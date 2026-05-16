@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="chambita_primario">#FF6B35</color>
+    <color name="chambita_primario_oscuro">#E55A24</color>
+    <color name="chambita_secundario">#2C3E50</color>
+    <color name="chambita_acento">#27AE60</color>
+    <color name="chambita_fondo">#F8F9FA</color>
+    <color name="chambita_texto_principal">#2C3E50</color>
+    <color name="chambita_texto_secundario">#7F8C8D</color>
+    <color name="blanco">#FFFFFF</color>
+    <color name="borde_input">#DADADA</color>
+    <color name="colorPrimary">#FF6B35</color>
+    <color name="colorPrimaryDark">#E55A24</color>
+    <color name="colorAccent">#27AE60</color>
+</resources>

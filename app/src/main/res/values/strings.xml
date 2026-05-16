@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Chambita</string>
+
+    <string name="login_titulo">Bienvenido a Chambita</string>
+    <string name="login_subtitulo">Encuentra técnicos cerca de ti</string>
+    <string name="hint_correo">Correo electrónico</string>
+    <string name="hint_contrasena">Contraseña</string>
+    <string name="btn_ingresar">Ingresar</string>
+    <string name="link_registro">¿No tienes cuenta? Regístrate</string>
+    <string name="error_correo_vacio">Ingresa tu correo</string>
+    <string name="error_contrasena_vacia">Ingresa tu contraseña</string>
+    <string name="error_correo_invalido">Correo no válido</string>
+</resources>

@@ -20,6 +20,7 @@
             android:src="@mipmap/ic_launcher"
             android:contentDescription="Logo Chambita"
             android:layout_marginBottom="16dp" />
+
         <TextView
             android:id="@+id/tvTitulo"
             android:layout_width="wrap_content"
@@ -29,6 +30,7 @@
             android:textStyle="bold"
             android:textColor="@color/chambita_texto_principal"
             android:layout_marginBottom="8dp" />
+
         <TextView
             android:id="@+id/tvSubtitulo"
             android:layout_width="wrap_content"
@@ -38,6 +40,16 @@
             android:textColor="@color/chambita_texto_secundario"
             android:gravity="center"
             android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvSemana"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Semana 02 - SISE"
+            android:textSize="12sp"
+            android:textColor="@color/chambita_texto_secundario"
+            android:textStyle="italic"
+            android:layout_marginBottom="32dp" />
 
         <!-- Campo correo -->
         <EditText

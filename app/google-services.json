@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "53721767221",
+    "project_id": "chambita-app-af4b2",
+    "storage_bucket": "chambita-app-af4b2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53721767221:android:3b777048da167f748b007c",
+        "android_client_info": {
+          "package_name": "com.chambita.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC79dJzXt2xJGcJcSQ_us3prN-AmGROwLU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

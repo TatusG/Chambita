@@ -1,5 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<resources>
     <style name="Theme.Chambita" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/chambita_primario</item>
         <item name="colorPrimaryDark">@color/chambita_primario_oscuro</item>

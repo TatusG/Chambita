@@ -7,8 +7,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.chambita.app.R
+import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
 
@@ -17,11 +18,16 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var etCorreo: EditText
     private lateinit var etContrasena: EditText
     private lateinit var btnIngresar: Button
+    private lateinit var btnRegistro: Button
     private lateinit var tvRegistro: TextView
+    private lateinit var tvOlvideContrasena: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        Log.d("FIREBASE", "Firebase conectado. Usuario: $firebaseUser")
 
         Log.d("APP", "Aplicación iniciada correctamente")
         Log.d(TAG, "onCreate - LoginActivity lista")
@@ -31,21 +37,32 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun inicializarComponentes() {
-        etCorreo = findViewById(R.id.etCorreo)
-        etContrasena = findViewById(R.id.etContrasena)
-        btnIngresar = findViewById(R.id.btnIngresar)
-        tvRegistro = findViewById(R.id.tvRegistro)
-        Log.d(TAG, "inicializarComponentes - OK")
+        etCorreo            = findViewById(R.id.etCorreo)
+        etContrasena        = findViewById(R.id.etContrasena)
+        btnIngresar         = findViewById(R.id.btnIngresar)
+        btnRegistro         = findViewById(R.id.btnRegistro)
+        tvRegistro          = findViewById(R.id.tvRegistro)
+        tvOlvideContrasena  = findViewById(R.id.tvOlvideContrasena)
+        Log.d(TAG, "inicializarComponentes — OK")
     }
 
     private fun configurarListener() {
         btnIngresar.setOnClickListener {
-            Log.d(TAG, "btnIngresar - click")
+            Log.d(TAG, "btnIngresar — click")
             intentarLogin()
         }
+        btnRegistro.setOnClickListener {
+            Log.d(TAG, "btnRegistro — click")
+            // TODO Sprint 2: ir a RegisterActivity
+            Toast.makeText(this, "Registro próximamente 🚧", Toast.LENGTH_SHORT).show()
+        }
         tvRegistro.setOnClickListener {
-            Log.d(TAG, "tvRegistro - click")
-            Toast.makeText(this, "Registro próximamente", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "tvRegistro — click")
+            Toast.makeText(this, "Registro próximamente 🚧", Toast.LENGTH_SHORT).show()
+        }
+        tvOlvideContrasena.setOnClickListener {
+            Log.d(TAG, "tvOlvideContrasena — click")
+            Toast.makeText(this, "Recuperación próximamente 🚧", Toast.LENGTH_SHORT).show()
         }
     }
 

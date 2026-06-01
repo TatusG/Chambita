@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ── Paleta principal Chambita v3.0 ─────────────── -->
     <color name="chambita_primario">#1A2A4A</color>
-    <color name="chambita_primario_oscuro">#111D33</color>
-    <color name="chambita_acento">#FF6B35</color>
-    <color name="chambita_acento_oscuro">#E55A24</color>
-    <color name="chambita_verde">#27AE60</color>
-    <color name="chambita_fondo">#F8F9FA</color>
-    <color name="chambita_texto_principal">#2C3E50</color>
-    <color name="chambita_texto_secundario">#7F8C8D</color>
+    <color name="chambita_primario_oscuro">#1A1A2E</color>
+    <color name="chambita_secundario">#4A5568</color>
+    <color name="chambita_acento">#2D6A9F</color>
+    <color name="chambita_acento_oscuro">#1A4F7A</color>
+
+    <!-- ── Fondos ──────────────────────────────────────── -->
+    <color name="chambita_fondo">#F0F4F8</color>
+    <color name="chambita_fondo_oscuro">#E2E8F0</color>
+
+    <!-- ── Textos ──────────────────────────────────────── -->
+    <color name="chambita_texto_principal">#2D3748</color>
+    <color name="chambita_texto_secundario">#718096</color>
+    <color name="chambita_texto_claro">#A0AEC0</color>
+
+    <!-- ── Utilidades ──────────────────────────────────── -->
+    <color name="chambita_verde">#2F855A</color>
+    <color name="chambita_rojo">#C53030</color>
     <color name="blanco">#FFFFFF</color>
-    <color name="borde_input">#DADADA</color>
+    <color name="negro">#1A1A2E</color>
+    <color name="borde_input">#CBD5E0</color>
 
+    <!-- ── Sistema Android ─────────────────────────────── -->
     <color name="colorPrimary">#1A2A4A</color>
-    <color name="colorPrimaryDark">#111D33</color>
-    <color name="colorAccent">#FF6B35</color>
-
+    <color name="colorPrimaryDark">#1A1A2E</color>
+    <color name="colorAccent">#2D6A9F</color>
 </resources>

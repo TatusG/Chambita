@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/chambita_fondo"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="40dp"
+        android:paddingEnd="30dp"
+        android:paddingBottom="30dp">
+
+        <!-- Título -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="Crear cuenta"
+            android:textColor="@color/chambita_primario"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="28dp"
+            android:text="Regístrate gratis en Chambita"
+            android:textColor="@color/chambita_texto_secundario"
+            android:textSize="14sp" />
+
+        <!-- Nombre -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="Nombre completo *"
+            android:textColor="@color/chambita_texto_principal"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etNombre"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_edittext"
+            android:hint="Tu nombre completo"
+            android:imeOptions="actionNext"
+            android:inputType="textPersonName"
+            android:maxLines="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/chambita_texto_principal"
+            android:textColorHint="@color/chambita_texto_secundario"
+            android:textSize="15sp" />
+
+        <!-- DNI -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="DNI (8 dígitos) *"
+            android:textColor="@color/chambita_acento"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etDni"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_edittext"
+            android:hint="12345678"
+            android:imeOptions="actionNext"
+            android:inputType="number"
+            android:maxLength="8"
+            android:maxLines="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/chambita_texto_principal"
+            android:textColorHint="@color/chambita_texto_secundario"
+            android:textSize="15sp" />
+
+        <!-- Correo -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="Correo electrónico *"
+            android:textColor="@color/chambita_texto_principal"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etCorreo"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_edittext"
+            android:hint="correo@ejemplo.com"
+            android:imeOptions="actionNext"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/chambita_texto_principal"
+            android:textColorHint="@color/chambita_texto_secundario"
+            android:textSize="15sp" />
+
+        <!-- Teléfono -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="Teléfono *"
+            android:textColor="@color/chambita_texto_principal"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etTelefono"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_edittext"
+            android:hint="+51 999 999 999"
+            android:imeOptions="actionNext"
+            android:inputType="phone"
+            android:maxLines="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/chambita_texto_principal"
+            android:textColorHint="@color/chambita_texto_secundario"
+            android:textSize="15sp" />
+
+        <!-- Contraseña -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="Contraseña *"
+            android:textColor="@color/chambita_texto_principal"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etContrasena"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_edittext"
+            android:hint="Mínimo 6 caracteres"
+            android:imeOptions="actionNext"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/chambita_texto_principal"
+            android:textColorHint="@color/chambita_texto_secundario"
+            android:textSize="15sp" />
+
+        <!-- Confirmar contraseña -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:text="Confirmar contraseña *"
+            android:textColor="@color/chambita_texto_principal"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etConfirmarContrasena"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_edittext"
+            android:hint="Repite tu contraseña"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/chambita_texto_principal"
+            android:textColorHint="@color/chambita_texto_secundario"
+            android:textSize="15sp" />
+
+        <!-- Selector de rol -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Tipo de cuenta *"
+            android:textColor="@color/chambita_texto_principal"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="28dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnCliente"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_primary"
+                android:text="👤 Cliente"
+                android:textColor="@color/blanco"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btnTecnico"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_outline"
+                android:text="🔧 Técnico"
+                android:textColor="@color/chambita_primario"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <!-- ProgressBar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="12dp"
+            android:indeterminateTint="@color/chambita_acento"
+            android:visibility="gone" />
+
+        <!-- Botón crear cuenta -->
+        <Button
+            android:id="@+id/btnCrearCuenta"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/bg_button_primary"
+            android:text="CREAR CUENTA"
+            android:textColor="@color/blanco"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Link login -->
+        <TextView
+            android:id="@+id/tvIniciarSesion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="8dp"
+            android:text="¿Ya tienes cuenta? Inicia sesión"
+            android:textColor="@color/chambita_acento"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -10,6 +10,7 @@ import android.widget.Toast
 import com.chambita.app.R
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import android.content.Intent
 
 class LoginActivity : AppCompatActivity() {
 
@@ -53,12 +54,11 @@ class LoginActivity : AppCompatActivity() {
         }
         btnRegistro.setOnClickListener {
             Log.d(TAG, "btnRegistro — click")
-            // TODO Sprint 2: ir a RegisterActivity
-            Toast.makeText(this, "Registro próximamente 🚧", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
         tvRegistro.setOnClickListener {
             Log.d(TAG, "tvRegistro — click")
-            Toast.makeText(this, "Registro próximamente 🚧", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
         tvOlvideContrasena.setOnClickListener {
             Log.d(TAG, "tvOlvideContrasena — click")

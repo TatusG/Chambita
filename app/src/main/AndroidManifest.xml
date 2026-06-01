@@ -29,6 +29,11 @@
             android:name=".ui.auth.LoginActivity"
             android:exported="false" />
 
+        <!-- REGISTRO -->
+        <activity
+            android:name=".ui.auth.RegisterActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

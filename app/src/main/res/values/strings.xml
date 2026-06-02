@@ -10,4 +10,5 @@
     <string name="error_correo_vacio">Ingresa tu correo</string>
     <string name="error_contrasena_vacia">Ingresa tu contraseña</string>
     <string name="error_correo_invalido">Correo no válido</string>
+    <string name="error_contrasena_caracteres">Mínimo 6 caracteres</string>
 </resources>

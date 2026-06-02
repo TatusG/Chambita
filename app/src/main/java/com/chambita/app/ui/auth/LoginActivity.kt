@@ -72,40 +72,48 @@ class LoginActivity : AppCompatActivity() {
 
         if (!validarCampos(correo, contrasena)) return
 
-        Log.d(TAG, "intentarLogin - validación OK")
-        Toast.makeText(this, "!Bienvenido!", Toast.LENGTH_LONG).show()
+        Log.d(TAG, "intentarLogin - validación local OK")
+
+        btnIngresar.isEnabled = false
+
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(correo, contrasena).addOnCompleteListener { task ->
+            btnIngresar.isEnabled = true
+
+            if (task.isSuccessful) {
+                Log.d(TAG, "Login exitoso con Firebase")
+                Toast.makeText(this, "!Bienvenido a Chambita¡", Toast.LENGTH_SHORT).show()
+            } else {
+                Log.e(TAG, "Error en login: ${task.exception?.message}")
+                Toast.makeText(this, "Usuario o Contraseña incorrectos", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun validarCampos(correo: String, contrasena: String): Boolean {
-        if (correo.isEmpty()) {
-            etCorreo.error = getString(R.string.error_correo_vacio)
-            etCorreo.requestFocus()
-            Log.w(TAG, "validarCampos - correo vacío")
-            return false
-        }
+        return when {
+            correo.isEmpty() ->
+                mostrarError(etCorreo, getString(R.string.error_correo_vacio))
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
-            etCorreo.error = getString(R.string.error_correo_invalido)
-            etCorreo.requestFocus()
-            Log.w(TAG, "validarCampos - correo inválido")
-            return false
-        }
+            !Patterns.EMAIL_ADDRESS.matcher(correo).matches()->
+                mostrarError(etCorreo, getString(R.string.error_correo_invalido))
 
-        if (contrasena.isEmpty()) {
-            etContrasena.error = getString(R.string.error_contrasena_vacia)
-            etContrasena.requestFocus()
-            Log.w(TAG, "validarCampos - contraseña vacía")
-            return false
-        }
+            contrasena.isEmpty() ->
+                mostrarError(etContrasena, getString(R.string.error_contrasena_vacia))
 
-        if (contrasena.length < 6) {
-            etContrasena.error = "Mínimo 6 caracteres"
-            etContrasena.requestFocus()
-            Log.w(TAG, "validarCampos - contraseña corta")
-            return false
+            contrasena.length < 6 ->
+                mostrarError(etContrasena, getString(R.string.error_contrasena_caracteres))
+
+            else -> true
         }
-        return true
     }
+
+    private fun mostrarError(editText: EditText, mensaje: String): Boolean {
+        editText.error = mensaje
+        editText.requestFocus()
+        Log.w(TAG, "Validación fallida: $mensaje")
+        return false
+    }
+
 
     override fun onStart() {
         super.onStart(); Log.d(TAG, "onStart")

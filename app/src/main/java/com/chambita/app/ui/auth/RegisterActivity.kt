@@ -158,70 +158,19 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun validarCampos(
-        nombre: String,
-        dni: String,
-        correo: String,
-        telefono: String,
-        contrasena: String,
-        confirmar: String
+        nombre: String, dni: String, correo: String,
+        telefono: String, contrasena: String, confirmar: String
     ): Boolean {
-        if (nombre.isEmpty()) {
-            etNombre.error = "Ingrese tu nombre completo"
-            etNombre.requestFocus()
-            return false
+        return when {
+            nombre.isEmpty() -> mostrarError(etNombre, "Ingrese su nombre")
+            nombre.length < 3 -> mostrarError(etNombre, "Nombre es muy corto")
+            dni.length != 8 -> mostrarError(etDni, "DNI debe tener 8 dígitos")
+            !Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> mostrarError(etCorreo, "Correo inválido")
+            telefono.length < 9 -> mostrarError(etTelefono, "Teléfono inválido")
+            contrasena.length < 6 -> mostrarError(etContrasena, "Contraseña corta")
+            confirmar != contrasena -> mostrarError(etConfirmarContrasena, "No coinciden")
+            else -> true
         }
-        if (nombre.length < 3) {
-            etNombre.error = "Nombre muy corto"
-            etNombre.requestFocus()
-            return false
-        }
-
-        if (dni.isEmpty()) {
-            etDni.error = "Ingrese tu DNI"
-            etDni.requestFocus()
-            return false
-        }
-        if (dni.length != 8 || !dni.all { it.isDigit() }) {
-            etDni.error = "El DNI debe tener exactamente 8 dígitos"
-            etDni.requestFocus()
-            return false
-        }
-        if (correo.isEmpty()) {
-            etCorreo.error = "Ingresa tu correo"
-            etCorreo.requestFocus()
-            return false
-        }
-        if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
-            etCorreo.error = "Correo no válido"
-            etCorreo.requestFocus()
-            return false
-        }
-        if (telefono.isEmpty()) {
-            etTelefono.error = "Ingresa tu teléfono"
-            etTelefono.requestFocus()
-            return false
-        }
-        if (telefono.length < 9) {
-            etTelefono.error = "Teléfono inválido"
-            etTelefono.requestFocus()
-            return false
-        }
-        if (contrasena.isEmpty()) {
-            etContrasena.error = "Ingresa una contraseña"
-            etContrasena.requestFocus()
-            return false
-        }
-        if (contrasena.length < 6) {
-            etContrasena.error = "Mínimo 6 caracteres"
-            etContrasena.requestFocus()
-            return false
-        }
-        if (confirmar != contrasena) {
-            etConfirmarContrasena.error = "Las contraseñas no coinciden"
-            etConfirmarContrasena.requestFocus()
-            return false
-        }
-        return true
     }
 
     private fun mostrarCarga(mostrar:Boolean) {
@@ -234,6 +183,13 @@ class RegisterActivity : AppCompatActivity() {
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
         finish()
+    }
+
+    private fun mostrarError(editText: EditText, mensaje: String): Boolean {
+        editText.error = mensaje
+        editText.requestFocus()
+        Log.w(TAG, "Validación fallida: $mensaje")
+        return false
     }
 
     override fun onStart() { super.onStart(); Log.d(TAG, "onStart") }

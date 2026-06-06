@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/activity_home_cliente.xml -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/chambita_fondo">
+
+    <!-- ═══════════════════════════════════
+         TOOLBAR
+         ═══════════════════════════════════ -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/chambita_fondo"
+        android:elevation="2dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <ImageButton
+            android:id="@+id/btnMenu"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_menu"
+            android:tint="@color/chambita_texto_principal"
+            android:contentDescription="Menú" />
+
+        <!-- Título Chambita centrado -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Chambita"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/chambita_primario" />
+
+        <!-- Íconos de la derecha -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- Campana notificaciones -->
+            <ImageButton
+                android:id="@+id/btnNotificaciones"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_bell"
+                android:tint="@color/chambita_texto_principal"
+                android:contentDescription="Notificaciones" />
+
+            <!-- Avatar con iniciales -->
+            <TextView
+                android:id="@+id/tvAvatar"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/bg_avatar"
+                android:gravity="center"
+                android:text="JP"
+                android:textColor="@color/chambita_primario"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- ═══════════════════════════════════
+         CONTENIDO SCROLLABLE
+         ═══════════════════════════════════ -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp"
+        android:layout_marginBottom="64dp"
+        android:fillViewport="false"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
+
+            <!-- ── Saludo ── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:background="@color/chambita_fondo">
+
+                <TextView
+                    android:id="@+id/tvSaludo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HOLA, JUAN 👋"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:textColor="@color/chambita_primario" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="¿Qué necesitas hoy?"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/chambita_texto_principal" />
+
+                <!-- ── Buscador ── -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/bg_edittext"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_search"
+                        android:tint="@color/chambita_texto_secundario"
+                        android:contentDescription="Buscar" />
+
+                    <EditText
+                        android:id="@+id/etBuscar"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:background="@null"
+                        android:hint="Buscar en tu distrito..."
+                        android:textColorHint="@color/chambita_texto_secundario"
+                        android:textColor="@color/chambita_texto_principal"
+                        android:textSize="14sp"
+                        android:inputType="text"
+                        android:imeOptions="actionSearch"
+                        android:maxLines="1" />
+
+                </LinearLayout>
+
+                <!-- ── Chips de categoría ── -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:scrollbars="none"
+                    android:overScrollMode="never">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <!-- Chip: Todos (activo) -->
+                        <TextView
+                            android:id="@+id/chipTodos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/bg_chip_selected"
+                            android:gravity="center"
+                            android:paddingStart="18dp"
+                            android:paddingEnd="18dp"
+                            android:text="Todos"
+                            android:textColor="@color/blanco"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <!-- Chip: Electr. -->
+                        <TextView
+                            android:id="@+id/chipElectr"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/bg_chip_normal"
+                            android:gravity="center"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:text="⚡ Electr."
+                            android:textColor="@color/chambita_texto_secundario"
+                            android:textSize="13sp" />
+
+                        <!-- Chip: Gasfitero -->
+                        <TextView
+                            android:id="@+id/chipGasfitero"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/bg_chip_normal"
+                            android:gravity="center"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:text="🔧 Gasfitero"
+                            android:textColor="@color/chambita_texto_secundario"
+                            android:textSize="13sp" />
+
+                        <!-- Chip: Carpintero -->
+                        <TextView
+                            android:id="@+id/chipCarpintero"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:background="@drawable/bg_chip_normal"
+                            android:gravity="center"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:text="🪚 Carpintero"
+                            android:textColor="@color/chambita_texto_secundario"
+                            android:textSize="13sp" />
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
+            </LinearLayout>
+
+            <!-- ── Mapa ── -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="185dp"
+                android:layout_marginTop="4dp">
+
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/mapView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <!-- Pill "Zona: Miraflores" sobre el mapa -->
+                <TextView
+                    android:id="@+id/tvZona"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="12dp"
+                    android:background="@drawable/bg_pill_zona"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:text="Zona: Miraflores"
+                    android:textColor="@color/chambita_texto_principal"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+            </FrameLayout>
+
+            <!-- ── Sección: Técnicos en tu zona ── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="10dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Técnicos en tu zona"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/chambita_texto_principal" />
+
+                <TextView
+                    android:id="@+id/tvVerTodo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="VER TODO"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/chambita_acento"
+                    android:padding="4dp" />
+
+            </LinearLayout>
+
+            <!-- ── Card técnico 1 ── -->
+            <LinearLayout
+                android:id="@+id/cardTecnico1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_card"
+                android:elevation="2dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <!-- Foto técnico -->
+                <ImageView
+                    android:id="@+id/ivFoto1"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:background="@drawable/bg_foto_tecnico"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/placeholder_avatar"
+                    android:contentDescription="Foto técnico" />
+
+                <!-- Info -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="14dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvNombre1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Carlos Q."
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/chambita_texto_principal" />
+
+                    <TextView
+                        android:id="@+id/tvEspecialidad1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Electricista"
+                        android:textSize="13sp"
+                        android:textColor="@color/chambita_acento" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <RatingBar
+                            android:id="@+id/ratingBar1"
+                            style="@style/Widget.AppCompat.RatingBar.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:isIndicator="true"
+                            android:numStars="5"
+                            android:rating="5.0"
+                            android:progressTint="@color/chambita_estrella"
+                            android:secondaryProgressTint="@color/borde_input" />
+
+                        <TextView
+                            android:id="@+id/tvRating1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:text="5.0"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/chambita_texto_principal" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Badge zona -->
+                <TextView
+                    android:id="@+id/tvZona1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_chip_zona"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="Surco"
+                    android:textColor="@color/chambita_primario"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- ── Card técnico 2 ── -->
+            <LinearLayout
+                android:id="@+id/cardTecnico2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_card"
+                android:elevation="2dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <ImageView
+                    android:id="@+id/ivFoto2"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:background="@drawable/bg_foto_tecnico"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/placeholder_avatar"
+                    android:contentDescription="Foto técnico" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="14dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvNombre2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="María R."
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/chambita_texto_principal" />
+
+                    <TextView
+                        android:id="@+id/tvEspecialidad2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Gasfitero"
+                        android:textSize="13sp"
+                        android:textColor="@color/chambita_acento" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <RatingBar
+                            android:id="@+id/ratingBar2"
+                            style="@style/Widget.AppCompat.RatingBar.Small"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:isIndicator="true"
+                            android:numStars="5"
+                            android:rating="4.2"
+                            android:progressTint="@color/chambita_estrella"
+                            android:secondaryProgressTint="@color/borde_input" />
+
+                        <TextView
+                            android:id="@+id/tvRating2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:text="4.2"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/chambita_texto_principal" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvZona2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_chip_zona"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="Mirflrs."
+                    android:textColor="@color/chambita_primario"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- ═══════════════════════════════════
+         FAB  +  (nueva solicitud)
+         ═══════════════════════════════════ -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabNuevo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/chambita_primario"
+        app:tint="@color/blanco"
+        app:elevation="6dp"
+        android:contentDescription="Nueva solicitud" />
+
+    <!-- ═══════════════════════════════════
+         BOTTOM NAVIGATION BAR
+         ═══════════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_gravity="bottom"
+        android:background="@color/blanco"
+        android:elevation="8dp"
+        android:orientation="horizontal">
+
+        <!-- Inicio (activo) -->
+        <LinearLayout
+            android:id="@+id/navInicio"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="?attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:layout_width="56dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_home"
+                android:tint="@color/blanco"
+                android:background="@drawable/bg_nav_active"
+                android:padding="6dp"
+                android:contentDescription="Inicio" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="Inicio"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@color/chambita_primario" />
+
+        </LinearLayout>
+
+        <!-- Trabajos -->
+        <LinearLayout
+            android:id="@+id/navTrabajos"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="?attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_tools"
+                android:tint="@color/chambita_texto_secundario"
+                android:contentDescription="Trabajos" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="Trabajos"
+                android:textSize="11sp"
+                android:textColor="@color/chambita_texto_secundario" />
+
+        </LinearLayout>
+
+        <!-- Mensajes -->
+        <LinearLayout
+            android:id="@+id/navMensajes"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="?attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_chat"
+                android:tint="@color/chambita_texto_secundario"
+                android:contentDescription="Mensajes" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="Mensajes"
+                android:textSize="11sp"
+                android:textColor="@color/chambita_texto_secundario" />
+
+        </LinearLayout>
+
+        <!-- Perfil -->
+        <LinearLayout
+            android:id="@+id/navPerfil"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="?attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_person"
+                android:tint="@color/chambita_texto_secundario"
+                android:contentDescription="Perfil" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="Perfil"
+                android:textSize="11sp"
+                android:textColor="@color/chambita_texto_secundario" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

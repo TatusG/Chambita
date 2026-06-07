@@ -34,6 +34,11 @@
             android:name=".ui.auth.RegisterActivity"
             android:exported="false" />
 
+        <!--HOME CLIENTE-->
+        <activity
+            android:name=".ui.auth.HomeClienteActivity"
+            android:exported="false"
+        />
     </application>
 
 </manifest>

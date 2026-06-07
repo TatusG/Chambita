@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/chambita_fondo">
 
     <!-- TOOLBAR -->
@@ -23,7 +23,7 @@
             android:layout_centerVertical="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_arrow_back"
-            android:tint="@color/chambita_primario"
+            app:tint="@color/chambita_primario"
             android:contentDescription="Volver" />
 
         <TextView
@@ -118,7 +118,7 @@
                         android:layout_width="14dp"
                         android:layout_height="14dp"
                         android:src="@drawable/ic_location"
-                        android:tint="#90A4AE"
+                        app:tint="#90A4AE"
                         android:contentDescription="Zona" />
 
                     <TextView

@@ -11,6 +11,8 @@ import com.chambita.app.R
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import android.content.Intent
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 
 class LoginActivity : AppCompatActivity() {
 
@@ -80,8 +82,21 @@ class LoginActivity : AppCompatActivity() {
             btnIngresar.isEnabled = true
 
             if (task.isSuccessful) {
-                Log.d(TAG, "Login exitoso con Firebase")
-                Toast.makeText(this, "!Bienvenido a Chambita¡", Toast.LENGTH_SHORT).show()
+                val db = Firebase.firestore
+                val user = db.collection("usuarios").document("rol")
+                    .get()
+                    .addOnSuccessListener { document ->
+                        val rol = document.getString("rol")
+                        if (rol == "cliente"){
+                            val intent = Intent(this, HomeClienteActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
+                            finish()
+                        }
+                        else {
+                            Toast.makeText(this, "Bienvenido", Toast.LENGTH_LONG).show()
+                        }
+                    }
             } else {
                 Log.e(TAG, "Error en login: ${task.exception?.message}")
                 Toast.makeText(this, "Usuario o Contraseña incorrectos", Toast.LENGTH_LONG).show()

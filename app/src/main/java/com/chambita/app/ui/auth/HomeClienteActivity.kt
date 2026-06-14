@@ -1,36 +1,43 @@
 package com.chambita.app.ui.auth
 
 import android.os.Bundle
-import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
+import androidx.cardview.widget.CardView
 import com.chambita.app.R
 
-class HomeClienteActivity : AppCompatActivity() {
+class HomeClienteActivity : NavActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_cliente)
 
-        val navInicio = findViewById<LinearLayout>(R.id.navInicio)
-        val navTrabajos = findViewById<LinearLayout>(R.id.navTrabajos)
-        val navMensajes = findViewById<LinearLayout>(R.id.navMensajes)
-        val navPerfil = findViewById<LinearLayout>(R.id.navPerfil)
+        // Activar navegación inferior
+        barraNavegacion()
 
-        navInicio.setOnClickListener {
-            Toast.makeText(this, "Ya estás en Inicio", Toast.LENGTH_SHORT).show()
+        // Configurar botones de la cabecera
+        findViewById<ImageButton>(R.id.btnMenu)?.setOnClickListener {
+            showToast("Menú lateral próximamente")
         }
 
-        navTrabajos.setOnClickListener {
-            Toast.makeText(this, "Sección de Trabajos próximamente", Toast.LENGTH_SHORT).show()
+        findViewById<ImageButton>(R.id.btnNotificaciones)?.setOnClickListener {
+            showToast("No tienes notificaciones nuevas")
         }
 
-        navMensajes.setOnClickListener {
-            Toast.makeText(this, "Sección de Mensajes próximamente", Toast.LENGTH_SHORT).show()
+        findViewById<ImageView>(R.id.imgPerfil)?.setOnClickListener {
+            // Reutilizamos la lógica de ir al perfil
+            findViewById<android.view.View>(R.id.navPerfil)?.performClick()
         }
 
-        navPerfil.setOnClickListener {
-            Toast.makeText(this, "Perfil del Cliente próximamente", Toast.LENGTH_SHORT).show()
+        // Configurar búsqueda y mapa (básico)
+        findViewById<EditText>(R.id.etBuscar)?.setOnEditorActionListener { v, _, _ ->
+            showToast("Buscando: ${v.text}")
+            false
+        }
+
+        findViewById<CardView>(R.id.cardMapa)?.setOnClickListener {
+            showToast("Abriendo mapa...")
         }
     }
 }

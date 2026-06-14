@@ -82,24 +82,27 @@ class LoginActivity : AppCompatActivity() {
             btnIngresar.isEnabled = true
 
             if (task.isSuccessful) {
-                val db = Firebase.firestore
-                val user = db.collection("usuarios").document("rol")
-                    .get()
-                    .addOnSuccessListener { document ->
-                        val rol = document.getString("rol")
-                        if (rol == "cliente"){
-                            val intent = Intent(this, HomeClienteActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            startActivity(intent)
-                            finish()
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
+                if (uid != null) {
+                    val db = Firebase.firestore
+                    db.collection("usuarios").document(uid)
+                        .get()
+                        .addOnSuccessListener { document ->
+                            val rol = document.getString("rol")
+                            if (rol == "cliente") {
+                                val intent = Intent(this, HomeClienteActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                startActivity(intent)
+                                finish()
+                            } else {
+                                Toast.makeText(this, "Bienvenido", Toast.LENGTH_LONG).show()
+                            }
                         }
-                        else {
-                            Toast.makeText(this, "Bienvenido", Toast.LENGTH_LONG).show()
-                        }
-                    }
-            } else {
-                Log.e(TAG, "Error en login: ${task.exception?.message}")
-                Toast.makeText(this, "Usuario o Contraseña incorrectos", Toast.LENGTH_LONG).show()
+                } else {
+                    Log.e(TAG, "Error en login: ${task.exception?.message}")
+                    Toast.makeText(this, "Usuario o Contraseña incorrectos", Toast.LENGTH_LONG)
+                        .show()
+                }
             }
         }
     }

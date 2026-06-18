@@ -19,7 +19,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Nombre Técnico"
+            android:text="@string/nombre_tecnico"
             android:textColor="@color/chambita_texto_principal"
             android:textSize="16sp"
             android:textStyle="bold"/>
@@ -28,7 +28,7 @@
             android:id="@+id/tvMonto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-S/ 0"
+            android:text="@string/monto_cero_negativo"
             android:textColor="#C96A28"
             android:textSize="16sp"
             android:textStyle="bold"/>
@@ -41,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:text="Fecha - Servicio"
+        android:text="@string/fecha_servicio"
         android:textColor="@color/chambita_texto_secundario"
         android:textSize="14sp"/>
 
@@ -54,7 +54,7 @@
         android:layout_marginTop="12dp"
         android:background="@drawable/bg_estado_pagado"
         android:gravity="center"
-        android:text="PAGADO"
+        android:text="@string/estado_pagado"
         android:textColor="#4F9B63"
         android:textSize="11sp"
         android:textStyle="bold"/>

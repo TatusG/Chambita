@@ -168,7 +168,7 @@
                     android:layout_height="40dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/cd_notificaciones"
-                    android:src="@drawable/ic_notificacion" />
+                    android:src="@drawable/ic_bell" />
 
                 <ImageView
                     android:id="@+id/imgPerfil"

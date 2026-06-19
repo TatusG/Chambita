@@ -45,6 +45,24 @@
             android:name=".ui.auth.PerfilClienteActivity"
             android:exported="false"
         />
+
+        <!--NUEVA SOLICITUD-->
+        <activity
+            android:name=".ui.auth.NuevaSolicitudActivity"
+            android:exported="false"
+        />
+
+        <!--EDITAR PERFIL-->
+        <activity
+            android:name=".ui.auth.EditarPerfilActivity"
+            android:exported="false"
+        />
+
+        <!--MIS SOLICITUDES-->
+        <activity
+            android:name=".ui.auth.MisSolicitudesActivity"
+            android:exported="false"
+        />
     </application>
 
 </manifest>

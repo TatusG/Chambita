@@ -99,10 +99,13 @@ class LoginActivity : AppCompatActivity() {
                             }
                         }
                 } else {
-                    Log.e(TAG, "Error en login: ${task.exception?.message}")
+                    Log.e(TAG, "error en login: ${task.exception?.message}")
                     Toast.makeText(this, "Usuario o Contraseña incorrectos", Toast.LENGTH_LONG)
                         .show()
                 }
+            } else {
+                Log.e(TAG, "error en login: ${task.exception?.message}")
+                Toast.makeText(this, "Usuario o Contraseña incorrectos", Toast.LENGTH_LONG).show()
             }
         }
     }

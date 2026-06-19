@@ -1,11 +1,15 @@
 package com.chambita.app.ui.auth
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.chambita.app.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class HomeClienteActivity : NavActivity() {
 
@@ -15,6 +19,7 @@ class HomeClienteActivity : NavActivity() {
 
         // Activar navegación inferior
         barraNavegacion()
+        cargarDatosCabecera()
 
         // Configurar botones de la cabecera
         findViewById<ImageButton>(R.id.btnMenu)?.setOnClickListener {
@@ -26,18 +31,33 @@ class HomeClienteActivity : NavActivity() {
         }
 
         findViewById<ImageView>(R.id.imgPerfil)?.setOnClickListener {
-            // Reutilizamos la lógica de ir al perfil
-            findViewById<android.view.View>(R.id.navPerfil)?.performClick()
+            startActivity(Intent(this, PerfilClienteActivity::class.java))
         }
 
-        // Configurar búsqueda y mapa (básico)
+        // Configurar búsqueda y mapa
         findViewById<EditText>(R.id.etBuscar)?.setOnEditorActionListener { v, _, _ ->
             showToast("Buscando: ${v.text}")
             false
         }
 
         findViewById<CardView>(R.id.cardMapa)?.setOnClickListener {
-            showToast("Abriendo mapa...")
+            startActivity(Intent(this, NuevaSolicitudActivity::class.java))
         }
+    }
+
+    private fun cargarDatosCabecera() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("usuarios").document(uid).get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val nombreCompleto = document.getString("nombreComplete") ?: "Usuario"
+                    // Tomamos solo el primer nombre para el saludo
+                    val primerNombre = nombreCompleto.split(" ")[0]
+                    
+                    findViewById<TextView>(R.id.tvSaludo)?.text = "HOLA, ${primerNombre.uppercase()}"
+                }
+            }
     }
 }

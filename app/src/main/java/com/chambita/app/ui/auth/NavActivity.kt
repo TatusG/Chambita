@@ -19,18 +19,21 @@ abstract class NavActivity : AppCompatActivity() {
         }
 
         findViewById<LinearLayout>(R.id.navPerfil)?.setOnClickListener {
-            if (this.javaClass != PerfilClienteActivity::class.java ) {
+            if (this.javaClass != PerfilClienteActivity::class.java) {
                 startActivity(Intent(this, PerfilClienteActivity::class.java))
                 finish()
             }
         }
 
         findViewById<LinearLayout>(R.id.navTrabajos)?.setOnClickListener {
-            showToast("Próximamente: Trabajos")
+            if (this.javaClass != MisSolicitudesActivity::class.java) {
+                startActivity(Intent(this, MisSolicitudesActivity::class.java))
+                finish()
+            }
         }
 
         findViewById<LinearLayout>(R.id.navMensajes)?.setOnClickListener {
-            showToast("Próximamente: Mensajes")
+            showToast("Sección de Mensajes próximamente")
         }
     }
 

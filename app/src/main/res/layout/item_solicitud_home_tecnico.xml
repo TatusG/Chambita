@@ -5,14 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardCornerRadius="16dp">
+    app:cardCornerRadius="16dp"
+    app:cardElevation="3dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        xmlns:tools="http://schemas.android.com/tools">
 
+        <!-- CABECERA -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,6 +25,7 @@
                 android:id="@+id/imgCliente"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:contentDescription="@string/cd_cliente"
                 android:src="@drawable/ic_person"/>
 
             <LinearLayout
@@ -35,13 +39,18 @@
                     android:id="@+id/txtCliente"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/chambita_texto_principal"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textSize="22sp"/>
+                    tools:text="Nombre Cliente"/>
 
                 <TextView
                     android:id="@+id/txtTrabajo"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/chambita_texto_secundario"
+                    android:textSize="14sp"
+                    tools:text="Instalación eléctrica"/>
             </LinearLayout>
 
             <TextView
@@ -49,9 +58,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_badge_nuevo"
-                android:padding="6dp"/>
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:text="@string/estado_nuevo"
+                android:textStyle="bold"/>
         </LinearLayout>
 
+        <!-- BOTONES -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -63,7 +76,9 @@
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:text="ACEPTAR"/>
+                android:background="@drawable/bg_button_primary"
+                android:text="@string/aceptar"
+                android:textColor="@android:color/white"/>
 
             <Button
                 android:id="@+id/btnRechazar"
@@ -71,7 +86,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
-                android:text="RECHAZAR"/>
+                android:text="@string/rechazar"/>
         </LinearLayout>
 
     </LinearLayout>

@@ -42,4 +42,45 @@
     <string name="buscar_chats">Buscar chats o servicios...</string>
     <string name="nuevo_mensaje">Nuevo mensaje</string>
     <string name="mis_trabajos">Mis Trabajos</string>
+    <!-- PANEL TECNICO -->
+    <string name="panel_tecnico">Panel técnico</string>
+    <string name="estoy_disponible">Estoy disponible</string>
+    <string name="zona_activa_hoy">ZONA ACTIVA HOY:</string>
+    <string name="editar_zona">Editar zona →</string>
+    <string name="solicitudes_nuevas">Solicitudes nuevas</string>
+    <string name="herramientas">Herramientas</string>
+    <string name="cd_perfil_tecnico">Foto de perfil del técnico</string>
+    <string name="cd_herramientas">Botón herramientas</string>
+    <string name="cliente">Cliente</string>
+    <string name="trabajo">Trabajo solicitado</string>
+    <string name="estado_nuevo">NUEVO</string>
+    <string name="aceptar">ACEPTAR</string>
+    <string name="rechazar">RECHAZAR</string>
+    <string name="cd_cliente">Foto del cliente</string>
+    <string name="servicios_hoy">Servicios Hoy</string>
+    <string name="ganancias_hoy">Ganancias Hoy</string>
+    <string name="calificacion">Calificación</string>
+    <string name="sin_zona">Sin zona asignada</string>
+    <string name="disponible">Disponible</string>
+    <string name="ocupado">Ocupado</string>
+    <string name="foto_perfil">Foto de perfil</string>
+    <string name="trabajos">Trabajos</string>
+    <string name="cd_trabajos">Trabajos</string>
+    <!-- HOME CLIENTE -->
+    <string name="bienvenido_mayus">BIENVENIDO</string>
+    <string name="pregunta_necesidad">¿Qué necesitas hoy?</string>
+    <string name="hint_buscar_servicios">Buscar servicios...</string>
+    <string name="todos">Todos</string>
+    <string name="categoria">Categoría</string>
+    <string name="servicios_disponibles">Servicios disponibles</string>
+    <string name="cd_menu">Botón menú</string>
+    <string name="cd_mapa">Mapa de técnicos cercanos</string>
+
+    <!-- CHAT -->
+    <string name="mensaje_hint">Escribe un mensaje...</string>
+    <string name="cd_perfil_chat">Perfil del técnico</string>
+    <string name="cd_opciones_chat">Opciones</string>
+    <string name="cd_adjuntar">Adjuntar archivo</string>
+    <string name="cd_ubicacion">Enviar ubicación</string>
+    <string name="cd_enviar_mensaje">Enviar mensaje</string>
 </resources>

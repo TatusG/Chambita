@@ -12,35 +12,13 @@
         android:layout_height="70dp"
         android:layout_alignParentBottom="true"
         android:background="@color/blanco"
+        android:baselineAligned="false"
         android:elevation="8dp"
         android:orientation="horizontal">
 
-        <!-- Inicio -->
+        <!-- Inicio ACTIVO -->
         <LinearLayout
             android:id="@+id/navInicio"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_home"
-                android:tint="@color/chambita_texto_secundario" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Inicio"
-                android:textColor="@color/chambita_texto_secundario"
-                android:textSize="11sp" />
-        </LinearLayout>
-
-        <!-- Trabajos -->
-        <LinearLayout
-            android:id="@+id/navTrabajos"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -56,17 +34,42 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
-                    android:src="@drawable/ic_tools"
-                    android:tint="@color/blanco" />
+                    android:contentDescription="@string/cd_inicio"
+                    android:src="@drawable/ic_home"
+                    app:tint="@color/blanco" />
             </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Trabajos"
+                android:text="@string/inicio"
                 android:textColor="@color/chambita_primario"
                 android:textSize="11sp"
                 android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Trabajos -->
+        <LinearLayout
+            android:id="@+id/navTrabajos"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/cd_trabajos"
+                android:src="@drawable/ic_tools"
+                app:tint="@color/chambita_texto_secundario" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trabajos"
+                android:textColor="@color/chambita_texto_secundario"
+                android:textSize="11sp" />
         </LinearLayout>
 
         <!-- Mensajes -->
@@ -81,13 +84,14 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:contentDescription="@string/cd_mensajes"
                 android:src="@drawable/ic_chat"
-                android:tint="@color/chambita_texto_secundario" />
+                app:tint="@color/chambita_texto_secundario" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mensajes"
+                android:text="@string/mensajes"
                 android:textColor="@color/chambita_texto_secundario"
                 android:textSize="11sp" />
         </LinearLayout>
@@ -104,13 +108,14 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:contentDescription="@string/cd_perfil"
                 android:src="@drawable/ic_person"
-                android:tint="@color/chambita_texto_secundario" />
+                app:tint="@color/chambita_texto_secundario" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Perfil"
+                android:text="@string/perfil"
                 android:textColor="@color/chambita_texto_secundario"
                 android:textSize="11sp" />
         </LinearLayout>
@@ -135,6 +140,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:baselineAligned="false"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -143,6 +149,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="@android:color/transparent"
+                    android:contentDescription="@string/cd_menu"
                     android:src="@drawable/ic_menu" />
 
                 <TextView
@@ -150,7 +157,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
-                    android:text="Chambita"
+                    android:text="@string/app_name"
                     android:textColor="@color/chambita_primario"
                     android:textSize="24sp"
                     android:textStyle="bold" />
@@ -160,6 +167,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="@android:color/transparent"
+                    android:contentDescription="@string/cd_notificaciones"
                     android:src="@drawable/ic_notificacion" />
 
                 <ImageView
@@ -167,6 +175,7 @@
                     android:layout_width="42dp"
                     android:layout_height="42dp"
                     android:layout_marginStart="8dp"
+                    android:contentDescription="@string/foto_perfil"
                     android:src="@drawable/ic_usuario" />
             </LinearLayout>
 
@@ -175,7 +184,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="BIENVENIDO"
+                android:text="@string/bienvenido_mayus"
                 android:textColor="@color/chambita_texto_secundario"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -184,7 +193,7 @@
                 android:id="@+id/tvTitulo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="¿Qué necesitas hoy?"
+                android:text="@string/pregunta_necesidad"
                 android:textColor="@color/chambita_texto_principal"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -194,8 +203,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginTop="20dp"
+                android:autofillHints=""
                 android:background="@drawable/bg_edittext"
-                android:hint="Buscar servicios..."
+                android:hint="@string/hint_buscar_servicios"
+                android:inputType="text"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp" />
 
@@ -212,23 +223,26 @@
 
                     <Button
                         android:id="@+id/btnTodos"
+                        style="?android:attr/buttonBarButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="48dp"
-                        android:text="Todos" />
+                        android:text="@string/todos" />
 
                     <Button
                         android:id="@+id/btnCategoria1"
+                        style="?android:attr/buttonBarButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="48dp"
                         android:layout_marginStart="8dp"
-                        android:text="Categoría" />
+                        android:text="@string/categoria" />
 
                     <Button
                         android:id="@+id/btnCategoria2"
+                        style="?android:attr/buttonBarButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="48dp"
                         android:layout_marginStart="8dp"
-                        android:text="Categoría" />
+                        android:text="@string/categoria" />
 
                 </LinearLayout>
             </HorizontalScrollView>
@@ -248,6 +262,7 @@
                         android:id="@+id/imgMapa"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:contentDescription="@string/cd_mapa"
                         android:scaleType="centerCrop"
                         android:src="@drawable/mapa_demo" />
 
@@ -259,7 +274,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Servicios disponibles"
+                android:text="@string/servicios_disponibles"
                 android:textColor="@color/chambita_texto_principal"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -270,7 +285,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:nestedScrollingEnabled="false" />
-
         </LinearLayout>
 
     </ScrollView>

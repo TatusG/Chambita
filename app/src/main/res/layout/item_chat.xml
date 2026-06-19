@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="14dp"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Avatar -->
+        <FrameLayout
+            android:id="@+id/layoutAvatar"
+            android:layout_width="58dp"
+            android:layout_height="58dp">
+
+            <ImageView
+                android:id="@+id/imgAvatar"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                android:background="@drawable/bg_circle_primary"
+                android:contentDescription="@string/avatar"
+                android:scaleType="centerCrop" />
+
+            <View
+                android:id="@+id/viewOnline"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="bottom|end"
+                android:background="@drawable/bg_online" />
+
+        </FrameLayout>
+
+        <!-- Fecha/Hora -->
+        <TextView
+            android:id="@+id/txtHora"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text=""
+            android:textColor="@color/chambita_texto_secundario"
+            android:textSize="14sp" />
+
+        <!-- Nombre -->
+        <TextView
+            android:id="@+id/txtNombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_toEndOf="@id/layoutAvatar"
+            android:layout_toStartOf="@id/txtHora"
+            android:text=""
+            android:textColor="@color/chambita_texto_principal"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- Último mensaje -->
+        <TextView
+            android:id="@+id/txtMensaje"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtNombre"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="8dp"
+            android:layout_toEndOf="@id/layoutAvatar"
+            android:text=""
+            android:textColor="@color/chambita_texto_secundario"
+            android:textSize="16sp" />
+
+        <!-- Badge mensajes no leídos -->
+        <TextView
+            android:id="@+id/txtNoLeidos"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_alignBottom="@id/txtMensaje"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/bg_badge_nuevo"
+            android:gravity="center"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

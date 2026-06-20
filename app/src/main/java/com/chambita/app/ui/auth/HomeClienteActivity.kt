@@ -52,7 +52,7 @@ class HomeClienteActivity : NavActivity() {
         db.collection("usuarios").document(uid).get()
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
-                    val nombreCompleto = document.getString("nombreComplete") ?: "Usuario"
+                    val nombreCompleto = document.getString("nombreCompleto") ?: "Usuario"
                     // Tomamos solo el primer nombre para el saludo
                     val primerNombre = nombreCompleto.split(" ")[0]
                     

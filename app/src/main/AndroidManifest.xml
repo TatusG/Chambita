@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -61,6 +63,36 @@
         <!--MIS SOLICITUDES-->
         <activity
             android:name=".ui.auth.MisSolicitudesActivity"
+            android:exported="false"
+        />
+
+        <!--DIRECCIONES-->
+        <activity
+            android:name=".ui.auth.MisDireccionesActivity"
+            android:exported="false"
+        />
+
+        <!--METODOS PAGO-->
+        <activity
+            android:name=".ui.auth.MetodosPagoActivity"
+            android:exported="false"
+        />
+
+        <!--MENSAJES-->
+        <activity
+            android:name=".ui.auth.MensajesActivity"
+            android:exported="false"
+        />
+
+        <!--HISTORIAL PAGOS-->
+        <activity
+            android:name=".ui.auth.HistorialPagosActivity"
+            android:exported="false"
+        />
+
+        <!--VISTA CHAT 1:1-->
+        <activity
+            android:name=".ui.auth.ChatActivity"
             android:exported="false"
         />
     </application>

@@ -33,7 +33,10 @@ abstract class NavActivity : AppCompatActivity() {
         }
 
         findViewById<LinearLayout>(R.id.navMensajes)?.setOnClickListener {
-            showToast("Sección de Mensajes próximamente")
+            if (this.javaClass != MensajesActivity::class.java) {
+                startActivity(Intent(this, MensajesActivity::class.java))
+                finish()
+            }
         }
     }
 

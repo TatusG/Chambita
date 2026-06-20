@@ -11,6 +11,8 @@ import com.chambita.app.R
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import android.content.Intent
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 
 class LoginActivity : AppCompatActivity() {
 
@@ -72,40 +74,67 @@ class LoginActivity : AppCompatActivity() {
 
         if (!validarCampos(correo, contrasena)) return
 
-        Log.d(TAG, "intentarLogin - validación OK")
-        Toast.makeText(this, "!Bienvenido!", Toast.LENGTH_LONG).show()
+        Log.d(TAG, "intentarLogin - validación local OK")
+
+        btnIngresar.isEnabled = false
+
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(correo, contrasena).addOnCompleteListener { task ->
+            btnIngresar.isEnabled = true
+
+            if (task.isSuccessful) {
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
+                if (uid != null) {
+                    val db = Firebase.firestore
+                    db.collection("usuarios").document(uid)
+                        .get()
+                        .addOnSuccessListener { document ->
+                            val rol = document.getString("rol")
+                            if (rol == "cliente") {
+                                val intent = Intent(this, HomeClienteActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                startActivity(intent)
+                                finish()
+                            } else {
+                                Toast.makeText(this, "Bienvenido", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                } else {
+                    Log.e(TAG, "error en login: ${task.exception?.message}")
+                    Toast.makeText(this, "Usuario o Contraseña incorrectos", Toast.LENGTH_LONG)
+                        .show()
+                }
+            } else {
+                Log.e(TAG, "error en login: ${task.exception?.message}")
+                Toast.makeText(this, "Usuario o Contraseña incorrectos", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun validarCampos(correo: String, contrasena: String): Boolean {
-        if (correo.isEmpty()) {
-            etCorreo.error = getString(R.string.error_correo_vacio)
-            etCorreo.requestFocus()
-            Log.w(TAG, "validarCampos - correo vacío")
-            return false
-        }
+        return when {
+            correo.isEmpty() ->
+                mostrarError(etCorreo, getString(R.string.error_correo_vacio))
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
-            etCorreo.error = getString(R.string.error_correo_invalido)
-            etCorreo.requestFocus()
-            Log.w(TAG, "validarCampos - correo inválido")
-            return false
-        }
+            !Patterns.EMAIL_ADDRESS.matcher(correo).matches()->
+                mostrarError(etCorreo, getString(R.string.error_correo_invalido))
 
-        if (contrasena.isEmpty()) {
-            etContrasena.error = getString(R.string.error_contrasena_vacia)
-            etContrasena.requestFocus()
-            Log.w(TAG, "validarCampos - contraseña vacía")
-            return false
-        }
+            contrasena.isEmpty() ->
+                mostrarError(etContrasena, getString(R.string.error_contrasena_vacia))
 
-        if (contrasena.length < 6) {
-            etContrasena.error = "Mínimo 6 caracteres"
-            etContrasena.requestFocus()
-            Log.w(TAG, "validarCampos - contraseña corta")
-            return false
+            contrasena.length < 6 ->
+                mostrarError(etContrasena, getString(R.string.error_contrasena_caracteres))
+
+            else -> true
         }
-        return true
     }
+
+    private fun mostrarError(editText: EditText, mensaje: String): Boolean {
+        editText.error = mensaje
+        editText.requestFocus()
+        Log.w(TAG, "Validación fallida: $mensaje")
+        return false
+    }
+
 
     override fun onStart() {
         super.onStart(); Log.d(TAG, "onStart")

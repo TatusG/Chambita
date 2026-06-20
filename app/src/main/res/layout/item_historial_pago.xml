@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="14dp"
+    android:background="@drawable/bg_pago_card"
+    android:orientation="vertical"
+    android:padding="18dp">
+
+    <!-- Fila superior -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvTecnico"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/nombre_tecnico"
+            android:textColor="@color/chambita_texto_principal"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvMonto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/monto_cero_negativo"
+            android:textColor="#C96A28"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+    <!-- Fecha y servicio -->
+    <TextView
+        android:id="@+id/tvDetalle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="@string/fecha_servicio"
+        android:textColor="@color/chambita_texto_secundario"
+        android:textSize="14sp"/>
+
+    <!-- Estado -->
+    <TextView
+        android:id="@+id/tvEstado"
+        android:layout_width="72dp"
+        android:layout_height="28dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_estado_pagado"
+        android:gravity="center"
+        android:text="@string/estado_pagado"
+        android:textColor="#4F9B63"
+        android:textSize="11sp"
+        android:textStyle="bold"/>
+
+</LinearLayout>

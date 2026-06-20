@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/chambita_fondo">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="64dp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- TOOLBAR -->
+            <LinearLayout
+                android:id="@+id/btnVolver"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="18dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_arrow_back"
+                    android:tint="@color/chambita_acento" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Mi perfil"
+                    android:textColor="@color/chambita_acento"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <!-- TITULO -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Historial de pagos"
+                android:textColor="@color/chambita_texto_principal"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <!-- RESUMEN -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="162dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_total_gastado"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total gastado"
+                    android:textColor="@color/blanco"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvTotalGastado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="S/ 0.00"
+                    android:textColor="@color/blanco"
+                    android:textSize="34sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvResumenMes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="0 servicios • Mes"
+                    android:textColor="@color/blanco"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <!-- FILTRO MESES -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/chipMes1"
+                        android:layout_width="84dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/bg_chip_mes_activo"
+                        android:gravity="center"
+                        android:text="Mes 1"
+                        android:textColor="@color/blanco"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/chipMes2"
+                        android:layout_width="84dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_chip_mes"
+                        android:gravity="center"
+                        android:text="Mes 2"
+                        android:textColor="@color/chambita_texto_secundario" />
+
+                    <TextView
+                        android:id="@+id/chipMes3"
+                        android:layout_width="84dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_chip_mes"
+                        android:gravity="center"
+                        android:text="Mes 3"
+                        android:textColor="@color/chambita_texto_secundario" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+            <!-- LISTA DE PAGOS -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvHistorialPagos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="20dp"
+                android:nestedScrollingEnabled="false" />
+
+            <!-- ESPACIO INFERIOR -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom"
+        android:background="@color/blanco"
+        android:elevation="8dp"
+        android:orientation="horizontal">
+
+        <!-- Inicio -->
+        <LinearLayout
+            android:id="@+id/navInicio"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_home"
+                android:tint="@color/chambita_texto_secundario"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inicio"
+                android:textSize="11sp"
+                android:textColor="@color/chambita_texto_secundario"/>
+        </LinearLayout>
+
+        <!-- Trabajos -->
+        <LinearLayout
+            android:id="@+id/navTrabajos"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_tools"
+                android:tint="@color/chambita_texto_secundario"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trabajos"
+                android:textSize="11sp"
+                android:textColor="@color/chambita_texto_secundario"/>
+        </LinearLayout>
+
+        <!-- Mensajes -->
+        <LinearLayout
+            android:id="@+id/navMensajes"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_chat"
+                android:tint="@color/chambita_texto_secundario"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mensajes"
+                android:textSize="11sp"
+                android:textColor="@color/chambita_texto_secundario"/>
+        </LinearLayout>
+
+        <!-- Perfil ACTIVO -->
+        <LinearLayout
+            android:id="@+id/navPerfil"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="56dp"
+                android:layout_height="36dp"
+                android:gravity="center"
+                android:background="@drawable/bg_nav_active"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_person"
+                    android:tint="@color/blanco"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Perfil"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@color/chambita_primario"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

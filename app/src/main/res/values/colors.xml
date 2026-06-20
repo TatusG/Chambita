@@ -27,4 +27,10 @@
     <color name="colorPrimary">#1A2A4A</color>
     <color name="colorPrimaryDark">#1A1A2E</color>
     <color name="colorAccent">#2D6A9F</color>
+
+    <!-- Faltan en tu colors.xml actual — agrégalas -->
+    <color name="chambita_oscuro">#0D1B2E</color>
+    <color name="chambita_estrella">#ECC94B</color>
+    <color name="fondo_input">#EDF2F7</color>
+    <color name="borde_input_focus">#2D6A9F</color>
 </resources>

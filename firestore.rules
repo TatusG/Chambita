@@ -1,0 +1,166 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ==========================================
+    // FUNCIONES AUXILIARES DE CONTROL DE ACCESO
+    // ==========================================
+
+    // Verifica si hay un usuario autenticado en la solicitud.
+    function esUsuarioAutenticado() {
+      return request.auth != null;
+    }
+
+    // Verifica si el usuario autenticado coincide con el UID provisto.
+    function esPropioUsuario(uid) {
+      return esUsuarioAutenticado() && request.auth.uid == uid;
+    }
+
+    // ==========================================
+    // REGLAS PARA LA COLECCIÓN DE USUARIOS
+    // ==========================================
+    match /usuarios/{uid} {
+      // Cualquier usuario autenticado puede leer los perfiles (para que clientes vean técnicos y viceversa).
+      allow read: if esUsuarioAutenticado();
+
+      // Un usuario solo puede crear o editar su propio perfil (cliente o técnico).
+      allow create, update: if esPropioUsuario(uid);
+
+      // Por seguridad e integridad de la plataforma, se deshabilita la eliminación directa de perfiles.
+      allow delete: if false;
+
+      // Subcolección: Direcciones (exclusiva para Clientes)
+      match /direcciones/{direccionId} {
+        // Solo el propio cliente dueño de la cuenta puede leer, crear, actualizar o eliminar sus direcciones.
+        allow read, write: if esPropioUsuario(uid);
+      }
+
+      // Subcolección: Métodos de Pago (exclusiva para Clientes)
+      match /metodos_pago/{metodoId} {
+        // Solo el propio cliente dueño de la cuenta puede leer o modificar sus métodos de pago.
+        allow read, write: if esPropioUsuario(uid);
+      }
+
+      // Subcolección: Reseñas (recibidas por Técnicos y escritas por Clientes)
+      match /resenas/{resenaId} {
+        // Las reseñas son públicas para cualquier usuario autenticado (para ver la reputación de los técnicos).
+        allow read: if esUsuarioAutenticado();
+
+        // Un cliente autenticado puede crear una reseña para un técnico, pero:
+        // 1. No puede auto-reseñarse (el UID del técnico en la ruta debe ser diferente al del cliente).
+        // 2. El campo 'clienteId' del documento debe coincidir con su UID.
+        allow create: if esUsuarioAutenticado()
+                      && request.auth.uid == request.resource.data.clienteId
+                      && request.auth.uid != uid;
+
+        // Solo el cliente que redactó la reseña puede editarla o eliminarla.
+        allow update, delete: if esUsuarioAutenticado()
+                              && request.auth.uid == resource.data.clienteId;
+      }
+    }
+
+    // ==========================================
+    // REGLAS PARA LA COLECCIÓN DE SOLICITUDES
+    // ==========================================
+    match /solicitudes/{solicitudId} {
+      // Verifica si el usuario autenticado está involucrado en la solicitud (como cliente o técnico).
+      function esInvolucradoEnSolicitud(datos) {
+        return esUsuarioAutenticado() && (request.auth.uid == datos.clienteId || request.auth.uid == datos.tecnicoId);
+      }
+
+      // Los involucrados pueden leer la solicitud. También los técnicos pueden leer solicitudes 'pendientes' para verlas en su bandeja de entrada (aunque tecnicoId sea null).
+      allow read: if esInvolucradoEnSolicitud(resource.data)
+                  || (esUsuarioAutenticado() && resource.data.estado == 'pendiente');
+
+      // Solo un cliente autenticado puede crear una nueva solicitud indicándose a sí mismo como 'clienteId'.
+      allow create: if esUsuarioAutenticado() && request.auth.uid == request.resource.data.clienteId;
+
+      // El cliente o técnico involucrados pueden actualizar la solicitud.
+      // Además, un técnico no involucrado puede actualizar una solicitud 'pendiente' ÚNICAMENTE para asignarse a sí mismo (tecnicoId) y cambiar el estado a 'aceptada'.
+      // Se asegura que no se alteren campos críticos como clienteId, descripcionAveria y montoFinal durante esta acción.
+      allow update: if esInvolucradoEnSolicitud(resource.data)
+                    || (esUsuarioAutenticado() 
+                        && resource.data.estado == 'pendiente' 
+                        && request.resource.data.tecnicoId == request.auth.uid 
+                        && request.resource.data.estado == 'aceptada'
+                        && request.resource.data.clienteId == resource.data.clienteId
+                        && request.resource.data.descripcionAveria == resource.data.descripcionAveria
+                        && request.resource.data.montoFinal == resource.data.montoFinal);
+
+      // Las solicitudes no se eliminan físicamente; se gestionan mediante su campo 'estado' (ej: "cancelada").
+      allow delete: if false;
+    }
+
+    // ==========================================
+    // REGLAS PARA LA COLECCIÓN DE PAGOS
+    // ==========================================
+    match /pagos/{pagoId} {
+      // Verifica si el usuario autenticado está involucrado en la transacción de pago.
+      function esInvolucradoEnPago(datos) {
+        return esUsuarioAutenticado() && (request.auth.uid == datos.clienteId || request.auth.uid == datos.tecnicoId);
+      }
+
+      // Solo los involucrados (el cliente emisor o el técnico receptor) pueden consultar la información del pago.
+      allow read: if esInvolucradoEnPago(resource.data);
+
+      // Un cliente autenticado puede registrar un pago donde él es el emisor ('clienteId').
+      allow create: if esUsuarioAutenticado() && request.auth.uid == request.resource.data.clienteId;
+
+      // Los registros de pago no se pueden modificar ni eliminar para mantener la integridad de la auditoría financiera.
+      allow update, delete: if false;
+    }
+
+    // ==========================================
+    // REGLAS PARA LA COLECCIÓN DE CHATS
+    // ==========================================
+    match /chats/{chatId} {
+      // Verifica si el usuario es uno de los participantes del chat.
+      function esInvolucradoEnChat(datos) {
+        return esUsuarioAutenticado() && (request.auth.uid == datos.clienteId || request.auth.uid == datos.tecnicoId);
+      }
+
+      // Lectura de información del chat permitida únicamente a los participantes de la conversación.
+      allow read: if esInvolucradoEnChat(resource.data);
+
+      // Creación del chat permitida si el iniciador es el cliente o el técnico involucrado.
+      allow create: if esUsuarioAutenticado()
+                    && (request.auth.uid == request.resource.data.clienteId || request.auth.uid == request.resource.data.tecnicoId);
+
+      // Los participantes pueden actualizar información del chat (ej: ultimoMensaje, fechaUltimoMensaje).
+      allow update: if esInvolucradoEnChat(resource.data);
+
+      // No se permite eliminar conversaciones de chat.
+      allow delete: if false;
+
+      // Subcolección: Mensajes
+      match /mensajes/{mensajeId} {
+        // Verifica que el usuario pertenezca al chat padre realizando una lectura del documento de chat correspondiente.
+        function perteneceAlChatPadre() {
+          let chatData = get(/databases/$(database)/documents/chats/$(chatId)).data;
+          return esUsuarioAutenticado() && (request.auth.uid == chatData.clienteId || request.auth.uid == chatData.tecnicoId);
+        }
+
+        // Permite leer mensajes solo a los participantes del chat.
+        allow read: if perteneceAlChatPadre();
+
+        // Permite crear mensajes si el usuario es parte del chat y se identifica como el remitente.
+        allow create: if perteneceAlChatPadre() && request.auth.uid == request.resource.data.remitenteId;
+
+        // Por integridad del historial de chat, no se permite la edición ni eliminación de mensajes individuales.
+        allow update, delete: if false;
+      }
+    }
+
+    // ==========================================
+    // REGLAS PARA LA COLECCIÓN DE DISTRITOS
+    // ==========================================
+    match /distritos/{distritoId} {
+      // Cualquier usuario autenticado puede consultar la lista de distritos autorizados en la plataforma.
+      allow read: if esUsuarioAutenticado();
+
+      // La escritura de distritos está restringida y solo se administra directamente desde la consola o backend.
+      allow write: if false;
+    }
+  }
+}

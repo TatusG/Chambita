@@ -1,0 +1,302 @@
+[
+  {
+    "id": "Ventanilla",
+    "nombre": "Ventanilla",
+    "codigoPostal": "07031",
+    "distritosVecinos": ["Mi Perú", "Puente Piedra", "Ancón", "Callao", "Carabayllo"]
+  },
+  {
+    "id": "Mi Perú",
+    "nombre": "Mi Perú",
+    "codigoPostal": "07051",
+    "distritosVecinos": ["Ventanilla", "Puente Piedra"]
+  },
+  {
+    "id": "Callao",
+    "nombre": "Callao (Cercado)",
+    "codigoPostal": "07001",
+    "distritosVecinos": ["Ventanilla", "Bellavista", "Carmen de la Legua Reynoso", "San Martín de Porres"]
+  },
+  {
+    "id": "Bellavista",
+    "nombre": "Bellavista",
+    "codigoPostal": "07011",
+    "distritosVecinos": ["Callao", "La Perla", "Carmen de la Legua Reynoso", "San Miguel"]
+  },
+  {
+    "id": "Carmen de la Legua Reynoso",
+    "nombre": "Carmen de la Legua Reynoso",
+    "codigoPostal": "07006",
+    "distritosVecinos": ["Callao", "Bellavista", "San Martín de Porres"]
+  },
+  {
+    "id": "La Perla",
+    "nombre": "La Perla",
+    "codigoPostal": "07016",
+    "distritosVecinos": ["Bellavista", "La Punta", "San Miguel", "Callao"]
+  },
+  {
+    "id": "La Punta",
+    "nombre": "La Punta",
+    "codigoPostal": "07021",
+    "distritosVecinos": ["La Perla"]
+  },
+  {
+    "id": "Puente Piedra",
+    "nombre": "Puente Piedra",
+    "codigoPostal": "15121",
+    "distritosVecinos": ["Ventanilla", "Ancón", "Carabayllo", "Los Olivos", "San Martín de Porres", "Mi Perú"]
+  },
+  {
+    "id": "Ancón",
+    "nombre": "Ancón",
+    "codigoPostal": "15116",
+    "distritosVecinos": ["Puente Piedra", "Ventanilla", "Carabayllo", "Santa Rosa"]
+  },
+  {
+    "id": "Santa Rosa",
+    "nombre": "Santa Rosa",
+    "codigoPostal": "15111",
+    "distritosVecinos": ["Ancón", "Puente Piedra", "Ventanilla"]
+  },
+  {
+    "id": "Carabayllo",
+    "nombre": "Carabayllo",
+    "codigoPostal": "15122",
+    "distritosVecinos": ["Ancón", "Puente Piedra", "Comas", "San Juan de Lurigancho"]
+  },
+  {
+    "id": "Comas",
+    "nombre": "Comas",
+    "codigoPostal": "15312",
+    "distritosVecinos": ["Carabayllo", "Los Olivos", "Independencia", "San Martín de Porres", "San Juan de Lurigancho"]
+  },
+  {
+    "id": "Los Olivos",
+    "nombre": "Los Olivos",
+    "codigoPostal": "15311",
+    "distritosVecinos": ["Puente Piedra", "Comas", "San Martín de Porres", "Independencia"]
+  },
+  {
+    "id": "San Martín de Porres",
+    "nombre": "San Martín de Porres",
+    "codigoPostal": "15101",
+    "distritosVecinos": ["Los Olivos", "Puente Piedra", "Comas", "Independencia", "Rímac", "Callao", "Carmen de la Legua Reynoso", "San Miguel"]
+  },
+  {
+    "id": "Independencia",
+    "nombre": "Independencia",
+    "codigoPostal": "15333",
+    "distritosVecinos": ["Los Olivos", "Comas", "San Martín de Porres", "Rímac", "San Juan de Lurigancho"]
+  },
+  {
+    "id": "San Juan de Lurigancho",
+    "nombre": "San Juan de Lurigancho",
+    "codigoPostal": "15401",
+    "distritosVecinos": ["Carabayllo", "Comas", "Independencia", "Rímac", "El Agustino", "Lurigancho", "Ate"]
+  },
+  {
+    "id": "Rímac",
+    "nombre": "Rímac",
+    "codigoPostal": "15201",
+    "distritosVecinos": ["San Martín de Porres", "Independencia", "San Juan de Lurigancho", "El Agustino", "Cercado de Lima"]
+  },
+  {
+    "id": "Cercado de Lima",
+    "nombre": "Cercado de Lima",
+    "codigoPostal": "15001",
+    "distritosVecinos": ["Rímac", "San Martín de Porres", "Breña", "Jesús María", "La Victoria", "El Agustino", "San Miguel"]
+  },
+  {
+    "id": "Breña",
+    "nombre": "Breña",
+    "codigoPostal": "15082",
+    "distritosVecinos": ["Cercado de Lima", "Jesús María", "Pueblo Libre", "San Miguel", "La Victoria"]
+  },
+  {
+    "id": "San Miguel",
+    "nombre": "San Miguel",
+    "codigoPostal": "15087",
+    "distritosVecinos": ["Cercado de Lima", "Breña", "Pueblo Libre", "Magdalena del Mar", "La Perla", "Bellavista", "San Martín de Porres"]
+  },
+  {
+    "id": "Pueblo Libre",
+    "nombre": "Pueblo Libre",
+    "codigoPostal": "15084",
+    "distritosVecinos": ["Breña", "San Miguel", "Magdalena del Mar", "Jesús María"]
+  },
+  {
+    "id": "Magdalena del Mar",
+    "nombre": "Magdalena del Mar",
+    "codigoPostal": "15076",
+    "distritosVecinos": ["Pueblo Libre", "San Miguel", "Jesús María", "San Isidro"]
+  },
+  {
+    "id": "Jesús María",
+    "nombre": "Jesús María",
+    "codigoPostal": "15072",
+    "distritosVecinos": ["Cercado de Lima", "Breña", "Pueblo Libre", "Magdalena del Mar", "San Isidro", "Lince"]
+  },
+  {
+    "id": "San Isidro",
+    "nombre": "San Isidro",
+    "codigoPostal": "15036",
+    "distritosVecinos": ["Magdalena del Mar", "Jesús María", "Lince", "San Borja", "Miraflores"]
+  },
+  {
+    "id": "Lince",
+    "nombre": "Lince",
+    "codigoPostal": "15046",
+    "distritosVecinos": ["Jesús María", "San Isidro", "La Victoria", "Surquillo"]
+  },
+  {
+    "id": "La Victoria",
+    "nombre": "La Victoria",
+    "codigoPostal": "15033",
+    "distritosVecinos": ["Cercado de Lima", "Breña", "Lince", "San Borja", "San Luis", "El Agustino", "Surquillo"]
+  },
+  {
+    "id": "El Agustino",
+    "nombre": "El Agustino",
+    "codigoPostal": "15006",
+    "distritosVecinos": ["Cercado de Lima", "Rímac", "San Juan de Lurigancho", "La Victoria", "San Luis", "Santa Anita", "Ate"]
+  },
+  {
+    "id": "San Luis",
+    "nombre": "San Luis",
+    "codigoPostal": "15021",
+    "distritosVecinos": ["La Victoria", "El Agustino", "San Borja", "Santa Anita", "Ate"]
+  },
+  {
+    "id": "Santa Anita",
+    "nombre": "Santa Anita",
+    "codigoPostal": "15008",
+    "distritosVecinos": ["El Agustino", "San Luis", "Ate", "La Molina"]
+  },
+  {
+    "id": "Ate",
+    "nombre": "Ate",
+    "codigoPostal": "15012",
+    "distritosVecinos": ["El Agustino", "San Luis", "Santa Anita", "La Molina", "Santiago de Surco", "Villa María del Triunfo", "Lurigancho", "Cieneguilla"]
+  },
+  {
+    "id": "Lurigancho",
+    "nombre": "Lurigancho (Chosica)",
+    "codigoPostal": "15472",
+    "distritosVecinos": ["San Juan de Lurigancho", "Ate", "Chaclacayo"]
+  },
+  {
+    "id": "Chaclacayo",
+    "nombre": "Chaclacayo",
+    "codigoPostal": "15472",
+    "distritosVecinos": ["Lurigancho", "Ate"]
+  },
+  {
+    "id": "Surquillo",
+    "nombre": "Surquillo",
+    "codigoPostal": "15038",
+    "distritosVecinos": ["Lince", "La Victoria", "San Borja", "Miraflores", "Santiago de Surco"]
+  },
+  {
+    "id": "Santiago de Surco",
+    "nombre": "Santiago de Surco",
+    "codigoPostal": "15039",
+    "distritosVecinos": ["Miraflores", "San Borja", "La Molina", "Chorrillos", "San Juan de Miraflores", "Barranco", "Ate", "Surquillo"]
+  },
+  {
+    "id": "San Borja",
+    "nombre": "San Borja",
+    "codigoPostal": "15037",
+    "distritosVecinos": ["Santiago de Surco", "San Isidro", "La Victoria", "San Luis", "Miraflores", "Surquillo"]
+  },
+  {
+    "id": "Miraflores",
+    "nombre": "Miraflores",
+    "codigoPostal": "15074",
+    "distritosVecinos": ["Santiago de Surco", "San Isidro", "San Borja", "Surquillo", "Barranco"]
+  },
+  {
+    "id": "Barranco",
+    "nombre": "Barranco",
+    "codigoPostal": "15063",
+    "distritosVecinos": ["Santiago de Surco", "Miraflores", "Chorrillos"]
+  },
+  {
+    "id": "Chorrillos",
+    "nombre": "Chorrillos",
+    "codigoPostal": "15067",
+    "distritosVecinos": ["Santiago de Surco", "Barranco", "San Juan de Miraflores", "Villa El Salvador"]
+  },
+  {
+    "id": "Villa El Salvador",
+    "nombre": "Villa El Salvador",
+    "codigoPostal": "15842",
+    "distritosVecinos": ["Chorrillos", "San Juan de Miraflores", "Villa María del Triunfo", "Lurín"]
+  },
+  {
+    "id": "Villa María del Triunfo",
+    "nombre": "Villa María del Triunfo",
+    "codigoPostal": "15811",
+    "distritosVecinos": ["San Juan de Miraflores", "Villa El Salvador", "La Molina", "Lurín", "Ate", "Cieneguilla"]
+  },
+  {
+    "id": "San Juan de Miraflores",
+    "nombre": "San Juan de Miraflores",
+    "codigoPostal": "15801",
+    "distritosVecinos": ["Santiago de Surco", "Chorrillos", "Villa El Salvador", "Villa María del Triunfo", "La Molina"]
+  },
+  {
+    "id": "La Molina",
+    "nombre": "La Molina",
+    "codigoPostal": "15024",
+    "distritosVecinos": ["Santiago de Surco", "Ate", "Cieneguilla", "Villa María del Triunfo", "San Juan de Miraflores", "Santa Anita"]
+  },
+  {
+    "id": "Cieneguilla",
+    "nombre": "Cieneguilla",
+    "codigoPostal": "15589",
+    "distritosVecinos": ["Ate", "La Molina", "Villa María del Triunfo", "Lurín"]
+  },
+  {
+    "id": "Lurín",
+    "nombre": "Lurín",
+    "codigoPostal": "15833",
+    "distritosVecinos": ["Villa El Salvador", "Villa María del Triunfo", "Cieneguilla", "Pachacámac", "Punta Hermosa"]
+  },
+  {
+    "id": "Pachacámac",
+    "nombre": "Pachacámac",
+    "codigoPostal": "15823",
+    "distritosVecinos": ["Lurín", "Cieneguilla", "Villa María del Triunfo"]
+  },
+  {
+    "id": "Punta Hermosa",
+    "nombre": "Punta Hermosa",
+    "codigoPostal": "15868",
+    "distritosVecinos": ["Lurín", "Punta Negra"]
+  },
+  {
+    "id": "Punta Negra",
+    "nombre": "Punta Negra",
+    "codigoPostal": "15866",
+    "distritosVecinos": ["Punta Hermosa", "San Bartolo"]
+  },
+  {
+    "id": "San Bartolo",
+    "nombre": "San Bartolo",
+    "codigoPostal": "15869",
+    "distritosVecinos": ["Punta Negra", "Santa María del Mar"]
+  },
+  {
+    "id": "Santa María del Mar",
+    "nombre": "Santa María del Mar",
+    "codigoPostal": "15867",
+    "distritosVecinos": ["San Bartolo", "Pucusana"]
+  },
+  {
+    "id": "Pucusana",
+    "nombre": "Pucusana",
+    "codigoPostal": "15871",
+    "distritosVecinos": ["Santa María del Mar"]
+  }
+]

@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+service-account.json
+node_modules/
+service-account.json
+package-lock.json
+.idea/

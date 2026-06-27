@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/blanco">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <!-- Foto de Perfil con bordes redondeados -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center_vertical"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/chambita_fondo">
+
+            <ImageView
+                android:id="@+id/imgFotoPerfil"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_usuario"
+                android:contentDescription="Foto del técnico" />
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Información central -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+
+            <!-- Nombre -->
+            <TextView
+                android:id="@+id/tvNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Juan Pérez"
+                android:textColor="@color/chambita_texto_principal"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <!-- Especialidad -->
+            <TextView
+                android:id="@+id/tvEspecialidad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Gasfitero"
+                android:textColor="@color/chambita_acento"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <!-- Calificación (Estrellas) y Reseñas -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_star"
+                    app:tint="@color/chambita_estrella"
+                    android:contentDescription="Calificación" />
+
+                <TextView
+                    android:id="@+id/tvCalificacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="4.8 (12 reseñas)"
+                    android:textColor="@color/chambita_texto_secundario"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <!-- Distritos que cubre -->
+            <TextView
+                android:id="@+id/tvDistritos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="Cubre: Ventanilla, Callao"
+                android:textColor="@color/chambita_texto_claro"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+        <!-- Sección lateral derecha (Precio y estado) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:gravity="end|center_vertical"
+            android:orientation="vertical">
+
+            <!-- Tarifa -->
+            <TextView
+                android:id="@+id/tvTarifa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="S/. 35.00"
+                android:textColor="@color/chambita_verde"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="por hora"
+                android:textColor="@color/chambita_texto_secundario"
+                android:textSize="10sp"
+                android:layout_marginBottom="6dp" />
+
+            <!-- Badge de disponibilidad -->
+            <TextView
+                android:id="@+id/tvDisponibilidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_rating"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:text="Disponible"
+                android:textColor="@color/chambita_verde"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

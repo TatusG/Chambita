@@ -125,7 +125,7 @@ class RegisterActivity : AppCompatActivity() {
     ){
         val usuario = mutableMapOf<String, Any>(
             "uid"           to uid,
-            "nombre"        to nombre,
+            "nombreCompleto" to nombre,
             "dni"           to dni,
             "correo"        to correo,
             "telefono"      to telefono,

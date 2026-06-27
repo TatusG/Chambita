@@ -11,6 +11,7 @@ data class Solicitud(
     val fechaCreacion: Timestamp? = null,
     val fechaServicioProgramado: Timestamp? = null,
     val direccionServicio: String = "",
+    val distritoServicio: String = "",
     val estado: String = "pendiente",
     val montoFinal: Double = 0.0,
     val resenaDejada: Boolean = false,

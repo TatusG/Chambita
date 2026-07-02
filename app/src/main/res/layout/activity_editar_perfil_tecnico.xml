@@ -272,6 +272,25 @@
 
                 </LinearLayout>
 
+                <!-- DISTRITO DE RESIDENCIA -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="DISTRITO DE RESIDENCIA"
+                    android:textAllCaps="true"
+                    android:textColor="@color/chambita_primario"
+                    android:textSize="14sp"
+                    android:textStyle="bold"/>
+
+                <Spinner
+                    android:id="@+id/spDistrito"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_edittext"
+                    android:paddingHorizontal="16dp"/>
+
                 <!-- BOTON -->
                 <Button
                     android:id="@+id/btnGuardarCambios"

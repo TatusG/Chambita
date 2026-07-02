@@ -69,7 +69,7 @@
     <!-- HOME CLIENTE -->
     <string name="bienvenido_mayus">BIENVENIDO</string>
     <string name="pregunta_necesidad">¿Qué necesitas hoy?</string>
-    <string name="hint_buscar_servicios">Buscar servicios...</string>
+    <string name="hint_buscar_en_tu_distrito">Buscar en tu distrito...</string>
     <string name="todos">Todos</string>
     <string name="categoria">Categoría</string>
     <string name="servicios_disponibles">Servicios disponibles</string>

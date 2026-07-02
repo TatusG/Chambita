@@ -1,76 +1,241 @@
 package com.chambita.app.ui.auth
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.chambita.app.R
+import com.chambita.app.models.Usuario
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URL
+import java.util.Locale
 
 class HomeClienteActivity : NavActivity() {
+
+    private lateinit var tecnicoAdapter: TecnicoAdapter
+    private val db = FirebaseFirestore.getInstance()
+    private var clienteDistrito: String = "Ventanilla" // Distrito por defecto
+    private lateinit var drawerLayout: DrawerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_cliente)
 
-        // Activar navegación inferior
+        // Activar navegación inferior de NavActivity
         barraNavegacion()
-        cargarDatosCabecera()
 
-        // Configurar botones de la cabecera
+        inicializarComponentes()
+        configurarMenuLateral()
+        cargarDatosCabecera()
+    }
+
+    private fun inicializarComponentes() {
+        drawerLayout = findViewById(R.id.drawerLayout)
+        
+        // Inicializar RecyclerView de técnicos
+        val rvTecnicos = findViewById<RecyclerView>(R.id.rvTecnicos)
+        tecnicoAdapter = TecnicoAdapter(emptyList()) { tecnico ->
+            val intent = Intent(this, VistaClientePerfilTecnicoActivity::class.java).apply {
+                putExtra("tecnicoUid", tecnico.uid)
+            }
+            startActivity(intent)
+        }
+        rvTecnicos?.layoutManager = LinearLayoutManager(this)
+        rvTecnicos?.adapter = tecnicoAdapter
+
+        // Configurar botones de categorías
+        findViewById<Button>(R.id.btnTodos)?.setOnClickListener { buscarTecnicos(null) }
+        findViewById<Button>(R.id.btnCategoria1)?.setOnClickListener { buscarTecnicos("Electricista") }
+        findViewById<Button>(R.id.btnCategoria2)?.setOnClickListener { buscarTecnicos("Gasfitero") }
+
+        // Configurar búsqueda reactiva
+        val etBuscar = findViewById<EditText>(R.id.etBuscar)
+        etBuscar?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val texto = s.toString().trim()
+                if (texto.isNotEmpty()) {
+                    buscarTecnicosPorTexto(texto)
+                } else {
+                    buscarTecnicos(null)
+                }
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        // Configurar cabecera y perfil
         findViewById<ImageButton>(R.id.btnMenu)?.setOnClickListener {
-            showToast("Menú lateral próximamente")
+            drawerLayout.openDrawer(GravityCompat.START)
         }
 
         findViewById<ImageButton>(R.id.btnNotificaciones)?.setOnClickListener {
             showToast("No tienes notificaciones nuevas")
         }
 
-        findViewById<ImageView>(R.id.imgPerfil)?.setOnClickListener {
+        // Clic en el área del avatar abre el perfil
+        findViewById<View>(R.id.layoutAvatar)?.setOnClickListener {
             startActivity(Intent(this, PerfilClienteActivity::class.java))
         }
 
-        // Configurar búsqueda y mapa
-        findViewById<EditText>(R.id.etBuscar)?.setOnEditorActionListener { v, _, _ ->
-            showToast("Buscando: ${v.text}")
-            false
-        }
-
         findViewById<CardView>(R.id.cardMapa)?.setOnClickListener {
-            startActivity(Intent(this, NuevaSolicitudActivity::class.java))
+            val intent = Intent(this, NuevaSolicitudActivity::class.java).apply {
+                putExtra("distrito", clienteDistrito)
+            }
+            startActivity(intent)
+        }
+        
+        findViewById<View>(R.id.fabAdd)?.setOnClickListener {
+            val intent = Intent(this, NuevaSolicitudActivity::class.java).apply {
+                putExtra("distrito", clienteDistrito)
+            }
+            startActivity(intent)
+        }
+    }
+
+    private fun configurarMenuLateral() {
+        val navView = findViewById<NavigationView>(R.id.navigationView)
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_perfil -> startActivity(Intent(this, PerfilClienteActivity::class.java))
+                R.id.nav_direcciones -> startActivity(Intent(this, MisDireccionesActivity::class.java))
+                R.id.nav_pagos -> startActivity(Intent(this, MetodosPagoActivity::class.java))
+                R.id.nav_historial -> startActivity(Intent(this, HistorialPagosActivity::class.java))
+                R.id.nav_logout -> {
+                    FirebaseAuth.getInstance().signOut()
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+                R.id.nav_soporte -> showToast("Soporte técnico próximamente")
+            }
+            drawerLayout.closeDrawer(GravityCompat.START)
+            true
         }
     }
 
     private fun cargarDatosCabecera() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val db = FirebaseFirestore.getInstance()
 
         db.collection("usuarios").document(uid).get()
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
                     val nombreCompleto = document.getString("nombreCompleto") ?: "Usuario"
-                    // Tomamos solo el primer nombre para el saludo
-                    val primerNombre = nombreCompleto.split(" ")[0]
+                    val fotoPerfil = document.getString("fotoPerfil") ?: ""
+                    val correo = document.getString("correo") ?: ""
+                    val partesNombre = nombreCompleto.trim().split(" ")
+                    val primerNombre = partesNombre[0]
                     
-                    findViewById<TextView>(R.id.tvSaludo)?.text = "HOLA, ${primerNombre.uppercase()}"
+                    findViewById<TextView>(R.id.tvSaludo)?.text = "HOLA, ${primerNombre.uppercase()} 👋"
 
-                    // Obtenemos el distrito de residencia del cliente para el mapa estático
-                    val distrito = document.getString("distritoResidencia") ?: "Ventanilla"
-                    cargarMapaEstatico(distrito)
+                    val iniciales = if (partesNombre.size > 1) {
+                        "${partesNombre[0].take(1)}${partesNombre[1].take(1)}"
+                    } else {
+                        primerNombre.take(2)
+                    }.uppercase()
+                    
+                    // Actualizar UI del Home
+                    findViewById<TextView>(R.id.tvAvatarInitials)?.text = iniciales
+                    val imgPerfil = findViewById<ImageView>(R.id.imgPerfil)
+                    
+                    // Actualizar Header del Drawer
+                    val navView = findViewById<NavigationView>(R.id.navigationView)
+                    val headerView = navView.getHeaderView(0)
+                    headerView.findViewById<TextView>(R.id.tvNavHeaderNombre).text = nombreCompleto
+                    headerView.findViewById<TextView>(R.id.tvNavHeaderCorreo).text = correo
+                    headerView.findViewById<TextView>(R.id.tvNavHeaderInitials).text = iniciales
+                    val imgNavHeader = headerView.findViewById<ImageView>(R.id.imgNavHeaderPerfil)
+
+                    if (fotoPerfil.isNotEmpty()) {
+                        Glide.with(this).load(fotoPerfil).circleCrop().into(imgPerfil)
+                        imgPerfil.visibility = View.VISIBLE
+                        
+                        Glide.with(this).load(fotoPerfil).circleCrop().into(imgNavHeader)
+                        imgNavHeader.visibility = View.VISIBLE
+                    } else {
+                        imgPerfil.visibility = View.GONE
+                        imgNavHeader.visibility = View.GONE
+                    }
+
+                    clienteDistrito = document.getString("distritoResidencia") ?: "Ventanilla"
+                    findViewById<TextView>(R.id.tvNombreZona)?.text = "Zona: $clienteDistrito"
+                    
+                    cargarMapaEstatico(clienteDistrito)
+                    buscarTecnicos(null)
                 }
             }
+    }
+
+    private fun buscarTecnicos(especialidad: String?) {
+        var query = db.collection("usuarios")
+            .whereEqualTo("rol", "tecnico")
+            .whereEqualTo("disponible", true)
+
+        if (especialidad != null) {
+            query = query.whereEqualTo("especialidad", especialidad)
+        }
+
+        query.get()
+            .addOnSuccessListener { querySnapshot ->
+                val lista = querySnapshot.mapNotNull { doc ->
+                    doc.toObject(Usuario::class.java)?.copy(uid = doc.id)
+                }
+                actualizarUILista(lista)
+            }
+    }
+
+    private fun buscarTecnicosPorTexto(texto: String) {
+        db.collection("usuarios")
+            .whereEqualTo("rol", "tecnico")
+            .whereEqualTo("disponible", true)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val listaCompleta = querySnapshot.mapNotNull { doc ->
+                    doc.toObject(Usuario::class.java)?.copy(uid = doc.id)
+                }
+                
+                val busquedaLower = texto.lowercase(Locale.getDefault())
+                val listaFiltrada = listaCompleta.filter { tecnico ->
+                    tecnico.nombreCompleto.lowercase(Locale.getDefault()).contains(busquedaLower) ||
+                    tecnico.especialidad.lowercase(Locale.getDefault()).contains(busquedaLower) ||
+                    tecnico.distritos.any { d -> d.lowercase(Locale.getDefault()).contains(busquedaLower) }
+                }
+                
+                actualizarUILista(listaFiltrada)
+            }
+    }
+
+    private fun actualizarUILista(lista: List<Usuario>) {
+        tecnicoAdapter.actualizarLista(lista)
+        
+        if (lista.isEmpty()) {
+            val intent = Intent(this, SinResultadosActivity::class.java).apply {
+                putExtra("distrito", clienteDistrito)
+            }
+            startActivity(intent)
+        }
     }
 
     private fun cargarMapaEstatico(distrito: String) {
@@ -78,57 +243,34 @@ class HomeClienteActivity : NavActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                // Obtenemos la clave de API desde BuildConfig (inyectada por el Secrets Gradle Plugin)
                 val apiKey = com.chambita.app.BuildConfig.MAPS_API_KEY
-                Log.d("MAPS", "API Key obtenida: $apiKey")
+                if (apiKey.isEmpty() || !apiKey.startsWith("AIza")) return@launch
 
-                if (apiKey.isEmpty() || apiKey.startsWith("AIza") == false) {
-                    Log.e("MAPS", "Clave API de mapas ausente o con formato inválido en BuildConfig")
-                    return@launch
-                }
-
-                // Generamos la URL del Static Maps API de Google
                 val center = "${distrito.replace(" ", "+")},+Lima,+Peru"
                 val urlString = "https://maps.googleapis.com/maps/api/staticmap" +
-                        "?center=$center" +
-                        "&zoom=14" +
-                        "&size=600x300" +
-                        "&scale=2" +
-                        "&maptype=roadmap" +
-                        "&key=$apiKey"
-
-                Log.d("MAPS", "Intentando cargar mapa desde URL: $urlString")
+                        "?center=$center&zoom=15&size=600x300&scale=2&maptype=roadmap&key=$apiKey"
 
                 val url = URL(urlString)
                 val connection = url.openConnection() as java.net.HttpURLConnection
-                connection.requestMethod = "GET"
-                connection.connectTimeout = 8000
-                connection.readTimeout = 8000
-
-                val responseCode = connection.responseCode
-                Log.d("MAPS", "Código de respuesta HTTP: $responseCode")
-
-                if (responseCode == java.net.HttpURLConnection.HTTP_OK) {
-                    val inputStream = connection.inputStream
-                    val bitmap = BitmapFactory.decodeStream(inputStream)
+                connection.setRequestProperty("X-Android-Package", packageName)
+                
+                if (connection.responseCode == java.net.HttpURLConnection.HTTP_OK) {
+                    val bitmap = BitmapFactory.decodeStream(connection.inputStream)
                     withContext(Dispatchers.Main) {
-                        if (bitmap != null) {
-                            imgMapa.setImageBitmap(bitmap)
-                            imgMapa.scaleType = ImageView.ScaleType.CENTER_CROP
-                            Log.d("MAPS", "Mapa cargado exitosamente en la vista")
-                        } else {
-                            Log.e("MAPS", "El stream decodificó un bitmap nulo")
-                        }
+                        imgMapa.setImageBitmap(bitmap)
                     }
-                } else {
-                    val errorStream = connection.errorStream
-                    val errorText = errorStream?.bufferedReader()?.use { it.readText() } ?: "Sin detalles"
-                    Log.e("MAPS", "Error de Google Maps API ($responseCode): $errorText")
                 }
             } catch (e: Exception) {
                 Log.e("MAPS", "Excepción al descargar el mapa estático", e)
             }
         }
     }
-}
 
+    override fun onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+}

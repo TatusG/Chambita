@@ -171,6 +171,29 @@
                 android:text="RECHAZAR"
                 android:background="@drawable/bg_button_outline"/>
 
+            <Button
+                android:id="@+id/btnFinalizar"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:text="FINALIZAR"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_button_primary"
+                android:visibility="gone"
+                android:textStyle="bold"/>
+
+            <Button
+                android:id="@+id/btnChat"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:text="CHAT"
+                android:textColor="@color/chambita_primario"
+                android:background="@drawable/bg_button_outline"
+                android:visibility="gone"
+                android:textStyle="bold"/>
+
         </LinearLayout>
 
     </LinearLayout>

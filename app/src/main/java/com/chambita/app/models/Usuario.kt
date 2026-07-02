@@ -1,8 +1,16 @@
 package com.chambita.app.models
 
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.IgnoreExtraProperties
 
+/**
+ * Modelo de datos unificado para Firestore.
+ * @IgnoreExtraProperties evita errores si el documento en Firestore tiene más campos
+ * de los declarados aquí.
+ */
+@IgnoreExtraProperties
 data class Usuario(
+    // --- CAMPOS COMPARTIDOS ---
     val uid: String = "",
     val nombreCompleto: String = "",
     val correo: String = "",
@@ -10,17 +18,20 @@ data class Usuario(
     val telefono: String = "",
     val rol: String = "", // "cliente" o "tecnico"
     val fotoPerfil: String = "",
+    val fcmToken: String = "", // Faltaba en tu código original
+    val notificacionesHabilitadas: Boolean = true, // Faltaba en tu código original
     val fechaRegistro: Timestamp? = null,
-    
-    // Campos específicos para Clientes
+
+    // --- CAMPOS EXCLUSIVOS: CLIENTE ---
     val distritoResidencia: String = "",
     val fechaNacimiento: Timestamp? = null,
-    
-    // Campos específicos para Técnicos
+
+    // --- CAMPOS EXCLUSIVOS: TÉCNICO ---
     val disponible: Boolean = false,
     val distritoActivoHoy: String = "",
     val especialidad: String = "",
     val tarifaPorHora: Double = 0.0,
+    val tarifaMaxima: Double = 0.0, // Rango superior de precio
     val descripcion: String = "",
     val experienciaAnos: Int = 0,
     val promedioEstrellas: Double = 0.0,

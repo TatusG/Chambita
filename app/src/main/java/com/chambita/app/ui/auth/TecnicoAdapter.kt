@@ -4,9 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.chambita.app.R
 import com.chambita.app.models.Usuario
 
@@ -38,48 +39,37 @@ class TecnicoAdapter(
         private val tvNombre: TextView = itemView.findViewById(R.id.tvNombre)
         private val tvEspecialidad: TextView = itemView.findViewById(R.id.tvEspecialidad)
         private val tvCalificacion: TextView = itemView.findViewById(R.id.tvCalificacion)
-        private val tvDistritos: TextView = itemView.findViewById(R.id.tvDistritos)
-        private val tvTarifa: TextView = itemView.findViewById(R.id.tvTarifa)
-        private val tvDisponibilidad: TextView = itemView.findViewById(R.id.tvDisponibilidad)
+        private val tvDistritoBadge: TextView = itemView.findViewById(R.id.tvDistritoBadge)
+        private val tvPrecioRango: TextView = itemView.findViewById(R.id.tvPrecioRango)
+        private val ratingBar: RatingBar = itemView.findViewById(R.id.ratingMini)
 
         fun bind(tecnico: Usuario, onItemClick: (Usuario) -> Unit) {
-            // Asignar textos básicos
             tvNombre.text = tecnico.nombreCompleto.ifEmpty { "Técnico Asociado" }
             tvEspecialidad.text = tecnico.especialidad.ifEmpty { "Servicios Generales" }
             
-            // Calificación promedio y cantidad de reseñas
             val promedio = if (tecnico.promedioEstrellas > 0) String.format("%.1f", tecnico.promedioEstrellas) else "N/A"
-            tvCalificacion.text = "$promedio (${tecnico.numeroResenas} reseñas)"
+            tvCalificacion.text = promedio
+            ratingBar.rating = tecnico.promedioEstrellas.toFloat()
 
-            // Distritos que cubre
-            val distritosTexto = if (tecnico.distritos.isNotEmpty()) {
-                tecnico.distritos.joinToString(", ")
+            tvDistritoBadge.text = if (tecnico.distritos.isNotEmpty()) {
+                tecnico.distritos[0].uppercase()
             } else {
-                "No especificado"
-            }
-            tvDistritos.text = "Cubre: $distritosTexto"
-
-            // Tarifa formateada
-            tvTarifa.text = "S/. ${String.format("%.2f", tecnico.tarifaPorHora)}"
-
-            // Configurar badge de disponibilidad y su color
-            if (tecnico.disponible) {
-                tvDisponibilidad.text = "Disponible"
-                tvDisponibilidad.setTextColor(ContextCompat.getColor(itemView.context, R.color.chambita_verde))
-                tvDisponibilidad.setBackgroundResource(R.drawable.bg_pill_white) // Fondo claro
-            } else {
-                tvDisponibilidad.text = "Ocupado"
-                tvDisponibilidad.setTextColor(ContextCompat.getColor(itemView.context, R.color.chambita_texto_secundario))
-                tvDisponibilidad.setBackgroundResource(R.drawable.bg_pill_rating) // Fondo gris
+                "LIMA"
             }
 
-            // Imagen de perfil por defecto (temporalmente, ya que no usamos Glide de terceros para evitar fallos de internet)
+            // Mostrar rango de precios
+            tvPrecioRango.text = "S/ %.2f - S/ %.2f".format(tecnico.tarifaPorHora, tecnico.tarifaMaxima)
+
             imgFotoPerfil.setImageResource(R.drawable.ic_usuario)
-
-            // Click listener
-            itemView.setOnClickListener {
-                onItemClick(tecnico)
+            if (tecnico.fotoPerfil.isNotEmpty()) {
+                Glide.with(itemView.context)
+                    .load(tecnico.fotoPerfil)
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_usuario)
+                    .into(imgFotoPerfil)
             }
+
+            itemView.setOnClickListener { onItemClick(tecnico) }
         }
     }
 }

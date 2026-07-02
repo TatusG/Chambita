@@ -46,6 +46,18 @@
             android:exported="false"
         />
 
+        <!-- HOME TECNICO -->
+        <activity
+            android:name=".ui.auth.HomeTecnicoActivity"
+            android:exported="false"
+        />
+
+        <!-- PERFIL TECNICO -->
+        <activity
+            android:name=".ui.auth.PerfilTecnicoActivity"
+            android:exported="false"
+        />
+
         <!--PERFIL CLIENTE-->
         <activity
             android:name=".ui.auth.PerfilClienteActivity"
@@ -76,6 +88,11 @@
             android:exported="false"
         />
 
+        <activity
+            android:name=".ui.auth.AgregarDireccionActivity"
+            android:exported="false"
+        />
+
         <!--METODOS PAGO-->
         <activity
             android:name=".ui.auth.MetodosPagoActivity"
@@ -97,8 +114,27 @@
         <!--VISTA CHAT 1:1-->
         <activity
             android:name=".ui.auth.ChatActivity"
-            android:exported="false"
-        />
+            android:exported="false" />
+
+        <!--VISTA CLIENTE AL PERFIL TECNICO-->
+        <activity
+            android:name=".ui.auth.VistaClientePerfilTecnicoActivity"
+            android:exported="false" />
+
+        <!-- CALIFICAR SERVICIO -->
+        <activity
+            android:name=".ui.auth.CalificarServicioActivity"
+            android:exported="false" />
+
+        <!-- SIN RESULTADOS -->
+        <activity
+            android:name=".ui.auth.SinResultadosActivity"
+            android:exported="false" />
+
+        <!-- EDITAR PERFIL TECNICO -->
+        <activity
+            android:name=".ui.auth.EditarPerfilTecnicoActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

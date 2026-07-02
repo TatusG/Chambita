@@ -118,10 +118,11 @@
                 android:layout_marginTop="28dp">
 
                 <ImageView
+                    android:id="@+id/imgMapa"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/img_mapa" />
+                    android:src="@drawable/mapa_demo" />
 
                 <LinearLayout
                     android:id="@+id/btnVistaMapa"

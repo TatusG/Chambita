@@ -3,8 +3,8 @@ package com.chambita.app.ui.auth
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class SolicitudAdapter(
     private var lista: List<Solicitud>,
-    private val onChatClick: (Solicitud) -> Unit
+    private val onAction: (Solicitud, String) -> Unit
 ) : RecyclerView.Adapter<SolicitudAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -25,6 +25,7 @@ class SolicitudAdapter(
         val txtNombreTecnico: TextView = view.findViewById(R.id.txtNombreTecnico)
         val txtMensajeEspera: TextView = view.findViewById(R.id.txtMensajeEspera)
         val btnChat: ImageButton = view.findViewById(R.id.btnChatTecnico)
+        val btnCalificar: Button = view.findViewById(R.id.btnCalificarServicio)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,11 +40,17 @@ class SolicitudAdapter(
         holder.txtEstado.text = solicitud.estado.uppercase()
         holder.txtDescripcion.text = solicitud.descripcionAveria
 
+        if (solicitud.estado == "finalizada" && !solicitud.resenaDejada) {
+            holder.btnCalificar.visibility = View.VISIBLE
+            holder.btnCalificar.setOnClickListener { onAction(solicitud, "CALIFICAR") }
+        } else {
+            holder.btnCalificar.visibility = View.GONE
+        }
+
         if (solicitud.tecnicoId != null) {
             holder.layoutTecnico.visibility = View.VISIBLE
             holder.txtMensajeEspera.visibility = View.GONE
             
-            // Cargar nombre del técnico desde Firebase
             FirebaseFirestore.getInstance().collection("usuarios").document(solicitud.tecnicoId)
                 .get().addOnSuccessListener { doc ->
                     if (doc.exists()) {
@@ -51,7 +58,7 @@ class SolicitudAdapter(
                     }
                 }
 
-            holder.btnChat.setOnClickListener { onChatClick(solicitud) }
+            holder.btnChat.setOnClickListener { onAction(solicitud, "CHAT") }
         } else {
             holder.layoutTecnico.visibility = View.GONE
             holder.txtMensajeEspera.visibility = View.VISIBLE

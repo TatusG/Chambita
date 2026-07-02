@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/chambita_fondo">
@@ -79,16 +80,39 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvAvatar"
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
-                    android:background="@drawable/bg_avatar_tecnico"
-                    android:gravity="center"
-                    android:text=""
-                    android:textColor="@color/blanco"
-                    android:textSize="32sp"
-                    android:textStyle="bold" />
+                <FrameLayout
+                    android:layout_width="110dp"
+                    android:layout_height="110dp">
+
+                    <TextView
+                        android:id="@+id/tvAvatar"
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_avatar_tecnico"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="@color/blanco"
+                        android:textSize="32sp"
+                        android:textStyle="bold" />
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:layout_gravity="center"
+                        app:cardCornerRadius="48dp"
+                        app:cardElevation="0dp">
+
+                        <ImageView
+                            android:id="@+id/imgPerfil"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone" />
+
+                    </androidx.cardview.widget.CardView>
+
+                </FrameLayout>
 
                 <TextView
                     android:id="@+id/tvCambiarFoto"
@@ -98,7 +122,9 @@
                     android:text="Cambiar foto"
                     android:textColor="@color/chambita_acento"
                     android:textSize="15sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true" />
 
             </LinearLayout>
 

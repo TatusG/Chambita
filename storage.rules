@@ -1,0 +1,32 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // --- REGLAS PARA FOTOS DE PERFIL ---
+    // Ruta: perfiles/{userId}.jpg
+    match /perfiles/{userId} {
+      // Lectura: Cualquier usuario de Chambita puede ver fotos de perfil
+      allow read: if request.auth != null;
+      
+      // Escritura/Borrado: Solo el dueño de la cuenta puede subir o borrar su propia foto
+      allow write, delete: if request.auth != null 
+                           && request.auth.uid == userId.replace('.jpg', '')
+                           && request.resource.size < 5 * 1024 * 1024 // Máx 5MB
+                           && request.resource.contentType.matches('image/.*'); // Solo imágenes
+    }
+
+    // --- REGLAS PARA IMÁGENES DE CHAT ---
+    // Ruta: chats/{chatId}/{imageName}
+    match /chats/{chatId}/{imageName} {
+      // Función para verificar si el usuario es parte del chat (clienteId_tecnicoId)
+      function esParteDelChat(cId) {
+        return request.auth != null && (cId.size() > request.auth.uid.size() && cId.contains(request.auth.uid));
+      }
+
+      allow read, write: if esParteDelChat(chatId)
+                         && request.resource.size < 10 * 1024 * 1024 // Máx 10MB para fotos de averías
+                         && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

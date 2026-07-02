@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
     alias(libs.plugins.secrets)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -50,6 +51,16 @@ dependencies {
     // ── Firebase ───────────────────────────────────
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+
+    // ── Room ───────────────────────────────────────
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // ── Glide ──────────────────────────────────────
+    implementation(libs.glide)
+    ksp(libs.glide.compiler)
 
     // ── Tests ──────────────────────────────────────
     testImplementation(libs.junit)

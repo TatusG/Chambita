@@ -1,5 +1,8 @@
 package com.chambita.app.ui.auth
 
+import android.content.Intent
+import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -7,6 +10,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 
 class ChatActivity : AppCompatActivity() {
 
@@ -30,15 +35,24 @@ class ChatActivity : AppCompatActivity() {
     
     private lateinit var adapter: ChatAdapter
     private var mensajesListener: ListenerRegistration? = null
+    private var miRol: String = "cliente"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        contactoId = intent.getStringExtra("contactoId")
+        contactoId = intent.getStringExtra("contactoId") ?: intent.getStringExtra("tecnicoId")
+        
+        if (contactoId == null) {
+            Toast.makeText(this, "Error: Contacto no encontrado", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
         chatId = intent.getStringExtra("chatId") ?: generarChatId()
 
         inicializarComponentes()
+        obtenerMiRol()
         cargarDatosContacto()
         escucharMensajes()
     }
@@ -46,6 +60,14 @@ class ChatActivity : AppCompatActivity() {
     private fun generarChatId(): String {
         val ids = listOf(currentUid ?: "", contactoId ?: "").sorted()
         return "${ids[0]}_${ids[1]}"
+    }
+
+    private fun obtenerMiRol() {
+        currentUid?.let { uid ->
+            db.collection("usuarios").document(uid).get().addOnSuccessListener {
+                miRol = it.getString("rol") ?: "cliente"
+            }
+        }
     }
 
     private fun inicializarComponentes() {
@@ -59,16 +81,16 @@ class ChatActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.btnVolver).setOnClickListener { finish() }
 
         findViewById<ImageButton>(R.id.btnEnviar).setOnClickListener {
-            val texto = findViewById<EditText>(R.id.etMensaje).text.toString().trim()
+            val et = findViewById<EditText>(R.id.etMensaje)
+            val texto = et.text.toString().trim()
             if (texto.isNotEmpty()) {
                 enviarMensaje(texto)
-                findViewById<EditText>(R.id.etMensaje).setText("")
+                et.setText("")
             }
         }
     }
 
     private fun cargarDatosContacto() {
-        if (contactoId == null) return
         db.collection("usuarios").document(contactoId!!).get()
             .addOnSuccessListener { doc ->
                 val contacto = doc.toObject(Usuario::class.java)
@@ -85,8 +107,6 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun escucharMensajes() {
-        if (chatId == null) return
-        
         mensajesListener = db.collection("chats").document(chatId!!)
             .collection("mensajes")
             .orderBy("fechaRegistro", Query.Direction.ASCENDING)
@@ -97,6 +117,7 @@ class ChatActivity : AppCompatActivity() {
                 }
 
                 val lista = snapshot?.toObjects(Mensaje::class.java) ?: emptyList()
+                Log.d(TAG, "Mensajes recibidos: ${lista.size}")
                 adapter.updateList(lista)
                 if (lista.isNotEmpty()) {
                     findViewById<RecyclerView>(R.id.rvMensajes).smoothScrollToPosition(lista.size - 1)
@@ -108,7 +129,6 @@ class ChatActivity : AppCompatActivity() {
         if (currentUid == null || chatId == null) return
 
         val nuevoMensaje = Mensaje(
-            id = "", // Firestore generará el ID
             remitenteId = currentUid,
             texto = texto,
             leido = false,
@@ -121,14 +141,23 @@ class ChatActivity : AppCompatActivity() {
         val mensajeRef = db.collection("chats").document(chatId!!).collection("mensajes").document()
         batch.set(mensajeRef, nuevoMensaje)
 
-        // 2. Actualizar el documento del chat para la bandeja de entrada
-        val chatRef = db.collection("chats").document(chatId!!)
-        batch.update(chatRef, mapOf(
+        // 2. Crear/Actualizar el documento del chat (Usamos merge para que no falle si no existe)
+        val chatData = mutableMapOf<String, Any>(
             "ultimoMensaje" to texto,
-            "fechaUltimoMensaje" to Timestamp.now(),
-            "clienteId" to (if (chatId!!.startsWith(currentUid)) currentUid else contactoId),
-            "tecnicoId" to (if (chatId!!.endsWith(currentUid)) currentUid else contactoId)
-        ))
+            "fechaUltimoMensaje" to Timestamp.now()
+        )
+        
+        // Aseguramos que los IDs de participantes estén presentes
+        if (miRol == "cliente") {
+            chatData["clienteId"] = currentUid
+            chatData["tecnicoId"] = contactoId!!
+        } else {
+            chatData["clienteId"] = contactoId!!
+            chatData["tecnicoId"] = currentUid
+        }
+
+        val chatRef = db.collection("chats").document(chatId!!)
+        batch.set(chatRef, chatData, SetOptions.merge())
 
         batch.commit().addOnFailureListener { e ->
             Log.e(TAG, "Error al enviar mensaje", e)
@@ -138,5 +167,9 @@ class ChatActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mensajesListener?.remove()
+    }
+    
+    private fun showToast(m: String) {
+        android.widget.Toast.makeText(this, m, android.widget.Toast.LENGTH_SHORT).show()
     }
 }

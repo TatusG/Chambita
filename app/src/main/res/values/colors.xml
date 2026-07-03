@@ -33,4 +33,7 @@
     <color name="chambita_estrella">#ECC94B</color>
     <color name="fondo_input">#EDF2F7</color>
     <color name="borde_input_focus">#2D6A9F</color>
+    <color name="figma_blue">#2563EB</color>
+    <color name="figma_grey">#4B5563</color>
+    <color name="figma_light_grey">#F3F4F6</color>
 </resources>

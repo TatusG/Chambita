@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/chambita_fondo">
+    android:background="@color/blanco">
 
     <!-- TOOLBAR -->
     <RelativeLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@color/chambita_fondo"
-        android:elevation="2dp"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp">
+        android:background="@color/chambita_oscuro"
+        android:elevation="0dp"
+        android:paddingHorizontal="4dp">
 
         <ImageButton
             android:id="@+id/btnVolver"
@@ -23,7 +23,7 @@
             android:layout_centerVertical="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_arrow_back"
-            app:tint="@color/chambita_primario"
+            app:tint="@color/blanco"
             android:contentDescription="Volver" />
 
         <TextView
@@ -33,7 +33,7 @@
             android:text="Perfil Técnico"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/chambita_texto_principal" />
+            android:textColor="@color/blanco" />
 
         <ImageButton
             android:id="@+id/btnNotificaciones"
@@ -43,399 +43,360 @@
             android:layout_centerVertical="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_bell"
-            android:tint="@color/chambita_texto_principal"
+            app:tint="@color/blanco"
             android:contentDescription="Notificaciones" />
 
     </RelativeLayout>
 
-    <!-- SCROLL -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="56dp"
-        android:layout_marginBottom="64dp"
+        android:layout_marginBottom="72dp"
         android:overScrollMode="never"
-        android:fillViewport="false">
+        android:fillViewport="true">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <!-- HEADER AZUL OSCURO -->
-            <LinearLayout
+            <View
+                android:id="@+id/headerBackground"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_height="320dp"
+                android:background="@drawable/bg_profile_header_dark"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- AVATAR -->
+            <TextView
+                android:id="@+id/tvAvatarTecnico"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_avatar_tecnico"
                 android:gravity="center"
-                android:background="@color/chambita_oscuro"
-                android:paddingTop="28dp"
-                android:paddingBottom="28dp"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp">
+                android:textColor="@color/blanco"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="CQ" />
+
+            <TextView
+                android:id="@+id/tvNombreTecnico"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/blanco"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvAvatarTecnico"
+                tools:text="Carlos Quispe" />
+
+            <TextView
+                android:id="@+id/tvEspecialidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:letterSpacing="0.05"
+                android:textColor="@color/chambita_fondo"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvNombreTecnico"
+                tools:text="ELECTRICISTA CERTIFICADO" />
+
+            <LinearLayout
+                android:id="@+id/llUbicacion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvEspecialidad">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_location"
+                    app:tint="@color/chambita_texto_claro" />
 
                 <TextView
-                    android:id="@+id/tvAvatarTecnico"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:background="@drawable/bg_avatar_tecnico"
-                    android:gravity="center"
-                    android:text=""
-                    android:textColor="@color/blanco"
-                    android:textSize="26sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="14dp" />
-
-                <TextView
-                    android:id="@+id/tvNombreTecnico"
+                    android:id="@+id/tvZonaAtencion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=""
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/blanco"
-                    android:layout_marginBottom="6dp" />
-
-                <TextView
-                    android:id="@+id/tvEspecialidad"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.08"
-                    android:textColor="@color/chambita_primario"
-                    android:layout_marginBottom="8dp" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="16dp">
-
-                    <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:src="@drawable/ic_location"
-                        app:tint="#90A4AE"
-                        android:contentDescription="Zona" />
-
-                    <TextView
-                        android:id="@+id/tvZonaAtencion"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:text=""
-                        android:textSize="13sp"
-                        android:textColor="#B0BEC5" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@drawable/bg_pill_rating"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
-                    android:gravity="center_vertical">
-
-                    <RatingBar
-                        android:id="@+id/ratingBarTecnico"
-                        style="@style/Widget.AppCompat.RatingBar.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:isIndicator="true"
-                        android:numStars="5"
-                        android:rating="0"
-                        android:progressTint="@color/chambita_estrella"
-                        android:secondaryProgressTint="#37474F" />
-
-                    <TextView
-                        android:id="@+id/tvRatingNumero"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:text=""
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/blanco" />
-
-                </LinearLayout>
-
+                    android:layout_marginStart="6dp"
+                    android:textColor="@color/chambita_texto_claro"
+                    android:textSize="13sp"
+                    tools:text="Atiende: Surco, Miraflores" />
             </LinearLayout>
 
-            <!-- BLOQUE BLANCO -->
             <LinearLayout
+                android:id="@+id/llRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/llUbicacion">
+
+                <RatingBar
+                    android:id="@+id/ratingBarTecnico"
+                    style="@style/Widget.AppCompat.RatingBar.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:progressTint="@color/chambita_estrella" />
+
+                <TextView
+                    android:id="@+id/tvRatingNumero"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:textColor="@color/blanco"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="4.9" />
+            </LinearLayout>
+
+            <!-- STATS CONTAINER (WHITE OVERLAP) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/statsCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@color/blanco"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="20dp"
-                android:paddingBottom="20dp">
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="-40dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="6dp"
+                app:layout_constraintTop_toBottomOf="@id/headerBackground">
 
-                <!-- Stats -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
+                    <!-- Stat Boxes -->
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="6dp"
-                        android:background="@drawable/bg_stat_card"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:paddingTop="14dp"
-                        android:paddingBottom="14dp">
+                        android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/tvNumTrabajos"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text=""
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/chambita_texto_principal" />
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingVertical="12dp"
+                            android:background="@drawable/bg_stat_card">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                            <TextView
+                                android:id="@+id/tvNumTrabajos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/negro"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                tools:text="38" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="TRABAJOS"
+                                android:textSize="10sp"
+                                android:textColor="@color/chambita_texto_secundario" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Trabajos"
-                            android:textSize="12sp"
-                            android:textColor="@color/chambita_texto_secundario" />
+                            android:layout_weight="1"
+                            android:layout_marginHorizontal="8dp"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingVertical="12dp"
+                            android:background="@drawable/bg_stat_card">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+                                <View
+                                    android:id="@+id/viewStatusDot"
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:background="@drawable/bg_online_dot" />
+                                <TextView
+                                    android:id="@+id/tvEstado"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="6dp"
+                                    android:textColor="@color/figma_blue"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"
+                                    tools:text="LIBRE" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="ESTADO"
+                                android:textSize="10sp"
+                                android:textColor="@color/chambita_texto_secundario" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingVertical="12dp"
+                            android:background="@drawable/bg_stat_card">
+
+                            <TextView
+                                android:id="@+id/tvTarifa"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/negro"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                tools:text="S/ 80" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="X HORA"
+                                android:textSize="10sp"
+                                android:textColor="@color/chambita_texto_secundario" />
+                        </LinearLayout>
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <!-- Chips Container -->
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="6dp"
-                        android:layout_marginEnd="6dp"
-                        android:background="@drawable/bg_stat_card"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:paddingTop="14dp"
-                        android:paddingBottom="14dp">
-
-                        <TextView
-                            android:id="@+id/tvEstado"
+                        android:layout_marginTop="20dp"
+                        android:scrollbars="none">
+                        <LinearLayout
+                            android:id="@+id/llChipsServicios"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text=""
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            android:textColor="#2E7D32" />
+                            android:orientation="horizontal" />
+                    </HorizontalScrollView>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Estado"
-                            android:textSize="12sp"
-                            android:textColor="@color/chambita_texto_secundario" />
+                    <!-- CONTRATAR AHORA -->
+                    <Button
+                        android:id="@+id/btnContratar"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="24dp"
+                        android:background="@drawable/bg_button_figma_blue"
+                        android:text="CONTRATAR AHORA →"
+                        android:textColor="@color/blanco"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="false" />
 
-                    </LinearLayout>
-
+                    <!-- LLAMAR + CHAT -->
                     <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="6dp"
-                        android:background="@drawable/bg_stat_card"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:paddingTop="14dp"
-                        android:paddingBottom="14dp">
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/tvTarifa"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/chambita_texto_principal" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="x hora"
-                            android:textSize="12sp"
-                            android:textColor="@color/chambita_texto_secundario" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <!-- Chips servicios -->
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:scrollbars="none"
-                    android:overScrollMode="never">
-
-                    <LinearLayout
-                        android:id="@+id/llChipsServicios"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingTop="2dp"
-                        android:paddingBottom="2dp" />
-
-                </HorizontalScrollView>
-
-                <!-- CONTRATAR AHORA -->
-                <Button
-                    android:id="@+id/btnContratar"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/bg_button_primary"
-                    android:text="CONTRATAR AHORA →"
-                    android:textColor="@color/blanco"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <!-- LLAMAR + CHAT — LinearLayout para centrar ícono+texto -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="10dp">
-
-                    <!-- LLAMAR -->
-                    <LinearLayout
-                        android:id="@+id/btnLlamar"
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_button_green"
-                        android:orientation="horizontal"
-                        android:gravity="center"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_phone"
-                            android:tint="@color/blanco"
-                            android:contentDescription="Llamar" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp"
+                        <Button
+                            android:id="@+id/btnLlamar"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/bg_button_figma_blue"
+                            android:drawableStart="@drawable/ic_phone"
+                            android:paddingStart="20dp"
+                            android:drawablePadding="8dp"
                             android:text="LLAMAR"
                             android:textColor="@color/blanco"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textAllCaps="true" />
 
-                    </LinearLayout>
-
-                    <!-- CHAT -->
-                    <LinearLayout
-                        android:id="@+id/btnChat"
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_button_dark"
-                        android:orientation="horizontal"
-                        android:gravity="center"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_chat"
-                            android:tint="@color/blanco"
-                            android:contentDescription="Chat" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp"
+                        <Button
+                            android:id="@+id/btnChat"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_button_figma_grey"
+                            android:drawableStart="@drawable/ic_chat"
+                            android:paddingStart="24dp"
+                            android:drawablePadding="8dp"
                             android:text="CHAT"
                             android:textColor="@color/blanco"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textAllCaps="true" />
 
                     </LinearLayout>
 
-                </LinearLayout>
-
-                <!-- VER EN MAPA -->
-                <LinearLayout
-                    android:id="@+id/btnVerMapa"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@drawable/bg_button_outline_dark"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@drawable/ic_location"
-                        android:tint="@color/chambita_texto_principal"
-                        android:contentDescription="Ver en mapa" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
+                    <!-- VER EN MAPA -->
+                    <Button
+                        android:id="@+id/btnVerMapa"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_button_outline_blue"
+                        android:drawableStart="@drawable/ic_location"
+                        android:paddingStart="70dp"
+                        android:drawablePadding="12dp"
+                        android:gravity="start|center_vertical"
                         android:text="VER EN MAPA"
-                        android:textColor="@color/chambita_texto_principal"
+                        android:textColor="@color/negro"
                         android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textAllCaps="true" />
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-            <!-- RESEÑAS -->
+            <!-- RESEÑA RECIENTE -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@color/chambita_fondo"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="20dp"
-                android:paddingBottom="16dp">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Reseña reciente"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/chambita_texto_principal"
-                    android:layout_marginBottom="12dp" />
+                    android:textColor="@color/negro"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvResenas"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:nestedScrollingEnabled="false" />
 
             </LinearLayout>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 
@@ -443,11 +404,14 @@
     <LinearLayout
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="72dp"
         android:layout_gravity="bottom"
         android:background="@color/blanco"
-        android:elevation="8dp"
-        android:orientation="horizontal">
+        android:elevation="12dp"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:id="@+id/navInicio"
@@ -455,24 +419,19 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_home"
-                android:tint="@color/chambita_texto_secundario"
-                android:contentDescription="Inicio" />
-
+                app:tint="@color/chambita_texto_secundario" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="2dp"
                 android:text="Inicio"
-                android:textSize="11sp"
-                android:textColor="@color/chambita_texto_secundario" />
-
+                android:textColor="@color/chambita_texto_secundario"
+                android:textSize="11sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -481,24 +440,19 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_tools"
-                android:tint="@color/chambita_texto_secundario"
-                android:contentDescription="Trabajos" />
-
+                app:tint="@color/chambita_texto_secundario" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="2dp"
                 android:text="Trabajos"
-                android:textSize="11sp"
-                android:textColor="@color/chambita_texto_secundario" />
-
+                android:textColor="@color/chambita_texto_secundario"
+                android:textSize="11sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -507,24 +461,19 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
+            android:orientation="vertical">
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_chat"
-                android:tint="@color/chambita_texto_secundario"
-                android:contentDescription="Mensajes" />
-
+                app:tint="@color/chambita_texto_secundario" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="2dp"
                 android:text="Mensajes"
-                android:textSize="11sp"
-                android:textColor="@color/chambita_texto_secundario" />
-
+                android:textColor="@color/chambita_texto_secundario"
+                android:textSize="11sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -533,27 +482,22 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="?attr/selectableItemBackgroundBorderless">
-
+            android:orientation="vertical">
             <ImageView
-                android:layout_width="56dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_person"
-                android:tint="@color/blanco"
+                android:layout_width="48dp"
+                android:layout_height="32dp"
                 android:background="@drawable/bg_nav_active"
                 android:padding="6dp"
-                android:contentDescription="Perfil" />
-
+                android:src="@drawable/ic_person"
+                app:tint="@color/blanco" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="2dp"
                 android:text="Perfil"
+                android:textColor="@color/chambita_acento"
                 android:textSize="11sp"
-                android:textStyle="bold"
-                android:textColor="@color/chambita_primario" />
-
+                android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>

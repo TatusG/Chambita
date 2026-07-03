@@ -3,14 +3,19 @@ package com.chambita.app.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
-import com.chambita.app.R
-import com.google.firebase.firestore.FirebaseFirestore
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
-import java.util.Date
 import android.util.Patterns
+import android.view.MotionEvent
 import android.view.View
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.TextViewCompat
+import com.chambita.app.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Date
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -48,7 +53,7 @@ class RegisterActivity : AppCompatActivity() {
         configurarListeners()
     }
 
-    private fun  inicializarComponentes(){
+    private fun inicializarComponentes(){
         etNombre                = findViewById(R.id.etNombre)
         etDni                   = findViewById(R.id.etDni)
         etCorreo                = findViewById(R.id.etCorreo)
@@ -67,27 +72,74 @@ class RegisterActivity : AppCompatActivity() {
     private fun configurarListeners(){
         btnCliente.setOnClickListener { seleccionarRol("cliente") }
         btnTecnico.setOnClickListener { seleccionarRol("tecnico") }
-        btnCrearCuenta.setOnClickListener { Log.d(TAG,"btnCrearCuenta - click")
-            intentarRegistro() }
+        btnCrearCuenta.setOnClickListener { 
+            Log.d(TAG,"btnCrearCuenta - click")
+            intentarRegistro() 
+        }
         tvIniciarSesion.setOnClickListener { finish() }
+
+        setupPasswordToggle(etContrasena)
+        setupPasswordToggle(etConfirmarContrasena)
     }
+
+    @android.annotation.SuppressLint("ClickableViewAccessibility")
+    private fun setupPasswordToggle(editText: EditText) {
+        editText.setOnTouchListener { _, event ->
+            val DRAWABLE_RIGHT = 2
+            if (event.action == MotionEvent.ACTION_UP) {
+                if (event.rawX >= (editText.right - editText.compoundDrawables[DRAWABLE_RIGHT].bounds.width() - editText.paddingEnd)) {
+                    togglePasswordVisibility(editText)
+                    editText.performClick()
+                    return@setOnTouchListener true
+                }
+            }
+            false
+        }
+    }
+
+    private var isPasswordVisible = false
+
+    private fun togglePasswordVisibility(editText: EditText) {
+        if (isPasswordVisible) {
+            editText.transformationMethod = PasswordTransformationMethod.getInstance()
+            editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_visibility_off, 0)
+        } else {
+            editText.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_visibility, 0)
+        }
+        isPasswordVisible = !isPasswordVisible
+        editText.setSelection(editText.text.length)
+    }
+
     private fun seleccionarRol(rol: String) {
         rolSeleccionado = rol
         Log.d(TAG, "Rol seleccionado: $rol")
 
+        val colorBlanco = getColor(R.color.blanco)
+        val colorTextoPrincipal = getColor(R.color.chambita_texto_principal)
+
         if (rol == "cliente") {
-            btnCliente.setBackgroundResource(R.drawable.bg_button_primary)
-            btnCliente.setTextColor(getColor(R.color.blanco))
-            btnTecnico.setBackgroundResource(R.drawable.bg_button_outline)
-            btnTecnico.setTextColor(getColor(R.color.chambita_primario))
+            btnCliente.setBackgroundResource(R.drawable.bg_button_figma_blue)
+            btnCliente.setTextColor(colorBlanco)
+            btnCliente.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person, 0, 0, 0)
+            TextViewCompat.setCompoundDrawableTintList(btnCliente, android.content.res.ColorStateList.valueOf(colorBlanco))
+
+            btnTecnico.setBackgroundResource(android.R.color.transparent)
+            btnTecnico.setTextColor(colorTextoPrincipal)
+            btnTecnico.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_tools, 0, 0, 0)
+            TextViewCompat.setCompoundDrawableTintList(btnTecnico, android.content.res.ColorStateList.valueOf(colorTextoPrincipal))
         } else {
-            btnTecnico.setBackgroundResource(R.drawable.bg_button_primary)
-            btnTecnico.setTextColor(getColor(R.color.blanco))
-            btnCliente.setBackgroundResource(R.drawable.bg_button_outline)
-            btnCliente.setTextColor(getColor(R.color.chambita_primario))
+            btnTecnico.setBackgroundResource(R.drawable.bg_button_figma_blue)
+            btnTecnico.setTextColor(colorBlanco)
+            btnTecnico.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_tools, 0, 0, 0)
+            TextViewCompat.setCompoundDrawableTintList(btnTecnico, android.content.res.ColorStateList.valueOf(colorBlanco))
+
+            btnCliente.setBackgroundResource(android.R.color.transparent)
+            btnCliente.setTextColor(colorTextoPrincipal)
+            btnCliente.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person, 0, 0, 0)
+            TextViewCompat.setCompoundDrawableTintList(btnCliente, android.content.res.ColorStateList.valueOf(colorTextoPrincipal))
         }
     }
-
 
     private fun intentarRegistro(){
         val nombre      = etNombre.text.toString().trim()
@@ -114,8 +166,6 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-
-    //Sebas esta parte es para generar los datos del usuario en Firestone ---
     private fun guardarEnFirestore(
         uid: String,
         nombre: String,
@@ -133,7 +183,6 @@ class RegisterActivity : AppCompatActivity() {
             "fechaRegistro" to Date()
         )
 
-        // Si es técnico, inicializamos sus campos específicos
         if (rolSeleccionado == "tecnico") {
             usuario["distritos"] = emptyList<String>()
             usuario["disponible"] = false
@@ -168,7 +217,7 @@ class RegisterActivity : AppCompatActivity() {
             !Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> mostrarError(etCorreo, "Correo inválido")
             telefono.length < 9 -> mostrarError(etTelefono, "Teléfono inválido")
             contrasena.length < 6 -> mostrarError(etContrasena, "Contraseña corta")
-            confirmar != contrasena -> mostrarError(etConfirmarContrasena, "No coinciden")
+            confirmar != contrasena -> mostrarError(etConfirmarContrasena, "Las contraseñas no coinciden")
             else -> true
         }
     }

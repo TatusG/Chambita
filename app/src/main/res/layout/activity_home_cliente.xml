@@ -74,7 +74,7 @@
                             android:layout_height="match_parent"
                             android:background="@drawable/bg_nav_active"
                             android:gravity="center"
-                            android:text="JP"
+                            android:text=""
                             android:textColor="@color/chambita_acento"
                             android:textSize="14sp"
                             android:textStyle="bold" />
@@ -104,7 +104,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
-                    android:text="HOLA, JUAN 👋"
+                    android:text="BIENVENIDO 👋"
                     android:textColor="@color/chambita_texto_secundario"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -249,7 +249,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
-                                android:text="Zona: Miraflores"
+                                android:text="Cargando zona..."
                                 android:textColor="@color/chambita_texto_principal"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />

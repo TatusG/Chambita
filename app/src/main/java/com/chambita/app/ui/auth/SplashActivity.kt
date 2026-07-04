@@ -8,11 +8,11 @@ import android.os.Looper
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.chambita.app.R
-import kotlinx.coroutines.flow.collect
+import com.google.firebase.auth.FirebaseAuth
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @SuppressLint("CustomSplashScreen")
@@ -22,42 +22,52 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash)
-
-        Log.d(TAG, "onCreate — SplashActivity iniciada")
-
-        observarEstado()
         
-        // Simular tiempo de carga del splash (2.5 seg)
+        try {
+            setContentView(R.layout.activity_splash)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error inflando splash: ${e.message}")
+        }
+
+        // Delay de seguridad para ver el logo
         Handler(Looper.getMainLooper()).postDelayed({
-            viewModel.checkSession()
-        }, 2500)
+            validarSesion()
+        }, 2000)
     }
 
-    private fun observarEstado() {
+    private fun validarSesion() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        
+        if (currentUser == null) {
+            irALogin()
+            return
+        }
+
+        // Si hay usuario, verificamos la sesión local en Room
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isReady.collect { ready ->
-                    if (ready) {
-                        val session = viewModel.sessionState.value
-                        if (session != null && session.estaActivo) {
-                            Log.d(TAG, "Sesión local activa: ${session.correo} - Rol: ${session.rol}")
-                            navegarSegunRol(session.rol)
-                        } else {
-                            Log.d(TAG, "Sin sesión activa — redirigiendo a Login")
-                            irALogin()
-                        }
-                    }
+            try {
+                viewModel.checkSession()
+                // Esperar a que el ViewModel termine la consulta a Room
+                viewModel.isReady.filter { it }.first() 
+                
+                val session = viewModel.sessionState.value
+                if (session != null && session.estaActivo) {
+                    navegarSegunRol(session.rol)
+                } else {
+                    irALogin()
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error en validación: ${e.message}")
+                irALogin()
             }
         }
     }
 
     private fun navegarSegunRol(rol: String) {
-        val intent = if (rol == "cliente") {
-            Intent(this, HomeClienteActivity::class.java)
-        } else {
+        val intent = if (rol == "tecnico") {
             Intent(this, HomeTecnicoActivity::class.java)
+        } else {
+            Intent(this, HomeClienteActivity::class.java)
         }
         startActivity(intent)
         finish()

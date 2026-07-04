@@ -1,10 +1,13 @@
 package com.chambita.app.ui.auth
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.chambita.app.R
 import com.chambita.app.models.Mensaje
 import com.google.firebase.auth.FirebaseAuth
@@ -15,9 +18,9 @@ class ChatAdapter(private var list: List<Mensaje>) : RecyclerView.Adapter<Recycl
 
     private val VIEW_TYPE_SENT = 1
     private val VIEW_TYPE_RECEIVED = 2
-    private val currentUid = FirebaseAuth.getInstance().currentUser?.uid
 
     override fun getItemViewType(position: Int): Int {
+        val currentUid = FirebaseAuth.getInstance().currentUser?.uid
         return if (list[position].remitenteId == currentUid) VIEW_TYPE_SENT else VIEW_TYPE_RECEIVED
     }
 
@@ -36,12 +39,34 @@ class ChatAdapter(private var list: List<Mensaje>) : RecyclerView.Adapter<Recycl
         val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
         val hora = message.fechaRegistro?.let { sdf.format(it.toDate()) } ?: ""
 
-        if (holder is SentViewHolder) {
-            holder.tvMensaje.text = message.texto
-            holder.tvHora.text = hora
-        } else if (holder is ReceivedViewHolder) {
-            holder.tvMensaje.text = message.texto
-            holder.tvHora.text = hora
+        // Log para depuración
+        Log.d("ChatAdapter", "Binding mensaje: ${message.texto} - Tipo: ${message.tipo}")
+
+        when (holder) {
+            is SentViewHolder -> {
+                holder.tvHora.text = hora
+                if (message.tipo == "imagen") {
+                    holder.tvMensaje.visibility = View.GONE
+                    holder.imgMensaje.visibility = View.VISIBLE
+                    Glide.with(holder.itemView.context).load(message.texto).into(holder.imgMensaje)
+                } else {
+                    holder.tvMensaje.visibility = View.VISIBLE
+                    holder.imgMensaje.visibility = View.GONE
+                    holder.tvMensaje.text = message.texto
+                }
+            }
+            is ReceivedViewHolder -> {
+                holder.tvHora.text = hora
+                if (message.tipo == "imagen") {
+                    holder.tvMensaje.visibility = View.GONE
+                    holder.imgMensaje.visibility = View.VISIBLE
+                    Glide.with(holder.itemView.context).load(message.texto).into(holder.imgMensaje)
+                } else {
+                    holder.tvMensaje.visibility = View.VISIBLE
+                    holder.imgMensaje.visibility = View.GONE
+                    holder.tvMensaje.text = message.texto
+                }
+            }
         }
     }
 
@@ -54,11 +79,13 @@ class ChatAdapter(private var list: List<Mensaje>) : RecyclerView.Adapter<Recycl
 
     class SentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMensaje: TextView = view.findViewById(R.id.tvMensaje)
+        val imgMensaje: ImageView = view.findViewById(R.id.imgMensaje)
         val tvHora: TextView = view.findViewById(R.id.tvHora)
     }
 
     class ReceivedViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMensaje: TextView = view.findViewById(R.id.tvMensaje)
+        val imgMensaje: ImageView = view.findViewById(R.id.imgMensaje)
         val tvHora: TextView = view.findViewById(R.id.tvHora)
     }
 }

@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.chambita.app.R
 import com.chambita.app.models.Solicitud
 
@@ -24,8 +25,12 @@ class SolicitudTecnicoAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = list[position]
         holder.txtCliente.text = item.nombreCliente
-        holder.txtTrabajo.text = "${item.especialidadRequerida} · ${item.direccionServicio.split(",").lastOrNull() ?: ""}"
+        holder.txtTrabajo.text = "${item.especialidadRequerida} · ${item.distritoServicio}"
         
+        if (item.fotoCliente.isNotEmpty()) {
+            Glide.with(holder.itemView.context).load(item.fotoCliente).circleCrop().into(holder.imgCliente)
+        }
+
         holder.btnAceptar.setOnClickListener { onAceptar(item) }
         holder.btnRechazar.setOnClickListener { onRechazar(item) }
     }
@@ -38,6 +43,7 @@ class SolicitudTecnicoAdapter(
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val imgCliente: ImageView = view.findViewById(R.id.imgCliente)
         val txtCliente: TextView = view.findViewById(R.id.txtCliente)
         val txtTrabajo: TextView = view.findViewById(R.id.txtTrabajo)
         val btnAceptar: Button = view.findViewById(R.id.btnAceptar)

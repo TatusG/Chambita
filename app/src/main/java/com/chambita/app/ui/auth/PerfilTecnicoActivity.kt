@@ -36,6 +36,14 @@ class PerfilTecnicoActivity : NavActivity() {
         findViewById<LinearLayout>(R.id.cardEditarPerfil)?.setOnClickListener {
             startActivity(Intent(this, EditarPerfilTecnicoActivity::class.java))
         }
+
+        findViewById<LinearLayout>(R.id.cardGanancias)?.setOnClickListener {
+            startActivity(Intent(this, DashboardGananciasActivity::class.java))
+        }
+
+        findViewById<LinearLayout>(R.id.cardZonasCobertura)?.setOnClickListener {
+            startActivity(Intent(this, CoberturaLaboralActivity::class.java))
+        }
     }
 
     private fun cargarDatos() {

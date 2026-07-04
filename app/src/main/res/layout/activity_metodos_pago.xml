@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/chambita_fondo">
@@ -11,44 +11,55 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Toolbar -->
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <!-- TOOLBAR -->
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="@color/chambita_fondo">
+            android:background="@color/blanco"
+            android:paddingHorizontal="16dp">
 
-            <ImageButton
+            <LinearLayout
                 android:id="@+id/btnBack"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_arrow_back"
-                android:tint="@color/chambita_primario"/>
-
-            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chambita"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:textColor="@color/chambita_primario"/>
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="@color/chambita_acento" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Chambita"
+                    android:textColor="@color/chambita_acento"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <ImageButton
                 android:id="@+id/btnNotificaciones"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_gravity="end"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_bell"
-                android:tint="@color/chambita_primario"/>
-
-        </androidx.appcompat.widget.Toolbar>
+                app:tint="@color/chambita_acento" />
+        </RelativeLayout>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:overScrollMode="never">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -60,26 +71,38 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="‹ MI PERFIL"
-                    android:textColor="@color/chambita_primario"
+                    android:textColor="@color/chambita_acento"
                     android:textStyle="bold"
-                    android:textSize="13sp"/>
+                    android:textSize="11sp"
+                    android:letterSpacing="0.05" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="Métodos de pago"
-                    android:textStyle="bold"
+                    android:textColor="@color/chambita_texto_principal"
                     android:textSize="32sp"
-                    android:textColor="@color/chambita_texto_principal"/>
+                    android:textStyle="bold" />
 
                 <!-- Lista de métodos -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvMetodosPago"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:nestedScrollingEnabled="false" />
+
+                <!-- Estado Vacío -->
+                <TextView
+                    android:id="@+id/layoutVacioMetodos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:nestedScrollingEnabled="false"/>
+                    android:text="No tienes métodos de pago registrados."
+                    android:gravity="center"
+                    android:textColor="@color/chambita_texto_secundario"
+                    android:visibility="gone" />
 
                 <!-- Agregar -->
                 <LinearLayout
@@ -87,75 +110,75 @@
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
                     android:layout_marginTop="16dp"
-                    android:background="@drawable/bg_agregar_metodo"
+                    android:background="@drawable/bg_address_add"
                     android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <ImageView
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_add_circle"
-                        android:tint="@color/chambita_primario"/>
+                        app:tint="@color/chambita_acento" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:text="AGREGAR MÉTODO DE PAGO"
-                        android:textStyle="bold"
-                        android:textSize="16sp"
-                        android:textColor="@color/chambita_primario"/>
-
+                        android:textColor="@color/chambita_acento"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <!-- Seguridad -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="32dp"
                     app:cardCornerRadius="14dp"
-                    app:cardBackgroundColor="#EEF4FA">
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#F3F7FF">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="18dp">
+                        android:padding="20dp"
+                        android:gravity="center_vertical">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_lock"
-                            android:tint="@color/chambita_primario"/>
+                            app:tint="@color/figma_blue" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:layout_marginStart="12dp"
+                            android:layout_marginStart="16dp"
                             android:text="Datos cifrados y protegidos bajo estándares bancarios."
-                            android:textColor="@color/chambita_texto_principal"
-                            android:textSize="14sp"/>
-
+                            android:textColor="@color/chambita_texto_secundario"
+                            android:textSize="13sp" />
                     </LinearLayout>
-
                 </androidx.cardview.widget.CardView>
 
             </LinearLayout>
-
         </ScrollView>
 
         <!-- Bottom Nav -->
         <LinearLayout
             android:id="@+id/bottomNav"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_alignParentBottom="true"
+            android:layout_height="72dp"
             android:background="@color/blanco"
-            android:elevation="8dp"
-            android:orientation="horizontal">
+            android:elevation="12dp"
+            android:orientation="horizontal"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
-            <!-- Inicio -->
             <LinearLayout
                 android:id="@+id/navInicio"
                 android:layout_width="0dp"
@@ -163,22 +186,20 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
-
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_home"
-                    android:tint="@color/chambita_texto_secundario" />
-
+                    app:tint="@color/chambita_texto_secundario" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:text="Inicio"
                     android:textColor="@color/chambita_texto_secundario"
                     android:textSize="11sp" />
             </LinearLayout>
 
-            <!-- Trabajos -->
             <LinearLayout
                 android:id="@+id/navTrabajos"
                 android:layout_width="0dp"
@@ -186,22 +207,20 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
-
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_tools"
-                    android:tint="@color/chambita_texto_secundario" />
-
+                    app:tint="@color/chambita_texto_secundario" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Mis Trabajos"
+                    android:layout_marginTop="2dp"
+                    android:text="Trabajos"
                     android:textColor="@color/chambita_texto_secundario"
                     android:textSize="11sp" />
             </LinearLayout>
 
-            <!-- Mensajes -->
             <LinearLayout
                 android:id="@+id/navMensajes"
                 android:layout_width="0dp"
@@ -209,22 +228,20 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
-
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_chat"
-                    android:tint="@color/chambita_texto_secundario" />
-
+                    app:tint="@color/chambita_texto_secundario" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:text="Mensajes"
                     android:textColor="@color/chambita_texto_secundario"
                     android:textSize="11sp" />
             </LinearLayout>
 
-            <!-- Perfil ACTIVO -->
             <LinearLayout
                 android:id="@+id/navPerfil"
                 android:layout_width="0dp"
@@ -232,31 +249,23 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="56dp"
-                    android:layout_height="36dp"
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="32dp"
                     android:background="@drawable/bg_nav_active"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:src="@drawable/ic_person"
-                        android:tint="@color/blanco" />
-                </LinearLayout>
-
+                    android:padding="6dp"
+                    android:src="@drawable/ic_person"
+                    app:tint="@color/blanco" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:text="Perfil"
-                    android:textColor="@color/chambita_primario"
+                    android:textColor="@color/chambita_acento"
                     android:textSize="11sp"
                     android:textStyle="bold" />
             </LinearLayout>
-
         </LinearLayout>
-
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

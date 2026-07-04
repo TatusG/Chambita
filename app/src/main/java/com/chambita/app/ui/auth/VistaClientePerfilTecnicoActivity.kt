@@ -7,12 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RatingBar
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -122,39 +117,79 @@ class VistaClientePerfilTecnicoActivity : NavActivity() {
                 if (document != null && document.exists()) {
                     val tecnico = document.toObject(Usuario::class.java)
                     if (tecnico != null) {
-                        tecnicoData = tecnico
-                        tecnicoNombre = tecnico.nombreCompleto
+                        tecnicoData    = tecnico
+                        tecnicoNombre  = tecnico.nombreCompleto
                         tecnicoTelefono = tecnico.telefono
                         tecnicoEspecialidad = tecnico.especialidad
 
                         tvNombreTecnico.text = tecnico.nombreCompleto
-                        tvEspecialidad.text = tecnico.especialidad.uppercase()
+                        tvEspecialidad.text  = tecnico.especialidad.uppercase()
                         tvAvatarTecnico.text = obtenerIniciales(tecnico.nombreCompleto)
-                        tvZonaAtencion.text = "Atiende: ${tecnico.distritos.joinToString(", ")}"
-                        
-                        ratingBarTecnico.rating = tecnico.promedioEstrellas.toFloat()
-                        tvRatingNumero.text = String.format(Locale.getDefault(), "%.1f", tecnico.promedioEstrellas)
+                        tvZonaAtencion.text  = "Atiende: ${tecnico.distritos.joinToString(", ")}"
 
-                        tvNumTrabajos.text = tecnico.conteoTrabajos.toString()
-                        tvEstado.text = if (tecnico.disponible) "LIBRE" else "OCUPADO"
-                        viewStatusDot.visibility = if (tecnico.disponible) View.VISIBLE else View.GONE
-                        
+                        // ✅ Mostrar promedio del documento principal
+                        actualizarUIRating(tecnico.promedioEstrellas)
+
+                        // Estado disponible
+                        if (tecnico.disponible) {
+                            tvEstado.text = "LIBRE"
+                            viewStatusDot.visibility = View.VISIBLE
+                        } else {
+                            tvEstado.text = "OCUPADO"
+                            tvEstado.setTextColor(ContextCompat.getColor(this, R.color.chambita_rojo))
+                            viewStatusDot.visibility = View.GONE
+                        }
+
                         tvTarifa.text = "S/ ${tecnico.tarifaPorHora.toInt()}"
 
+                        // Chips de servicios
                         llChipsServicios.removeAllViews()
                         tecnico.servicios.forEach { agregarChipServicio(it) }
+
+                        // Contar trabajos finalizados
+                        db.collection("solicitudes")
+                            .whereEqualTo("tecnicoId", tecnicoUid)
+                            .whereEqualTo("estado", "finalizada")
+                            .get()
+                            .addOnSuccessListener { snapshot ->
+                                tvNumTrabajos.text = snapshot.size().toString()
+                            }
+                            .addOnFailureListener {
+                                tvNumTrabajos.text = "0"
+                            }
                     }
                 }
             }
     }
 
+    private fun actualizarUIRating(promedio: Double) {
+        if (promedio > 0.0) {
+            ratingBarTecnico.rating = promedio.toFloat()
+            tvRatingNumero.text = String.format(Locale.US, "%.1f", promedio)
+        } else {
+            ratingBarTecnico.rating = 0f
+            tvRatingNumero.text = "Sin calificación"
+        }
+    }
+
     private fun cargarResenas() {
-        db.collection("usuarios").document(tecnicoUid!!).collection("resenas")
+        db.collection("usuarios").document(tecnicoUid!!)
+            .collection("resenas")
             .orderBy("fechaRegistro", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { querySnapshot ->
                 val lista = querySnapshot.toObjects(Resena::class.java)
                 resenaAdapter.actualizarResenas(lista)
+
+                // ✅ Fallback & Auto-Healing: Si el documento dice 0 pero hay reseñas, calcula y actualiza la DB
+                if (lista.isNotEmpty() && (tecnicoData?.promedioEstrellas ?: 0.0) == 0.0) {
+                    val promCalculado = lista.map { it.calificacion }.average()
+                    actualizarUIRating(promCalculado)
+                    
+                    // Sincronizar con el documento del técnico para que se vea en el Home
+                    db.collection("usuarios").document(tecnicoUid!!)
+                        .update("promedioEstrellas", promCalculado, "numeroResenas", lista.size)
+                }
             }
     }
 
@@ -195,7 +230,8 @@ class VistaClientePerfilTecnicoActivity : NavActivity() {
             holder.tvComentario.text = item.comentario
             val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             holder.tvFecha.text = item.fechaRegistro?.let { sdf.format(it.toDate()) } ?: ""
-            holder.tvCalificacion.text = item.calificacion.toString()
+            
+            holder.ratingBar.rating = item.calificacion.toFloat()
             
             if (item.recomienda) {
                 holder.tvRecomienda.text = "✓ Recomienda a este técnico"
@@ -214,7 +250,7 @@ class VistaClientePerfilTecnicoActivity : NavActivity() {
             val tvNombre: TextView = v.findViewById(R.id.tvNombreCliente)
             val tvComentario: TextView = v.findViewById(R.id.tvComentario)
             val tvFecha: TextView = v.findViewById(R.id.tvFecha)
-            val tvCalificacion: TextView = v.findViewById(R.id.tvCalificacion)
+            val ratingBar: RatingBar = v.findViewById(R.id.ratingBarResena)
             val tvRecomienda: TextView = v.findViewById(R.id.tvRecomienda)
         }
     }

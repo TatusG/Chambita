@@ -7,11 +7,7 @@ plugins {
 
 android {
     namespace = "com.chambita.app"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.chambita.app"
@@ -52,6 +48,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
 
     // ── Room ───────────────────────────────────────
     implementation(libs.androidx.room.runtime)

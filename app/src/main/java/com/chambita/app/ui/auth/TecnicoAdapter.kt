@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.chambita.app.R
 import com.chambita.app.models.Usuario
+import java.util.Locale
 
 class TecnicoAdapter(
     private var listaTecnicos: List<Usuario>,
@@ -47,9 +48,14 @@ class TecnicoAdapter(
             tvNombre.text = tecnico.nombreCompleto.ifEmpty { "Técnico Asociado" }
             tvEspecialidad.text = tecnico.especialidad.ifEmpty { "Servicios Generales" }
             
-            val promedio = if (tecnico.promedioEstrellas > 0) String.format("%.1f", tecnico.promedioEstrellas) else "N/A"
-            tvCalificacion.text = promedio
-            ratingBar.rating = tecnico.promedioEstrellas.toFloat()
+            // ✅ Mostrar promedio real o N/A si es 0
+            if (tecnico.promedioEstrellas > 0) {
+                tvCalificacion.text = String.format(Locale.US, "%.1f", tecnico.promedioEstrellas)
+                ratingBar.rating = tecnico.promedioEstrellas.toFloat()
+            } else {
+                tvCalificacion.text = "N/A"
+                ratingBar.rating = 0f
+            }
 
             tvDistritoBadge.text = if (tecnico.distritos.isNotEmpty()) {
                 tecnico.distritos[0].uppercase()
@@ -57,8 +63,8 @@ class TecnicoAdapter(
                 "LIMA"
             }
 
-            // Mostrar rango de precios
-            tvPrecioRango.text = "S/ %.2f - S/ %.2f".format(tecnico.tarifaPorHora, tecnico.tarifaMaxima)
+            // Mostrar tarifa
+            tvPrecioRango.text = "S/ %.2f".format(tecnico.tarifaPorHora)
 
             imgFotoPerfil.setImageResource(R.drawable.ic_usuario)
             if (tecnico.fotoPerfil.isNotEmpty()) {

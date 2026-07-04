@@ -9,9 +9,6 @@ import com.chambita.app.data.local.dao.UserSessionDao
 import com.chambita.app.data.local.entities.LocalAddressEntity
 import com.chambita.app.data.local.entities.UserSessionEntity
 
-/**
- * Base de datos principal de la aplicación utilizando Room.
- */
 @Database(entities = [UserSessionEntity::class, LocalAddressEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -28,7 +25,8 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "chambita_db"
-                ).fallbackToDestructiveMigration() // Útil durante el desarrollo inicial
+                )
+                .fallbackToDestructiveMigration() // ESTO EVITA EL CRASH POR VERSIÓN
                 .build()
                 INSTANCE = instance
                 instance

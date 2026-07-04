@@ -30,32 +30,17 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <!-- Calificación (Estrellas en texto) -->
-            <LinearLayout
+            <!-- Calificación (Estrellas Reales) -->
+            <RatingBar
+                android:id="@+id/ratingBarResena"
+                style="@style/Widget.AppCompat.RatingBar.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:src="@drawable/ic_star"
-                    app:tint="@color/chambita_estrella"
-                    android:contentDescription="Estrella" />
-
-                <TextView
-                    android:id="@+id/tvCalificacion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="5"
-                    android:textColor="@color/chambita_texto_principal"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
+                android:isIndicator="true"
+                android:numStars="5"
+                android:stepSize="1.0"
+                android:progressTint="@color/chambita_estrella" />
 
         </RelativeLayout>
 

@@ -35,7 +35,6 @@
 
     <ProgressBar
         android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:indeterminateTint="@color/chambita_acento" />
+        android:layout_height="48dp" />
 
 </LinearLayout>

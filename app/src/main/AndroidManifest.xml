@@ -23,7 +23,7 @@
         <activity
             android:name=".ui.auth.SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.Chambita">
+            android:theme="@style/Theme.Chambita.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -55,6 +55,18 @@
         <!-- PERFIL TECNICO -->
         <activity
             android:name=".ui.auth.PerfilTecnicoActivity"
+            android:exported="false"
+        />
+
+        <!-- DASHBOARD GANANCIAS -->
+        <activity
+            android:name=".ui.auth.DashboardGananciasActivity"
+            android:exported="false"
+        />
+
+        <!-- COBERTURA LABORAL -->
+        <activity
+            android:name=".ui.auth.CoberturaLaboralActivity"
             android:exported="false"
         />
 

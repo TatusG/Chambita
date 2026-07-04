@@ -1,202 +1,229 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/chambita_fondo">
 
-    <!-- Toolbar -->
-    <androidx.appcompat.widget.Toolbar
+    <!-- TOOLBAR -->
+    <RelativeLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@color/blanco">
+        android:background="@color/blanco"
+        android:paddingHorizontal="16dp">
 
         <ImageButton
             android:id="@+id/btnMenu"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_menu"
-            android:tint="@color/chambita_primario"/>
+            app:tint="@color/chambita_acento" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_centerInParent="true"
             android:text="Chambita"
-            android:textColor="@color/chambita_primario"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textColor="@color/chambita_acento"
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
         <ImageButton
             android:id="@+id/btnNotificaciones"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_gravity="end"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_bell"
-            android:tint="@color/chambita_primario"/>
-
-    </androidx.appcompat.widget.Toolbar>
+            app:tint="@color/chambita_acento" />
+    </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="56dp"
-        android:layout_marginBottom="70dp">
+        android:layout_marginBottom="72dp"
+        android:fillViewport="true"
+        android:overScrollMode="never">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Cabecera Perfil -->
+            <!-- HEADER -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:background="@drawable/bg_header_profile"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:background="@color/chambita_oscuro"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingBottom="40dp"
+                android:paddingTop="32dp">
 
                 <FrameLayout
-                    android:layout_width="110dp"
-                    android:layout_height="110dp">
+                    android:layout_width="96dp"
+                    android:layout_height="96dp">
+
+                    <TextView
+                        android:id="@+id/tvAvatarInitials"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_nav_active"
+                        android:gravity="center"
+                        android:textColor="@color/chambita_acento"
+                        android:textSize="32sp"
+                        android:textStyle="bold"
+                        tools:text="JR" />
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:cardBackgroundColor="@android:color/transparent"
+                        app:cardCornerRadius="48dp"
+                        app:cardElevation="0dp">
+
+                        <ImageView
+                            android:id="@+id/imgPerfil"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone" />
+                    </androidx.cardview.widget.CardView>
 
                     <ImageView
-                        android:id="@+id/imgPerfil"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_person"
-                        android:scaleType="centerCrop"/>
-
-                    <ImageButton
-                        android:id="@+id/btnEditarFoto"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:layout_gravity="bottom|end"
-                        android:background="@drawable/bg_circle_primary"
+                        android:background="@drawable/bg_nav_active"
+                        android:padding="6dp"
                         android:src="@drawable/ic_edit"
-                        android:tint="@color/blanco"/>
-
+                        app:tint="@color/blanco" />
                 </FrameLayout>
 
                 <TextView
                     android:id="@+id/txtNombre"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:textSize="28sp"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@color/blanco"
+                    android:textSize="24sp"
                     android:textStyle="bold"
-                    android:textColor="@color/blanco"/>
+                    tools:text="Juan Ramos" />
 
                 <TextView
-                    android:id="@+id/txtCorreo"
+                    android:id="@+id/txtCorreoRol"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#D9E1F2"
                     android:textSize="14sp"
-                    android:textColor="#DDFFFFFF"/>
-
+                    tools:text="juan@correo.com • Cliente" />
             </LinearLayout>
 
-            <!-- Configuración -->
+            <!-- Toggles Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:cardCornerRadius="18dp">
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="-25dp"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp">
 
-                    <!-- Notificaciones -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="56dp"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp">
+                        android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
                             android:src="@drawable/ic_bell"
-                            android:tint="@color/chambita_primario"/>
+                            app:tint="@color/chambita_primario" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="12dp"
+                            android:layout_weight="1"
                             android:text="Notificaciones"
-                            android:textSize="16sp"/>
+                            android:textColor="@color/chambita_texto_principal"
+                            android:textSize="16sp" />
 
-                        <Switch
-                            android:id="@+id/switchNotificaciones"
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/swNotificaciones"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:checked="true" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#EEEEEE"/>
+                        android:background="#F3F4F6" />
 
-                    <!-- GPS -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="56dp"
                         android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp">
+                        android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
                             android:src="@drawable/ic_location"
-                            android:tint="@color/chambita_primario"/>
+                            app:tint="@color/chambita_primario" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="12dp"
+                            android:layout_weight="1"
                             android:text="Permitir GPS puntual"
-                            android:textSize="16sp"/>
+                            android:textColor="@color/chambita_texto_principal"
+                            android:textSize="16sp" />
 
-                        <Switch
-                            android:id="@+id/switchGps"
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/swGps"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:checked="true" />
                     </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#EEEEEE"/>
-
-                    <!-- Modo Oscuro -->
-
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
 
-            <!-- Mi Cuenta -->
+            <!-- MI CUENTA -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
                 android:text="MI CUENTA"
-                android:textStyle="bold"
-                android:textColor="@color/chambita_primario"/>
+                android:textColor="@color/chambita_texto_secundario"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:cardCornerRadius="18dp">
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -208,6 +235,7 @@
                         android:id="@+id/opEditarPerfil"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
+                        android:background="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="16dp">
 
@@ -215,34 +243,35 @@
                             android:layout_width="22dp"
                             android:layout_height="22dp"
                             android:src="@drawable/ic_person"
-                            android:tint="@color/chambita_primario"/>
+                            app:tint="@color/chambita_primario" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="16dp"
+                            android:layout_weight="1"
                             android:text="Editar perfil"
-                            android:textSize="16sp"/>
+                            android:textColor="@color/chambita_texto_principal"
+                            android:textSize="16sp" />
 
                         <ImageView
                             android:layout_width="18dp"
                             android:layout_height="18dp"
-                            android:src="@drawable/ic_chevron_right"
-                            android:tint="#999999"/>
-
+                            android:src="@drawable/ic_arrow_forward"
+                            app:tint="#9CA3AF" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#EEEEEE"/>
+                        android:background="#F3F4F6" />
 
                     <!-- Métodos de pago -->
                     <LinearLayout
                         android:id="@+id/opMetodosPago"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
+                        android:background="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="16dp">
 
@@ -250,34 +279,35 @@
                             android:layout_width="22dp"
                             android:layout_height="22dp"
                             android:src="@drawable/ic_payment"
-                            android:tint="@color/chambita_primario"/>
+                            app:tint="@color/chambita_primario" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="16dp"
+                            android:layout_weight="1"
                             android:text="Métodos de pago"
-                            android:textSize="16sp"/>
+                            android:textColor="@color/chambita_texto_principal"
+                            android:textSize="16sp" />
 
                         <ImageView
                             android:layout_width="18dp"
                             android:layout_height="18dp"
-                            android:src="@drawable/ic_chevron_right"
-                            android:tint="#999999"/>
-
+                            android:src="@drawable/ic_arrow_forward"
+                            app:tint="#9CA3AF" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#EEEEEE"/>
+                        android:background="#F3F4F6" />
 
-                    <!-- Direcciones -->
+                    <!-- Mis direcciones -->
                     <LinearLayout
                         android:id="@+id/opDirecciones"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
+                        android:background="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="16dp">
 
@@ -285,34 +315,35 @@
                             android:layout_width="22dp"
                             android:layout_height="22dp"
                             android:src="@drawable/ic_map"
-                            android:tint="@color/chambita_primario"/>
+                            app:tint="@color/chambita_primario" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="16dp"
+                            android:layout_weight="1"
                             android:text="Mis direcciones"
-                            android:textSize="16sp"/>
+                            android:textColor="@color/chambita_texto_principal"
+                            android:textSize="16sp" />
 
                         <ImageView
                             android:layout_width="18dp"
                             android:layout_height="18dp"
-                            android:src="@drawable/ic_chevron_right"
-                            android:tint="#999999"/>
-
+                            android:src="@drawable/ic_arrow_forward"
+                            app:tint="#9CA3AF" />
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#EEEEEE"/>
+                        android:background="#F3F4F6" />
 
                     <!-- Historial de pagos -->
                     <LinearLayout
                         android:id="@+id/opHistorialPagos"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
+                        android:background="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="16dp">
 
@@ -320,54 +351,55 @@
                             android:layout_width="22dp"
                             android:layout_height="22dp"
                             android:src="@drawable/ic_receipt"
-                            android:tint="@color/chambita_primario"/>
+                            app:tint="@color/chambita_primario" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="16dp"
+                            android:layout_weight="1"
                             android:text="Historial de pagos"
-                            android:textSize="16sp"/>
+                            android:textColor="@color/chambita_texto_principal"
+                            android:textSize="16sp" />
 
                         <ImageView
                             android:layout_width="18dp"
                             android:layout_height="18dp"
-                            android:src="@drawable/ic_chevron_right"
-                            android:tint="#999999"/>
-
+                            android:src="@drawable/ic_arrow_forward"
+                            app:tint="#9CA3AF" />
                     </LinearLayout>
-
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
 
-            <!-- Cerrar sesión -->
+            <!-- CERRAR SESIÓN -->
             <Button
                 android:id="@+id/btnCerrarSesion"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/bg_button_logout"
                 android:text="CERRAR SESIÓN"
+                android:textColor="#D32F2F"
                 android:textStyle="bold"
-                android:textColor="@color/chambita_primario"
-                android:background="@drawable/bg_button_outline"/>
+                android:textAllCaps="true" />
 
         </LinearLayout>
-
     </ScrollView>
-    <!-- Bottom Navigation -->
+
+    <!-- BOTTOM NAV -->
     <LinearLayout
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="72dp"
         android:layout_gravity="bottom"
         android:background="@color/blanco"
-        android:elevation="8dp"
-        android:orientation="horizontal">
+        android:elevation="12dp"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
 
-        <!-- Inicio -->
         <LinearLayout
             android:id="@+id/navInicio"
             android:layout_width="0dp"
@@ -375,22 +407,20 @@
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
-
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_home"
-                android:tint="@color/chambita_texto_secundario"/>
-
+                app:tint="@color/chambita_texto_secundario" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:text="Inicio"
-                android:textSize="11sp"
-                android:textColor="@color/chambita_texto_secundario"/>
+                android:textColor="@color/chambita_texto_secundario"
+                android:textSize="11sp" />
         </LinearLayout>
 
-        <!-- Trabajos -->
         <LinearLayout
             android:id="@+id/navTrabajos"
             android:layout_width="0dp"
@@ -398,22 +428,20 @@
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
-
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_tools"
-                android:tint="@color/chambita_texto_secundario"/>
-
+                app:tint="@color/chambita_texto_secundario" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:text="Trabajos"
-                android:textSize="11sp"
-                android:textColor="@color/chambita_texto_secundario"/>
+                android:textColor="@color/chambita_texto_secundario"
+                android:textSize="11sp" />
         </LinearLayout>
 
-        <!-- Mensajes -->
         <LinearLayout
             android:id="@+id/navMensajes"
             android:layout_width="0dp"
@@ -421,22 +449,20 @@
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
-
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_chat"
-                android:tint="@color/chambita_texto_secundario"/>
-
+                app:tint="@color/chambita_texto_secundario" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:text="Mensajes"
-                android:textSize="11sp"
-                android:textColor="@color/chambita_texto_secundario"/>
+                android:textColor="@color/chambita_texto_secundario"
+                android:textSize="11sp" />
         </LinearLayout>
 
-        <!-- Perfil ACTIVO -->
         <LinearLayout
             android:id="@+id/navPerfil"
             android:layout_width="0dp"
@@ -444,31 +470,22 @@
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="56dp"
-                android:layout_height="36dp"
-                android:gravity="center"
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="32dp"
                 android:background="@drawable/bg_nav_active"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_person"
-                    android:tint="@color/blanco"/>
-
-            </LinearLayout>
-
+                android:padding="6dp"
+                android:src="@drawable/ic_person"
+                app:tint="@color/blanco" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:text="Perfil"
+                android:textColor="@color/chambita_acento"
                 android:textSize="11sp"
-                android:textStyle="bold"
-                android:textColor="@color/chambita_primario"/>
+                android:textStyle="bold" />
         </LinearLayout>
-
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

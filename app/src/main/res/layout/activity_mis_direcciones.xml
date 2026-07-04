@@ -1,254 +1,260 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/chambita_fondo">
 
-    <!-- TOOLBAR -->
-    <RelativeLayout
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@color/chambita_fondo"
-        android:elevation="2dp">
-
-        <LinearLayout
-            android:id="@+id/btnVolver"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="16dp">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_arrow_back"
-                android:tint="@color/chambita_acento"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:text="Mi perfil"
-                android:textColor="@color/chambita_acento"
-                android:textSize="16sp"/>
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Chambita"
-            android:textColor="@color/chambita_oscuro"
-            android:textSize="18sp"
-            android:textStyle="bold"/>
-    </RelativeLayout>
-
-    <!-- CONTENIDO -->
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="56dp"
-        android:layout_marginBottom="64dp">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <!-- TOOLBAR -->
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:layout_height="56dp"
+            android:background="@color/blanco"
+            android:paddingHorizontal="16dp">
 
-            <!-- TITULO -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mis direcciones"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                android:textColor="@color/chambita_texto_principal"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Gestiona tus lugares frecuentes para servicios a domicilio."
-                android:textSize="16sp"
-                android:textColor="@color/chambita_texto_secundario"/>
-
-            <!-- RecyclerView de direcciones -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvDirecciones"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:nestedScrollingEnabled="false"/>
-
-            <!-- AGREGAR -->
             <LinearLayout
-                android:id="@+id/btnAgregarDireccion"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_add_direccion"
-                android:gravity="center"
+                android:id="@+id/btnVolver"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_location_add"
-                    android:tint="@color/chambita_acento"/>
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="@color/chambita_acento" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="+ Agregar dirección (máx. 5)"
+                    android:layout_marginStart="6dp"
+                    android:text="Mi perfil"
                     android:textColor="@color/chambita_acento"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp" />
             </LinearLayout>
 
-            <!-- MAPA -->
-            <FrameLayout
-                android:id="@+id/cardMapa"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Chambita"
+                android:textColor="@color/chambita_oscuro"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:overScrollMode="never">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:layout_marginTop="28dp">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
 
-                <ImageView
-                    android:id="@+id/imgMapa"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/mapa_demo" />
-
-                <LinearLayout
-                    android:id="@+id/btnVistaMapa"
+                <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/bg_pill_white"
-                    android:elevation="4dp"
+                    android:layout_height="wrap_content"
+                    android:text="Mis direcciones"
+                    android:textColor="@color/chambita_texto_principal"
+                    android:textSize="32sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Gestiona tus lugares frecuentes para servicios a domicilio."
+                    android:textColor="@color/chambita_texto_secundario"
+                    android:textSize="15sp" />
+
+                <!-- Lista de direcciones -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvDirecciones"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:nestedScrollingEnabled="false" />
+
+                <!-- Agregar -->
+                <LinearLayout
+                    android:id="@+id/btnAgregarDireccion"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_address_add"
                     android:gravity="center"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="18dp">
+                    android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@drawable/ic_location"
-                        android:tint="@color/chambita_acento"/>
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_location_add"
+                        app:tint="@color/chambita_acento" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="Vista en mapa"
-                        android:textColor="@color/chambita_texto_principal"
-                        android:textSize="16sp"/>
-
+                        android:layout_marginStart="10dp"
+                        android:text="+ Agregar dirección (máx. 5)"
+                        android:textColor="@color/chambita_acento"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-            </FrameLayout>
+                <!-- MAPA -->
+                <FrameLayout
+                    android:id="@+id/cardMapaContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:layout_marginTop="32dp">
 
-        </LinearLayout>
+                    <ImageView
+                        android:id="@+id/imgMapa"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/mapa_demo" />
 
-    </ScrollView>
+                    <LinearLayout
+                        android:id="@+id/btnVistaMapa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_pill_white"
+                        android:elevation="4dp"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="18dp">
 
-    <!-- BOTTOM NAV -->
-    <LinearLayout
-        android:id="@+id/bottomNav"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_gravity="bottom"
-        android:background="@color/blanco"
-        android:elevation="8dp"
-        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_location"
+                            app:tint="@color/figma_blue" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Vista en mapa"
+                            android:textColor="@color/chambita_texto_principal"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </FrameLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Bottom Nav -->
         <LinearLayout
-            android:id="@+id/navInicio"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:id="@+id/bottomNav"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:background="@color/blanco"
+            android:elevation="12dp"
+            android:orientation="horizontal"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_home"/>
+            <LinearLayout
+                android:id="@+id/navInicio"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_home"
+                    app:tint="@color/chambita_texto_secundario" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Inicio"
+                    android:textColor="@color/chambita_texto_secundario"
+                    android:textSize="11sp" />
+            </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Inicio"/>
+            <LinearLayout
+                android:id="@+id/navTrabajos"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_tools"
+                    app:tint="@color/chambita_texto_secundario" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Trabajos"
+                    android:textColor="@color/chambita_texto_secundario"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/navMensajes"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_chat"
+                    app:tint="@color/chambita_texto_secundario" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Mensajes"
+                    android:textColor="@color/chambita_texto_secundario"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/navPerfil"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_nav_active"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_person"
+                    app:tint="@color/blanco" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Perfil"
+                    android:textColor="@color/chambita_acento"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navTrabajos"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_tools"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mis Trabajos"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navMensajes"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_chat"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mensajes"/>
-        </LinearLayout>
-
-        <!-- PERFIL ACTIVO -->
-        <LinearLayout
-            android:id="@+id/navPerfil"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="56dp"
-                android:layout_height="36dp"
-                android:background="@drawable/bg_nav_active"
-                android:padding="6dp"
-                android:src="@drawable/ic_person"
-                android:tint="@color/blanco"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Perfil"
-                android:textColor="@color/chambita_acento"
-                android:textStyle="bold"/>
-        </LinearLayout>
-
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

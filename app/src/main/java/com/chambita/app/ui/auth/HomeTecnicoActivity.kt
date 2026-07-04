@@ -2,10 +2,12 @@ package com.chambita.app.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -15,6 +17,7 @@ import com.chambita.app.models.Usuario
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 class HomeTecnicoActivity : NavActivity() {
@@ -62,33 +65,48 @@ class HomeTecnicoActivity : NavActivity() {
     private fun cargarDatosPerfil() {
         if (uid == null) return
         db.collection("usuarios").document(uid).get().addOnSuccessListener { doc ->
-            val tecnico = doc.toObject(Usuario::class.java)
-            tecnico?.let {
-                findViewById<TextView>(R.id.txtNombreTecnico).text = it.nombreCompleto
-                findViewById<TextView>(R.id.txtZona).text = it.distritoActivoHoy
-                findViewById<SwitchCompat>(R.id.swDisponible).isChecked = it.disponible
-                misDistritos = it.distritos
-                
-                // Actualizar Stats (Cargar de Firestore según GEMINI.md)
-                actualizarEstadisticas(it)
+            if (doc != null && doc.exists()) {
+                val tecnico = doc.toObject(Usuario::class.java)
+                tecnico?.let {
+                    findViewById<TextView>(R.id.txtNombreTecnico).text = it.nombreCompleto
+                    findViewById<TextView>(R.id.txtZona).text = it.distritoActivoHoy
+                    findViewById<SwitchCompat>(R.id.swDisponible).isChecked = it.disponible
+                    misDistritos = it.distritos
+                    
+                    actualizarEstadisticas(it)
 
-                if (it.fotoPerfil.isNotEmpty()) {
-                    Glide.with(this).load(it.fotoPerfil).circleCrop().into(findViewById<ImageView>(R.id.imgPerfil))
+                    if (it.fotoPerfil.isNotEmpty()) {
+                        Glide.with(this).load(it.fotoPerfil).circleCrop().into(findViewById<ImageView>(R.id.imgPerfil))
+                    }
+
+                    if (it.disponible) activarEscuchaSolicitudes()
                 }
-
-                if (it.disponible) activarEscuchaSolicitudes()
+            } else {
+                Log.e("HOME_TECNICO", "Perfil no encontrado. Cerrando sesión.")
+                forzarCerrarSesion()
             }
         }
     }
 
+    private fun forzarCerrarSesion() {
+        FirebaseAuth.getInstance().signOut()
+        lifecycleScope.launch {
+            val dbLocal = com.chambita.app.data.local.AppDatabase.getDatabase(this@HomeTecnicoActivity)
+            dbLocal.userSessionDao().clearActiveSessions()
+            val intent = Intent(this@HomeTecnicoActivity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
+    }
+
     private fun actualizarEstadisticas(t: Usuario) {
-        // Vinculamos con los IDs del item_estadistica.xml (txtNumero y txtTitulo)
         val vMes = findViewById<View>(R.id.statMes)
         vMes.findViewById<TextView>(R.id.txtNumero).text = t.conteoTrabajos.toString()
         vMes.findViewById<TextView>(R.id.txtTitulo).text = "Este mes"
 
         val vGanado = findViewById<View>(R.id.statGanado)
-        vGanado.findViewById<TextView>(R.id.txtNumero).text = "S/ 0" // Pendiente implementar Pagos
+        vGanado.findViewById<TextView>(R.id.txtNumero).text = "S/ 0"
         vGanado.findViewById<TextView>(R.id.txtTitulo).text = "Ganado"
 
         val vRating = findViewById<View>(R.id.statRating)

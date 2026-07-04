@@ -1,7 +1,19 @@
 <resources>
-    <style name="Theme.Chambita" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- Tema Principal (Para la app interna) -->
+    <style name="Theme.Chambita" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/chambita_primario</item>
-        <item name="colorPrimaryDark">@color/chambita_primario_oscuro</item>
-        <item name="colorAccent">@color/chambita_acento</item>
+        <item name="colorPrimaryVariant">@color/chambita_primario_oscuro</item>
+        <item name="colorOnPrimary">@color/blanco</item>
+        <item name="colorSecondary">@color/chambita_acento</item>
+        <item name="colorSecondaryVariant">@color/chambita_acento_oscuro</item>
+        <item name="colorOnSecondary">@color/blanco</item>
+        <item name="android:statusBarColor">@color/chambita_primario_oscuro</item>
+    </style>
+
+    <!-- TEMA DE EMERGENCIA PARA SPLASH (Ultra-compatible) -->
+    <style name="Theme.Chambita.Splash" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/chambita_primario</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 </resources>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Monto cobrado (S/)"
+        android:textStyle="bold"
+        android:textColor="@color/chambita_primario" />
+
+    <EditText
+        android:id="@+id/etMontoCobrado"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_edittext"
+        android:hint="Ej. 50.00"
+        android:inputType="numberDecimal"
+        android:paddingHorizontal="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Medio de pago recibido"
+        android:textStyle="bold"
+        android:textColor="@color/chambita_primario" />
+
+    <RadioGroup
+        android:id="@+id/rgMetodoPago"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <RadioButton
+            android:id="@+id/rbYape"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Yape"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/rbPlin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Plin" />
+
+        <RadioButton
+            android:id="@+id/rbEfectivo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Efectivo" />
+
+    </RadioGroup>
+
+</LinearLayout>

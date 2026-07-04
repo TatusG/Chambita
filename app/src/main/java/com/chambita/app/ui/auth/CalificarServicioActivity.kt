@@ -9,6 +9,7 @@ import com.chambita.app.models.Resena
 import com.chambita.app.models.Usuario
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 class CalificarServicioActivity : NavActivity() {
@@ -39,7 +40,6 @@ class CalificarServicioActivity : NavActivity() {
     private fun inicializarComponentes() {
         findViewById<LinearLayout>(R.id.btnVolver)?.setOnClickListener { finish() }
 
-        // Lógica de estrellas
         val estrellas = listOf(
             findViewById<ImageButton>(R.id.star1),
             findViewById<ImageButton>(R.id.star2),
@@ -49,21 +49,13 @@ class CalificarServicioActivity : NavActivity() {
         )
 
         estrellas.forEachIndexed { index, star ->
-            star.setOnClickListener {
-                seleccionarEstrellas(index + 1, estrellas)
-            }
+            star.setOnClickListener { seleccionarEstrellas(index + 1, estrellas) }
         }
 
-        // Lógica de recomendación
-        val btnSi = findViewById<LinearLayout>(R.id.btnSi)
-        val btnNo = findViewById<LinearLayout>(R.id.btnNo)
+        findViewById<LinearLayout>(R.id.btnSi).setOnClickListener { seleccionarRecomendacion(true) }
+        findViewById<LinearLayout>(R.id.btnNo).setOnClickListener { seleccionarRecomendacion(false) }
 
-        btnSi.setOnClickListener { seleccionarRecomendacion(true) }
-        btnNo.setOnClickListener { seleccionarRecomendacion(false) }
-
-        findViewById<Button>(R.id.btnEnviarResena)?.setOnClickListener {
-            enviarResena()
-        }
+        findViewById<Button>(R.id.btnEnviarResena).setOnClickListener { enviarResena() }
     }
 
     private fun seleccionarEstrellas(puntaje: Int, lista: List<ImageButton>) {
@@ -75,9 +67,7 @@ class CalificarServicioActivity : NavActivity() {
                 star.setColorFilter(ContextCompat.getColor(this, R.color.chambita_texto_claro))
             }
         }
-        
-        val tvValoracion = findViewById<TextView>(R.id.txtValoracion)
-        tvValoracion.text = when(puntaje) {
+        findViewById<TextView>(R.id.txtValoracion).text = when(puntaje) {
             1 -> "Pésimo"
             2 -> "Regular"
             3 -> "Bueno"
@@ -89,15 +79,12 @@ class CalificarServicioActivity : NavActivity() {
 
     private fun seleccionarRecomendacion(si: Boolean) {
         recomiendaSeleccionado = si
-        val btnSi = findViewById<LinearLayout>(R.id.btnSi)
-        val btnNo = findViewById<LinearLayout>(R.id.btnNo)
-        
         if (si) {
-            btnSi.setBackgroundResource(R.drawable.bg_recomendar_si)
-            btnNo.setBackgroundResource(R.drawable.bg_recomendar_normal)
+            findViewById<LinearLayout>(R.id.btnSi).setBackgroundResource(R.drawable.bg_recomendar_si)
+            findViewById<LinearLayout>(R.id.btnNo).setBackgroundResource(R.drawable.bg_recomendar_normal)
         } else {
-            btnSi.setBackgroundResource(R.drawable.bg_recomendar_normal)
-            btnNo.setBackgroundResource(R.drawable.bg_recomendar_no)
+            findViewById<LinearLayout>(R.id.btnSi).setBackgroundResource(R.drawable.bg_recomendar_normal)
+            findViewById<LinearLayout>(R.id.btnNo).setBackgroundResource(R.drawable.bg_recomendar_no)
         }
     }
 
@@ -107,9 +94,8 @@ class CalificarServicioActivity : NavActivity() {
             tecnico?.let {
                 findViewById<TextView>(R.id.txtNombre).text = it.nombreCompleto
                 findViewById<TextView>(R.id.txtServicio).text = it.especialidad
-                val img = findViewById<ImageView>(R.id.imgTecnico)
                 if (it.fotoPerfil.isNotEmpty()) {
-                    Glide.with(this).load(it.fotoPerfil).circleCrop().into(img)
+                    Glide.with(this).load(it.fotoPerfil).circleCrop().into(findViewById(R.id.imgTecnico))
                 }
             }
         }
@@ -117,34 +103,45 @@ class CalificarServicioActivity : NavActivity() {
 
     private fun enviarResena() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val comentario = findViewById<EditText>(R.id.etComentario)?.text.toString().trim()
-
         if (ratingSeleccionado == 0) {
-            showToast("Por favor, selecciona una calificación")
+            showToast("Selecciona una calificación")
             return
         }
 
         val resena = Resena(
             clienteId = uid,
+            nombreCliente = FirebaseAuth.getInstance().currentUser?.displayName ?: "Cliente",
             calificacion = ratingSeleccionado,
             recomienda = recomiendaSeleccionado,
+            comentario = findViewById<EditText>(R.id.etComentario).text.toString().trim(),
             solicitudId = solicitudId ?: "",
             fechaRegistro = Timestamp.now()
         )
 
-        db.collection("usuarios").document(tecnicoId!!).collection("resenas")
-            .add(resena)
-            .addOnSuccessListener {
-                actualizarEstadoSolicitud()
-            }
-    }
-
-    private fun actualizarEstadoSolicitud() {
-        db.collection("solicitudes").document(solicitudId!!)
-            .update("resenaDejada", true)
-            .addOnSuccessListener {
-                showToast("¡Gracias por tu reseña!")
-                finish()
-            }
+        // Usamos una transaccion para actualizar el promedio de estrellas y numero de reseñas
+        db.runTransaction { transaction ->
+            val tecnicoRef = db.collection("usuarios").document(tecnicoId!!)
+            val snapshot = transaction.get(tecnicoRef)
+            
+            val numActual = snapshot.getLong("numeroResenas") ?: 0L
+            val promActual = snapshot.getDouble("promedioEstrellas") ?: 0.0
+            
+            val nuevoNum = numActual + 1
+            val nuevoProm = ((promActual * numActual) + ratingSeleccionado) / nuevoNum
+            
+            transaction.update(tecnicoRef, "numeroResenas", nuevoNum)
+            transaction.update(tecnicoRef, "promedioEstrellas", nuevoProm)
+            
+            val resenaRef = tecnicoRef.collection("resenas").document()
+            transaction.set(resenaRef, resena)
+            
+            val solicitudRef = db.collection("solicitudes").document(solicitudId!!)
+            transaction.update(solicitudRef, "resenaDejada", true)
+        }.addOnSuccessListener {
+            showToast("¡Gracias por tu reseña!")
+            finish()
+        }.addOnFailureListener { e ->
+            showToast("Error al enviar: ${e.message}")
+        }
     }
 }

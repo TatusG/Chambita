@@ -119,7 +119,7 @@ class RegisterActivity : AppCompatActivity() {
         val colorTextoPrincipal = getColor(R.color.chambita_texto_principal)
 
         if (rol == "cliente") {
-            btnCliente.setBackgroundResource(R.drawable.bg_button_figma_blue)
+            btnCliente.setBackgroundResource(R.drawable.bg_button_primary)
             btnCliente.setTextColor(colorBlanco)
             btnCliente.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_person, 0, 0, 0)
             TextViewCompat.setCompoundDrawableTintList(btnCliente, android.content.res.ColorStateList.valueOf(colorBlanco))
@@ -129,7 +129,7 @@ class RegisterActivity : AppCompatActivity() {
             btnTecnico.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_tools, 0, 0, 0)
             TextViewCompat.setCompoundDrawableTintList(btnTecnico, android.content.res.ColorStateList.valueOf(colorTextoPrincipal))
         } else {
-            btnTecnico.setBackgroundResource(R.drawable.bg_button_figma_blue)
+            btnTecnico.setBackgroundResource(R.drawable.bg_button_primary)
             btnTecnico.setTextColor(colorBlanco)
             btnTecnico.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_tools, 0, 0, 0)
             TextViewCompat.setCompoundDrawableTintList(btnTecnico, android.content.res.ColorStateList.valueOf(colorBlanco))

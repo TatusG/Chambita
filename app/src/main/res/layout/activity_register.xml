@@ -14,14 +14,12 @@
         android:paddingTop="40dp"
         android:paddingBottom="40dp">
 
-        <!-- Logo Header -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-
             <ImageView
                 android:layout_width="36dp"
                 android:layout_height="36dp"
@@ -29,7 +27,6 @@
                 android:padding="8dp"
                 android:src="@drawable/ic_tools"
                 app:tint="@color/blanco" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -40,7 +37,6 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Título -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -57,7 +53,6 @@
             android:textColor="@color/chambita_texto_secundario"
             android:textSize="14sp" />
 
-        <!-- Nombre -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -73,12 +68,9 @@
             android:layout_height="52dp"
             android:layout_marginBottom="18dp"
             android:background="@drawable/bg_edittext"
-            android:hint="Tu nombre completo"
-            android:inputType="textPersonName"
             android:paddingHorizontal="16dp"
             android:textSize="15sp" />
 
-        <!-- DNI -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -94,13 +86,11 @@
             android:layout_height="52dp"
             android:layout_marginBottom="18dp"
             android:background="@drawable/bg_edittext"
-            android:hint="12345678"
             android:inputType="number"
             android:maxLength="8"
             android:paddingHorizontal="16dp"
             android:textSize="15sp" />
 
-        <!-- Correo -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -116,12 +106,10 @@
             android:layout_height="52dp"
             android:layout_marginBottom="18dp"
             android:background="@drawable/bg_edittext"
-            android:hint="correo@ejemplo.com"
             android:inputType="textEmailAddress"
             android:paddingHorizontal="16dp"
             android:textSize="15sp" />
 
-        <!-- Teléfono -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -139,13 +127,11 @@
             android:background="@drawable/bg_edittext"
             android:drawableStart="@drawable/ic_phone"
             android:drawablePadding="12dp"
-            android:hint="+51 999 999 999"
             android:inputType="phone"
             android:paddingHorizontal="16dp"
             android:textSize="15sp"
             app:drawableTint="@color/chambita_texto_secundario" />
 
-        <!-- Contraseña -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -162,13 +148,11 @@
             android:layout_marginBottom="18dp"
             android:background="@drawable/bg_edittext"
             android:drawableEnd="@drawable/ic_visibility_off"
-            android:hint="********"
             android:inputType="textPassword"
             android:paddingHorizontal="16dp"
             android:textSize="15sp"
             app:drawableTint="@color/chambita_texto_secundario" />
 
-        <!-- Confirmar Contraseña -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -185,13 +169,11 @@
             android:layout_marginBottom="24dp"
             android:background="@drawable/bg_edittext"
             android:drawableEnd="@drawable/ic_visibility_off"
-            android:hint="********"
             android:inputType="textPassword"
             android:paddingHorizontal="16dp"
             android:textSize="15sp"
             app:drawableTint="@color/chambita_texto_secundario" />
 
-        <!-- Selector de rol -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -214,10 +196,9 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/bg_button_figma_blue"
+                android:background="@drawable/bg_button_primary"
                 android:drawableStart="@drawable/ic_person"
                 android:paddingStart="20dp"
-                app:drawableTint="@color/blanco"
                 android:text="Cliente"
                 android:textAllCaps="false"
                 android:textColor="@color/blanco"
@@ -232,29 +213,24 @@
                 android:background="@android:color/transparent"
                 android:drawableStart="@drawable/ic_tools"
                 android:paddingStart="20dp"
-                app:drawableTint="@color/chambita_texto_principal"
                 android:text="Técnico"
                 android:textAllCaps="false"
                 android:textColor="@color/chambita_texto_principal"
                 android:textSize="14sp"
                 android:textStyle="bold" />
-
         </LinearLayout>
 
-        <!-- Botón crear cuenta -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCrearCuenta"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="60dp"
             android:layout_marginBottom="24dp"
-            android:background="@drawable/bg_button_figma_blue"
-            android:drawableEnd="@drawable/ic_arrow_forward"
-            android:paddingHorizontal="24dp"
-            app:drawableTint="@color/blanco"
-            android:text="CREAR CUENTA"
+            android:text="CREAR CUENTA →"
             android:textColor="@color/blanco"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:backgroundTint="@color/figma_blue" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -264,7 +240,6 @@
             android:layout_marginBottom="16dp"
             android:visibility="gone" />
 
-        <!-- Link login -->
         <TextView
             android:id="@+id/tvIniciarSesion"
             android:layout_width="wrap_content"
@@ -274,7 +249,5 @@
             android:text="¿Ya tienes cuenta? Inicia sesión"
             android:textColor="@color/chambita_acento"
             android:textSize="14sp" />
-
     </LinearLayout>
-
 </ScrollView>

@@ -83,4 +83,5 @@
     <string name="cd_adjuntar">Adjuntar archivo</string>
     <string name="cd_ubicacion">Enviar ubicación</string>
     <string name="cd_enviar_mensaje">Enviar mensaje</string>
+    <string name="address_format">%1$s, %2$s</string>
 </resources>

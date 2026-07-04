@@ -3,8 +3,9 @@ package com.chambita.app.ui.auth
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.chambita.app.R
 import com.chambita.app.models.Direccion
@@ -21,24 +22,55 @@ class DireccionAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = list[position]
-        holder.tvAlias.text = item.alias
-        holder.tvDireccion.text = "${item.direccion}, ${item.distrito}"
-        holder.tvBadge.visibility = if (item.esPrincipal) View.VISIBLE else View.GONE
+        holder.txtAlias.text = item.alias
         
-        holder.btnEdit.setOnClickListener { onEdit(item) }
+        // Uso de recurso de cadena con marcadores de posición para buenas prácticas
+        holder.txtDireccion.text = holder.itemView.context.getString(
+            R.string.address_format,
+            item.direccion,
+            item.distrito
+        )
+        
+        holder.txtPrincipal.visibility = if (item.esPrincipal) View.VISIBLE else View.GONE
+        
+        // Cambiar ícono según el alias
+        val iconRes = when (item.alias.lowercase()) {
+            "casa" -> R.drawable.ic_home
+            "trabajo" -> R.drawable.ic_pin
+            else -> R.drawable.ic_location
+        }
+        holder.imgIcono.setImageResource(iconRes)
+
+        holder.btnEditar.setOnClickListener { onEdit(item) }
     }
 
     override fun getItemCount() = list.size
 
+    // Uso de DiffUtil para actualizaciones eficientes (Buenas prácticas)
     fun updateList(newList: List<Direccion>) {
-        list = newList
-        notifyDataSetChanged()
+        val diffCallback = DireccionDiffCallback(this.list, newList)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        this.list = newList
+        diffResult.dispatchUpdatesTo(this)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvAlias: TextView = view.findViewById(R.id.tvAlias)
-        val tvDireccion: TextView = view.findViewById(R.id.tvDireccion)
-        val tvBadge: TextView = view.findViewById(R.id.tvBadgePrincipal)
-        val btnEdit: ImageButton = view.findViewById(R.id.btnEditar)
+        val txtAlias: TextView = view.findViewById(R.id.txtAlias)
+        val txtDireccion: TextView = view.findViewById(R.id.txtDireccion)
+        val txtPrincipal: TextView = view.findViewById(R.id.txtPrincipal)
+        val btnEditar: TextView = view.findViewById(R.id.btnEditar)
+        val imgIcono: ImageView = view.findViewById(R.id.imgIcono)
+    }
+
+    class DireccionDiffCallback(
+        private val oldList: List<Direccion>,
+        private val newList: List<Direccion>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize() = oldList.size
+        override fun getNewListSize() = newList.size
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            oldList[oldItemPosition].id == newList[newItemPosition].id
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+            oldList[oldItemPosition] == newList[newItemPosition]
     }
 }

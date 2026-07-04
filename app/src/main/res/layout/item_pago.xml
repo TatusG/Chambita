@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp">
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,48 +15,44 @@
         android:padding="16dp">
 
         <ImageView
-            android:id="@+id/imgMetodoIcon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:id="@+id/imgPagoIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/ic_payment" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="14dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/txtMetodoTipo"
+                android:id="@+id/txtPagoMetodo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Yape"
                 android:textColor="@color/chambita_texto_principal"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/txtMetodoNumero"
+                android:id="@+id/txtPagoFecha"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="999 999 999"
+                android:text="28 Jun, 2026"
                 android:textColor="@color/chambita_texto_secundario"
-                android:textSize="14sp" />
+                android:textSize="13sp" />
         </LinearLayout>
 
         <TextView
-            android:id="@+id/txtMetodoDefault"
+            android:id="@+id/txtPagoMonto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_nav_active"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
-            android:text="PRINCIPAL"
-            android:textColor="@color/blanco"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:visibility="gone" />
+            android:text="S/ 50.00"
+            android:textColor="@color/chambita_primario"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

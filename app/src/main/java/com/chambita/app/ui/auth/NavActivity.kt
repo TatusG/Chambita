@@ -20,30 +20,34 @@ abstract class NavActivity : AppCompatActivity() {
             findViewById<LinearLayout>(R.id.navInicio)?.setOnClickListener {
                 val targetActivity = if (rol == "tecnico") HomeTecnicoActivity::class.java else HomeClienteActivity::class.java
                 if (this@NavActivity.javaClass != targetActivity) {
-                    startActivity(Intent(this@NavActivity, targetActivity))
-                    finish()
+                    val intent = Intent(this@NavActivity, targetActivity)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
                 }
             }
 
             findViewById<LinearLayout>(R.id.navPerfil)?.setOnClickListener {
                 val targetActivity = if (rol == "tecnico") PerfilTecnicoActivity::class.java else PerfilClienteActivity::class.java
                 if (this@NavActivity.javaClass != targetActivity) {
-                    startActivity(Intent(this@NavActivity, targetActivity))
-                    finish()
+                    val intent = Intent(this@NavActivity, targetActivity)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
                 }
             }
 
             findViewById<LinearLayout>(R.id.navTrabajos)?.setOnClickListener {
                 if (this@NavActivity.javaClass != MisSolicitudesActivity::class.java) {
-                    startActivity(Intent(this@NavActivity, MisSolicitudesActivity::class.java))
-                    finish()
+                    val intent = Intent(this@NavActivity, MisSolicitudesActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
                 }
             }
 
             findViewById<LinearLayout>(R.id.navMensajes)?.setOnClickListener {
                 if (this@NavActivity.javaClass != MensajesActivity::class.java) {
-                    startActivity(Intent(this@NavActivity, MensajesActivity::class.java))
-                    finish()
+                    val intent = Intent(this@NavActivity, MensajesActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                    startActivity(intent)
                 }
             }
         }

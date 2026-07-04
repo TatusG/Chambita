@@ -2,39 +2,56 @@ package com.chambita.app.ui.auth
 
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.chambita.app.R
+import com.chambita.app.models.Pago
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import java.util.Locale
 
 class HistorialPagosActivity : NavActivity() {
+
+    private lateinit var adapter: PagoAdapter
+    private val db = FirebaseFirestore.getInstance()
+    private val uid = FirebaseAuth.getInstance().currentUser?.uid
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_historial_pagos)
 
         barraNavegacion()
-
-        findViewById<View>(R.id.btnVolver)?.setOnClickListener { finish() }
-
+        inicializarComponentes()
         cargarHistorialPagos()
     }
 
-    private fun cargarHistorialPagos() {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val db = FirebaseFirestore.getInstance()
+    private fun inicializarComponentes() {
+        findViewById<View>(R.id.btnVolver)?.setOnClickListener { finish() }
 
-        // Siguiendo tu especificación: Colección pagos filtrada por clienteId
+        val rv = findViewById<RecyclerView>(R.id.rvHistorialPagos)
+        adapter = PagoAdapter(emptyList())
+        rv.layoutManager = LinearLayoutManager(this)
+        rv.adapter = adapter
+    }
+
+    private fun cargarHistorialPagos() {
+        if (uid == null) return
+
         db.collection("pagos")
-            .whereEqualTo("clientId", uid) // Nota: Revisa si es clientId o clienteId en tu base de datos real
+            .whereEqualTo("clienteId", uid)
             .orderBy("fechaRegistro", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
-                if (result.isEmpty) {
-                    // Si tienes un layout de "vacío", lo muestras aquí
-                    showToast("No tienes historial de pagos")
-                }
+                val lista = result.toObjects(Pago::class.java)
+                adapter.updateList(lista)
+                
+                var total = 0.0
+                lista.forEach { total += it.monto }
+                findViewById<TextView>(R.id.tvTotalGastado)?.text = String.format(Locale.US, "S/ %.2f", total)
+                
+                findViewById<TextView>(R.id.tvResumenMes)?.text = "${lista.size} servicios • Total"
             }
             .addOnFailureListener { e ->
                 showToast("Error al cargar pagos: ${e.message}")

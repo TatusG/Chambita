@@ -6,6 +6,7 @@ data class Mensaje(
     val id: String = "",
     val remitenteId: String = "",
     val texto: String = "",
+    val tipo: String = "texto", // "texto" o "imagen"
     val leido: Boolean = false,
     val fechaRegistro: Timestamp? = null
 )

@@ -20,61 +20,72 @@ import java.util.*
 
 class EditarPerfilActivity : NavActivity() {
 
+    private val TAG = "EDIT_PERFIL_CLIENTE"
     private val db = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
     private val uid = FirebaseAuth.getInstance().currentUser?.uid
 
-    private lateinit var etNombre: EditText
-    private lateinit var etDni: EditText
-    private lateinit var etCorreo: EditText
-    private lateinit var etTelefono: EditText
-    private lateinit var etFechaNacimiento: EditText
-    private lateinit var spDistrito: Spinner
-    private lateinit var btnGuardar: Button
-    private lateinit var imgPerfil: ImageView
-    private lateinit var tvAvatar: TextView
-    private lateinit var tvCambiarFoto: TextView
+    private var etNombre: EditText? = null
+    private var etDni: EditText? = null
+    private var etCorreo: EditText? = null
+    private var etTelefono: EditText? = null
+    private var etFechaNacimiento: EditText? = null
+    private var spDistrito: Spinner? = null
+    private var btnGuardar: Button? = null
+    private var imgPerfil: ImageView? = null
+    private var tvAvatar: TextView? = null
+    private var tvCambiarFoto: TextView? = null
 
     private var selectedImageUri: Uri? = null
 
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             selectedImageUri = result.data?.data
-            if (selectedImageUri != null) {
-                imgPerfil.visibility = View.VISIBLE
-                Glide.with(this).load(selectedImageUri).circleCrop().into(imgPerfil)
+            if (selectedImageUri != null && imgPerfil != null) {
+                imgPerfil?.visibility = View.VISIBLE
+                Glide.with(this).load(selectedImageUri).circleCrop().into(imgPerfil!!)
             }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_editar_perfil)
+        try {
+            Log.d(TAG, "Iniciando onCreate")
+            setContentView(R.layout.activity_editar_perfil)
 
-        inicializarComponentes()
-        configurarDistritos()
-        cargarDatosActuales()
+            barraNavegacion()
+            inicializarComponentes()
+            configurarDistritos()
+            cargarDatosActuales()
 
-        findViewById<LinearLayout>(R.id.btnVolver)?.setOnClickListener { finish() }
+            findViewById<View>(R.id.btnVolver)?.setOnClickListener { finish() }
 
-        etFechaNacimiento.setOnClickListener { mostrarSelectorFecha(etFechaNacimiento) }
+            etFechaNacimiento?.setOnClickListener { mostrarSelectorFecha(it as EditText) }
 
-        tvCambiarFoto.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            pickImageLauncher.launch(intent)
-        }
-
-        btnGuardar.setOnClickListener {
-            if (selectedImageUri != null) {
-                subirImagenYGuardar()
-            } else {
-                guardarCambios(null)
+            tvCambiarFoto?.setOnClickListener {
+                val intent = Intent(Intent.ACTION_PICK)
+                intent.type = "image/*"
+                pickImageLauncher.launch(intent)
             }
+
+            btnGuardar?.setOnClickListener {
+                if (selectedImageUri != null) {
+                    subirImagenYGuardar()
+                } else {
+                    guardarCambios(null)
+                }
+            }
+            Log.d(TAG, "onCreate completado con éxito")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fatal en onCreate: ${e.message}", e)
+            showToast("Error al abrir edición de perfil")
+            finish()
         }
     }
 
     private fun inicializarComponentes() {
+        Log.d(TAG, "Inicializando componentes UI")
         etNombre = findViewById(R.id.etNombre)
         etDni = findViewById(R.id.etDni)
         etCorreo = findViewById(R.id.etCorreo)
@@ -85,63 +96,76 @@ class EditarPerfilActivity : NavActivity() {
         imgPerfil = findViewById(R.id.imgPerfil)
         tvAvatar = findViewById(R.id.tvAvatar)
         tvCambiarFoto = findViewById(R.id.tvCambiarFoto)
+
+        if (btnGuardar == null) Log.e(TAG, "ERROR: btnGuardar no encontrado en el layout")
     }
 
     private fun configurarDistritos() {
+        Log.d(TAG, "Configurando spinner de distritos")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, Distritos.listaLimaCallao)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spDistrito.adapter = adapter
+        spDistrito?.adapter = adapter
     }
 
     private fun cargarDatosActuales() {
-        if (uid == null) return
+        if (uid == null) {
+            Log.e(TAG, "UID es nulo, no se pueden cargar datos")
+            return
+        }
+
+        Log.d(TAG, "Cargando datos desde Firestore para UID: $uid")
         db.collection("usuarios").document(uid).get()
             .addOnSuccessListener { doc ->
-                if (doc.exists()) {
-                    val nombre = doc.getString("nombreCompleto") ?: ""
-                    etNombre.setText(nombre)
-                    etDni.setText(doc.getString("dni") ?: "")
-                    etCorreo.setText(doc.getString("correo") ?: "")
-                    etTelefono.setText(doc.getString("telefono") ?: "")
-                    
-                    tvAvatar.text = if (nombre.isNotEmpty()) nombre.take(1).uppercase() else ""
+                try {
+                    if (doc.exists()) {
+                        val nombre = doc.getString("nombreCompleto") ?: ""
+                        etNombre?.setText(nombre)
+                        etDni?.setText(doc.getString("dni") ?: "")
+                        etCorreo?.setText(doc.getString("correo") ?: "")
+                        etTelefono?.setText(doc.getString("telefono") ?: "")
+                        
+                        tvAvatar?.text = if (nombre.isNotEmpty()) nombre.take(1).uppercase() else ""
 
-                    val fotoUrl = doc.getString("fotoPerfil")
-                    if (!fotoUrl.isNullOrEmpty()) {
-                        imgPerfil.visibility = View.VISIBLE
-                        Glide.with(this).load(fotoUrl).circleCrop().into(imgPerfil)
-                    }
+                        val fotoUrl = doc.getString("fotoPerfil")
+                        if (!fotoUrl.isNullOrEmpty() && imgPerfil != null) {
+                            imgPerfil?.visibility = View.VISIBLE
+                            Glide.with(this).load(fotoUrl).circleCrop().into(imgPerfil!!)
+                        }
 
-                    val distrito = doc.getString("distritoResidencia") ?: ""
-                    val index = Distritos.listaLimaCallao.indexOf(distrito)
-                    if (index >= 0) spDistrito.setSelection(index)
+                        val distrito = doc.getString("distritoResidencia") ?: ""
+                        val index = Distritos.listaLimaCallao.indexOf(distrito)
+                        if (index >= 0) spDistrito?.setSelection(index)
 
-                    try {
                         val timestamp = doc.getTimestamp("fechaNacimiento")
                         if (timestamp != null) {
                             val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                            etFechaNacimiento.setText(sdf.format(timestamp.toDate()))
+                            etFechaNacimiento?.setText(sdf.format(timestamp.toDate()))
                         }
-                    } catch (e: Exception) {
-                        Log.e("EditarPerfil", "Error al leer fecha: ${e.message}")
                     }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error procesando datos: ${e.message}")
                 }
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error de red al cargar perfil: ${e.message}")
             }
     }
 
     private fun subirImagenYGuardar() {
         if (uid == null || selectedImageUri == null) return
 
-        btnGuardar.isEnabled = false
+        btnGuardar?.isEnabled = false
+        Log.d(TAG, "Subiendo imagen a Storage...")
         val ref = storage.reference.child("perfiles/$uid.jpg")
         ref.putFile(selectedImageUri!!)
             .addOnSuccessListener {
                 ref.downloadUrl.addOnSuccessListener { uri ->
+                    Log.d(TAG, "Imagen subida. URL: $uri")
                     guardarCambios(uri.toString())
                 }
             }
             .addOnFailureListener {
-                btnGuardar.isEnabled = true
+                btnGuardar?.isEnabled = true
                 showToast("Error al subir imagen: ${it.message}")
             }
     }
@@ -149,39 +173,47 @@ class EditarPerfilActivity : NavActivity() {
     private fun guardarCambios(nuevaFotoUrl: String?) {
         if (uid == null) return
 
-        val nombre = etNombre.text.toString().trim()
-        val dni = etDni.text.toString().trim()
-        val correo = etCorreo.text.toString().trim()
-        val tel = etTelefono.text.toString().trim()
-        val fechaTexto = etFechaNacimiento.text.toString().trim()
-        val distrito = spDistrito.selectedItem.toString()
+        try {
+            val nombre = etNombre?.text.toString().trim()
+            val dni = etDni?.text.toString().trim()
+            val correo = etCorreo?.text.toString().trim()
+            val tel = etTelefono?.text.toString().trim()
+            val fechaTexto = etFechaNacimiento?.text.toString().trim()
+            val distrito = spDistrito?.selectedItem?.toString() ?: ""
 
-        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val fechaDate = try { sdf.parse(fechaTexto) } catch (e: Exception) { null }
+            Log.d(TAG, "Guardando cambios: $nombre en $distrito")
 
-        val actualizaciones = mutableMapOf<String, Any>(
-            "nombreCompleto" to nombre,
-            "dni" to dni,
-            "correo" to correo,
-            "telefono" to tel,
-            "distritoResidencia" to distrito,
-            "fechaNacimiento" to (fechaDate?.let { Timestamp(it) } ?: Timestamp.now())
-        )
+            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val fechaDate = try { sdf.parse(fechaTexto) } catch (e: Exception) { null }
 
-        if (nuevaFotoUrl != null) {
-            actualizaciones["fotoPerfil"] = nuevaFotoUrl
+            val actualizaciones = mutableMapOf<String, Any>(
+                "nombreCompleto" to nombre,
+                "dni" to dni,
+                "correo" to correo,
+                "telefono" to tel,
+                "distritoResidencia" to distrito,
+                "fechaNacimiento" to (fechaDate?.let { Timestamp(it) } ?: Timestamp.now())
+            )
+
+            if (nuevaFotoUrl != null) {
+                actualizaciones["fotoPerfil"] = nuevaFotoUrl
+            }
+
+            btnGuardar?.isEnabled = false
+            db.collection("usuarios").document(uid).update(actualizaciones)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Actualización exitosa en Firestore")
+                    showToast("Perfil actualizado correctamente")
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    btnGuardar?.isEnabled = true
+                    Log.e(TAG, "Error al actualizar: ${e.message}")
+                    showToast("Error al actualizar: ${e.message}")
+                }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error en lógica de guardado: ${e.message}")
         }
-
-        btnGuardar.isEnabled = false
-        db.collection("usuarios").document(uid).update(actualizaciones)
-            .addOnSuccessListener {
-                showToast("Perfil actualizado correctamente")
-                finish()
-            }
-            .addOnFailureListener { e ->
-                btnGuardar.isEnabled = true
-                showToast("Error al actualizar: ${e.message}")
-            }
     }
 
     private fun mostrarSelectorFecha(editText: EditText) {

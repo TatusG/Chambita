@@ -23,4 +23,10 @@ class SplashViewModel(private val repository: AuthRepository) : ViewModel() {
             _isReady.value = true
         }
     }
+
+    fun clearLocalSession() {
+        viewModelScope.launch {
+            repository.logout()
+        }
+    }
 }

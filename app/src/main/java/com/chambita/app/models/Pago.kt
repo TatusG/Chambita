@@ -8,7 +8,7 @@ data class Pago(
     val tecnicoId: String = "",
     val solicitudId: String = "",
     val monto: Double = 0.0,
-    val metodoUsado: String = "", // e.g., "tarjeta", "yape", "plin"
-    val estado: String = "pendiente", // e.g., "exitoso", "fallido"
+    val metodoUsado: String = "",
+    val estado: String = "exitoso", // exitoso, pendiente, fallido
     val fechaRegistro: Timestamp? = null
 )

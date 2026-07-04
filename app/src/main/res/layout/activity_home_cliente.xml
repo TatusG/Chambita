@@ -167,11 +167,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="48dp"
                             android:background="@drawable/bg_chip_selected"
+                            app:backgroundTint="@null"
                             android:paddingStart="24dp"
                             android:paddingEnd="24dp"
                             android:text="Todos"
                             android:textAllCaps="false"
-                            android:textColor="@color/blanco" />
+                            android:textColor="@color/blanco"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
 
                         <Button
                             android:id="@+id/btnCategoria1"
@@ -179,13 +182,15 @@
                             android:layout_height="48dp"
                             android:layout_marginStart="12dp"
                             android:background="@drawable/bg_chip_unselected"
+                            app:backgroundTint="@null"
                             android:paddingStart="20dp"
                             android:paddingEnd="20dp"
                             android:drawableStart="@drawable/ic_bolt"
                             android:drawablePadding="8dp"
                             android:text="Electr."
                             android:textAllCaps="false"
-                            android:textColor="@color/chambita_texto_principal" />
+                            android:textColor="@color/chambita_texto_principal"
+                            android:textSize="14sp" />
 
                         <Button
                             android:id="@+id/btnCategoria2"
@@ -193,14 +198,15 @@
                             android:layout_height="48dp"
                             android:layout_marginStart="12dp"
                             android:background="@drawable/bg_chip_unselected"
+                            app:backgroundTint="@null"
                             android:paddingStart="20dp"
                             android:paddingEnd="20dp"
                             android:drawableStart="@drawable/ic_tools"
                             android:drawablePadding="8dp"
                             android:text="Gasfiter"
                             android:textAllCaps="false"
-                            android:textColor="@color/chambita_texto_principal" />
-
+                            android:textColor="@color/chambita_texto_principal"
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </HorizontalScrollView>
 

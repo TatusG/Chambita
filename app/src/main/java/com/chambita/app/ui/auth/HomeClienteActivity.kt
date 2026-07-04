@@ -39,22 +39,29 @@ class HomeClienteActivity : NavActivity() {
     private var clienteDistrito: String = "Ventanilla" // Distrito por defecto
     private lateinit var drawerLayout: DrawerLayout
 
+    // ── Chips ─────────────────────────────────────────
+    private lateinit var btnTodos: Button
+    private lateinit var btnCategoria1: Button
+    private lateinit var btnCategoria2: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_cliente)
 
-        // Activar navegación inferior de NavActivity
         barraNavegacion()
-
         inicializarComponentes()
         configurarMenuLateral()
         cargarDatosCabecera()
+        configurarChips()
     }
 
     private fun inicializarComponentes() {
         drawerLayout = findViewById(R.id.drawerLayout)
         
-        // Inicializar RecyclerView de técnicos
+        btnTodos      = findViewById(R.id.btnTodos)
+        btnCategoria1 = findViewById(R.id.btnCategoria1)
+        btnCategoria2 = findViewById(R.id.btnCategoria2)
+
         val rvTecnicos = findViewById<RecyclerView>(R.id.rvTecnicos)
         tecnicoAdapter = TecnicoAdapter(emptyList()) { tecnico ->
             val intent = Intent(this, VistaClientePerfilTecnicoActivity::class.java).apply {
@@ -65,12 +72,6 @@ class HomeClienteActivity : NavActivity() {
         rvTecnicos?.layoutManager = LinearLayoutManager(this)
         rvTecnicos?.adapter = tecnicoAdapter
 
-        // Configurar botones de categorías
-        findViewById<Button>(R.id.btnTodos)?.setOnClickListener { buscarTecnicos(null) }
-        findViewById<Button>(R.id.btnCategoria1)?.setOnClickListener { buscarTecnicos("Electricista") }
-        findViewById<Button>(R.id.btnCategoria2)?.setOnClickListener { buscarTecnicos("Gasfitero") }
-
-        // Configurar búsqueda reactiva
         val etBuscar = findViewById<EditText>(R.id.etBuscar)
         etBuscar?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -85,7 +86,6 @@ class HomeClienteActivity : NavActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        // Configurar cabecera y perfil
         findViewById<ImageButton>(R.id.btnMenu)?.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
@@ -94,7 +94,6 @@ class HomeClienteActivity : NavActivity() {
             showToast("No tienes notificaciones nuevas")
         }
 
-        // Clic en el área del avatar abre el perfil
         findViewById<View>(R.id.layoutAvatar)?.setOnClickListener {
             startActivity(Intent(this, PerfilClienteActivity::class.java))
         }
@@ -156,27 +155,31 @@ class HomeClienteActivity : NavActivity() {
                         primerNombre.take(2)
                     }.uppercase()
                     
-                    // Actualizar UI del Home
                     findViewById<TextView>(R.id.tvAvatarInitials)?.text = iniciales
                     val imgPerfil = findViewById<ImageView>(R.id.imgPerfil)
                     
-                    // Actualizar Header del Drawer
                     val navView = findViewById<NavigationView>(R.id.navigationView)
-                    val headerView = navView.getHeaderView(0)
-                    headerView.findViewById<TextView>(R.id.tvNavHeaderNombre).text = nombreCompleto
-                    headerView.findViewById<TextView>(R.id.tvNavHeaderCorreo).text = correo
-                    headerView.findViewById<TextView>(R.id.tvNavHeaderInitials).text = iniciales
-                    val imgNavHeader = headerView.findViewById<ImageView>(R.id.imgNavHeaderPerfil)
+                    val headerView = if (navView.headerCount > 0) navView.getHeaderView(0) else null
+                    
+                    headerView?.let { header ->
+                        header.findViewById<TextView>(R.id.tvNavHeaderNombre).text = nombreCompleto
+                        header.findViewById<TextView>(R.id.tvNavHeaderCorreo).text = correo
+                        header.findViewById<TextView>(R.id.tvNavHeaderInitials).text = iniciales
+                        val imgNavHeader = header.findViewById<ImageView>(R.id.imgNavHeaderPerfil)
 
-                    if (fotoPerfil.isNotEmpty()) {
+                        if (fotoPerfil.isNotEmpty()) {
+                            Glide.with(this).load(fotoPerfil).circleCrop().into(imgNavHeader)
+                            imgNavHeader.visibility = View.VISIBLE
+                        } else {
+                            imgNavHeader.visibility = View.GONE
+                        }
+                    }
+
+                    if (fotoPerfil.isNotEmpty() && imgPerfil != null) {
                         Glide.with(this).load(fotoPerfil).circleCrop().into(imgPerfil)
                         imgPerfil.visibility = View.VISIBLE
-                        
-                        Glide.with(this).load(fotoPerfil).circleCrop().into(imgNavHeader)
-                        imgNavHeader.visibility = View.VISIBLE
                     } else {
-                        imgPerfil.visibility = View.GONE
-                        imgNavHeader.visibility = View.GONE
+                        imgPerfil?.visibility = View.GONE
                     }
 
                     clienteDistrito = document.getString("distritoResidencia") ?: "Ventanilla"
@@ -184,8 +187,23 @@ class HomeClienteActivity : NavActivity() {
                     
                     cargarMapaEstatico(clienteDistrito)
                     buscarTecnicos(null)
+                } else {
+                    Log.e("HOME", "Perfil no encontrado en Firestore. Cerrando sesión.")
+                    forzarCerrarSesion()
                 }
             }
+    }
+
+    private fun forzarCerrarSesion() {
+        FirebaseAuth.getInstance().signOut()
+        lifecycleScope.launch {
+            val dbLocal = com.chambita.app.data.local.AppDatabase.getDatabase(this@HomeClienteActivity)
+            dbLocal.userSessionDao().clearActiveSessions()
+            val intent = Intent(this@HomeClienteActivity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
     }
 
     private fun buscarTecnicos(especialidad: String?) {
@@ -265,6 +283,36 @@ class HomeClienteActivity : NavActivity() {
             }
         }
     }
+
+    private fun configurarChips() {
+        seleccionarChip(btnTodos)
+
+        btnTodos.setOnClickListener {
+            seleccionarChip(btnTodos)
+            buscarTecnicos(null)
+        }
+        btnCategoria1.setOnClickListener {
+            seleccionarChip(btnCategoria1)
+            buscarTecnicos("Electricista")
+        }
+        btnCategoria2.setOnClickListener {
+            seleccionarChip(btnCategoria2)
+            buscarTecnicos("Gasfitero")
+        }
+    }
+
+    private fun seleccionarChip(seleccionado: Button) {
+        listOf(btnTodos, btnCategoria1, btnCategoria2).forEach { chip ->
+            if (chip == seleccionado) {
+                chip.setBackgroundResource(R.drawable.bg_chip_selected)
+                chip.setTextColor(getColor(R.color.blanco))
+            } else {
+                chip.setBackgroundResource(R.drawable.bg_chip_unselected)
+                chip.setTextColor(getColor(R.color.chambita_texto_principal))
+            }
+        }
+    }
+
 
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {

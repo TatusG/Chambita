@@ -1,7 +1,6 @@
 package com.chambita.app.ui.auth
 
 import android.content.Intent
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +10,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +24,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.storage.FirebaseStorage
+import java.util.*
 
 class ChatActivity : AppCompatActivity() {
 
@@ -31,11 +33,16 @@ class ChatActivity : AppCompatActivity() {
     private var contactoId: String? = null
     private var chatId: String? = null
     private val db = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance()
     private val currentUid = FirebaseAuth.getInstance().currentUser?.uid
     
     private lateinit var adapter: ChatAdapter
     private var mensajesListener: ListenerRegistration? = null
     private var miRol: String = "cliente"
+
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let { subirImagenYEnviar(it) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,13 +50,14 @@ class ChatActivity : AppCompatActivity() {
 
         contactoId = intent.getStringExtra("contactoId") ?: intent.getStringExtra("tecnicoId")
         
-        if (contactoId == null) {
-            Toast.makeText(this, "Error: Contacto no encontrado", Toast.LENGTH_SHORT).show()
+        if (contactoId == null || currentUid == null) {
+            Toast.makeText(this, "Error: Datos de chat incompletos", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
         chatId = intent.getStringExtra("chatId") ?: generarChatId()
+        Log.d(TAG, "Chat ID generado: $chatId")
 
         inicializarComponentes()
         obtenerMiRol()
@@ -84,9 +92,13 @@ class ChatActivity : AppCompatActivity() {
             val et = findViewById<EditText>(R.id.etMensaje)
             val texto = et.text.toString().trim()
             if (texto.isNotEmpty()) {
-                enviarMensaje(texto)
+                enviarMensaje(texto, "texto")
                 et.setText("")
             }
+        }
+
+        findViewById<ImageButton>(R.id.btnAdjuntar).setOnClickListener {
+            pickImageLauncher.launch("image/*")
         }
     }
 
@@ -107,6 +119,9 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun escucharMensajes() {
+        if (chatId == null) return
+        
+        Log.d(TAG, "Iniciando escucha de mensajes para chat: $chatId")
         mensajesListener = db.collection("chats").document(chatId!!)
             .collection("mensajes")
             .orderBy("fechaRegistro", Query.Direction.ASCENDING)
@@ -117,37 +132,38 @@ class ChatActivity : AppCompatActivity() {
                 }
 
                 val lista = snapshot?.toObjects(Mensaje::class.java) ?: emptyList()
-                Log.d(TAG, "Mensajes recibidos: ${lista.size}")
+                Log.d(TAG, "Mensajes actualizados: ${lista.size}")
                 adapter.updateList(lista)
                 if (lista.isNotEmpty()) {
-                    findViewById<RecyclerView>(R.id.rvMensajes).smoothScrollToPosition(lista.size - 1)
+                    findViewById<RecyclerView>(R.id.rvMensajes).scrollToPosition(lista.size - 1)
                 }
             }
     }
 
-    private fun enviarMensaje(texto: String) {
+    private fun enviarMensaje(texto: String, tipo: String) {
         if (currentUid == null || chatId == null) return
 
         val nuevoMensaje = Mensaje(
             remitenteId = currentUid,
             texto = texto,
+            tipo = tipo,
             leido = false,
             fechaRegistro = Timestamp.now()
         )
 
         val batch = db.batch()
         
-        // 1. Agregar mensaje a la subcolección
-        val mensajeRef = db.collection("chats").document(chatId!!).collection("mensajes").document()
+        // 1. Agregar mensaje
+        val chatRef = db.collection("chats").document(chatId!!)
+        val mensajeRef = chatRef.collection("mensajes").document()
         batch.set(mensajeRef, nuevoMensaje)
 
-        // 2. Crear/Actualizar el documento del chat (Usamos merge para que no falle si no existe)
+        // 2. Actualizar resumen
         val chatData = mutableMapOf<String, Any>(
-            "ultimoMensaje" to texto,
+            "ultimoMensaje" to (if (tipo == "imagen") "📷 Imagen" else texto),
             "fechaUltimoMensaje" to Timestamp.now()
         )
         
-        // Aseguramos que los IDs de participantes estén presentes
         if (miRol == "cliente") {
             chatData["clienteId"] = currentUid
             chatData["tecnicoId"] = contactoId!!
@@ -156,20 +172,31 @@ class ChatActivity : AppCompatActivity() {
             chatData["tecnicoId"] = currentUid
         }
 
-        val chatRef = db.collection("chats").document(chatId!!)
         batch.set(chatRef, chatData, SetOptions.merge())
 
-        batch.commit().addOnFailureListener { e ->
+        batch.commit().addOnSuccessListener {
+            Log.d(TAG, "Mensaje enviado con éxito")
+        }.addOnFailureListener { e ->
             Log.e(TAG, "Error al enviar mensaje", e)
+            Toast.makeText(this, "Error al enviar: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun subirImagenYEnviar(uri: Uri) {
+        val path = "chats/${chatId}/${UUID.randomUUID()}.jpg"
+        val imageRef = storage.reference.child(path)
+
+        imageRef.putFile(uri).addOnSuccessListener {
+            imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                enviarMensaje(downloadUri.toString(), "imagen")
+            }
+        }.addOnFailureListener {
+            Toast.makeText(this, "Error al subir imagen", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mensajesListener?.remove()
-    }
-    
-    private fun showToast(m: String) {
-        android.widget.Toast.makeText(this, m, android.widget.Toast.LENGTH_SHORT).show()
     }
 }

@@ -18,7 +18,8 @@ class SolicitudGestionTecnicoAdapter(
     private val onAceptar: (Solicitud) -> Unit,
     private val onRechazar: (Solicitud) -> Unit,
     private val onChat: (Solicitud) -> Unit,
-    private val onFinalizar: (Solicitud) -> Unit
+    private val onFinalizar: (Solicitud) -> Unit,
+    private val onDetail: (Solicitud) -> Unit // ✅ Nuevo callback para detalle
 ) : RecyclerView.Adapter<SolicitudGestionTecnicoAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -31,7 +32,9 @@ class SolicitudGestionTecnicoAdapter(
         
         holder.txtNombre.text = item.nombreCliente
         holder.txtServicio.text = item.especialidadRequerida
-        holder.txtTarifa.text = "S/ ${item.montoFinal.toInt()}"
+        
+        // Formato decimal con punto (Locale.US)
+        holder.txtTarifa.text = String.format(Locale.US, "S/ %.2f", item.montoFinal)
         
         val sdf = SimpleDateFormat("dd MMM hh:mm a", Locale.getDefault())
         holder.txtFecha.text = item.fechaServicioProgramado?.let { sdf.format(it.toDate()) } ?: "No definida"
@@ -40,7 +43,10 @@ class SolicitudGestionTecnicoAdapter(
             Glide.with(holder.itemView.context).load(item.fotoCliente).circleCrop().into(holder.imgCliente)
         }
 
-        // Reset visibility
+        // Al hacer clic en la tarjeta se muestra el detalle
+        holder.itemView.setOnClickListener { onDetail(item) }
+
+        // Reset visibilities
         holder.btnAceptar.visibility = View.GONE
         holder.btnRechazar.visibility = View.GONE
         holder.btnFinalizar.visibility = View.GONE

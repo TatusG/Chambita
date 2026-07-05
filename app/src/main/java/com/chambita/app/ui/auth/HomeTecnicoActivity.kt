@@ -4,9 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +18,8 @@ import com.bumptech.glide.Glide
 import com.chambita.app.R
 import com.chambita.app.data.repository.SolicitudRepository
 import com.chambita.app.models.Usuario
+import com.chambita.app.models.Solicitud
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -22,11 +28,13 @@ import java.util.Locale
 
 class HomeTecnicoActivity : NavActivity() {
 
+    private val TAG = "HOME_TECNICO"
     private val db = FirebaseFirestore.getInstance()
     private val solicitudRepo = SolicitudRepository()
     private val uid = FirebaseAuth.getInstance().currentUser?.uid
     
     private lateinit var adapter: SolicitudTecnicoAdapter
+    private lateinit var drawerLayout: DrawerLayout
     private var solicitudesListener: ListenerRegistration? = null
     private var misDistritos: List<String> = emptyList()
 
@@ -36,21 +44,29 @@ class HomeTecnicoActivity : NavActivity() {
 
         barraNavegacion()
         inicializarComponentes()
+        configurarMenuLateral()
         cargarDatosPerfil()
     }
 
     private fun inicializarComponentes() {
+        drawerLayout = findViewById(R.id.drawerLayout)
+        
+        findViewById<ImageButton>(R.id.btnMenu)?.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
+
         val rv = findViewById<RecyclerView>(R.id.rvSolicitudes)
         rv.layoutManager = LinearLayoutManager(this)
         
         adapter = SolicitudTecnicoAdapter(emptyList(), 
             onAceptar = { solicitud -> aceptarTrabajo(solicitud.id) },
-            onRechazar = { solicitud -> showToast("Solicitud omitida") }
+            onRechazar = { _ -> showToast("Solicitud omitida") },
+            onDetail = { solicitud -> mostrarDetalleSolicitud(solicitud) } // ✅ Mostrar detalle
         )
         rv.adapter = adapter
         
         findViewById<TextView>(R.id.btnEditarZona)?.setOnClickListener {
-            startActivity(Intent(this, EditarPerfilTecnicoActivity::class.java))
+            startActivity(Intent(this, CoberturaLaboralActivity::class.java))
         }
 
         findViewById<ImageView>(R.id.imgPerfil)?.setOnClickListener {
@@ -62,6 +78,37 @@ class HomeTecnicoActivity : NavActivity() {
         }
     }
 
+    private fun mostrarDetalleSolicitud(solicitud: Solicitud) {
+        AlertDialog.Builder(this)
+            .setTitle("Detalle de la Avería")
+            .setMessage("Cliente: ${solicitud.nombreCliente}\n\nDescripción:\n${solicitud.descripcionAveria}")
+            .setPositiveButton("Cerrar", null)
+            .setNeutralButton("Aceptar Trabajo") { _, _ -> aceptarTrabajo(solicitud.id) }
+            .show()
+    }
+
+    private fun configurarMenuLateral() {
+        val navView = findViewById<NavigationView>(R.id.navigationView)
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_perfil -> startActivity(Intent(this, PerfilTecnicoActivity::class.java))
+                R.id.nav_ganancias -> startActivity(Intent(this, DashboardGananciasActivity::class.java))
+                R.id.nav_cobertura -> startActivity(Intent(this, CoberturaLaboralActivity::class.java))
+                R.id.nav_solicitudes -> startActivity(Intent(this, MisSolicitudesActivity::class.java))
+                R.id.nav_logout -> {
+                    FirebaseAuth.getInstance().signOut()
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+                R.id.nav_soporte -> showToast("Soporte técnico próximamente")
+            }
+            drawerLayout.closeDrawer(GravityCompat.START)
+            true
+        }
+    }
+
     private fun cargarDatosPerfil() {
         if (uid == null) return
         db.collection("usuarios").document(uid).get().addOnSuccessListener { doc ->
@@ -69,7 +116,14 @@ class HomeTecnicoActivity : NavActivity() {
                 val tecnico = doc.toObject(Usuario::class.java)
                 tecnico?.let {
                     findViewById<TextView>(R.id.txtNombreTecnico).text = it.nombreCompleto
-                    findViewById<TextView>(R.id.txtZona).text = it.distritoActivoHoy
+                    
+                    val cobertura = if (it.distritos.isNotEmpty()) {
+                        it.distritos.joinToString(" · ")
+                    } else {
+                        "Sin zonas asignadas"
+                    }
+                    findViewById<TextView>(R.id.txtZona).text = cobertura
+                    
                     findViewById<SwitchCompat>(R.id.swDisponible).isChecked = it.disponible
                     misDistritos = it.distritos
                     
@@ -82,7 +136,7 @@ class HomeTecnicoActivity : NavActivity() {
                     if (it.disponible) activarEscuchaSolicitudes()
                 }
             } else {
-                Log.e("HOME_TECNICO", "Perfil no encontrado. Cerrando sesión.")
+                Log.e(TAG, "Perfil no encontrado. Cerrando sesión.")
                 forzarCerrarSesion()
             }
         }
@@ -102,15 +156,33 @@ class HomeTecnicoActivity : NavActivity() {
 
     private fun actualizarEstadisticas(t: Usuario) {
         val vMes = findViewById<View>(R.id.statMes)
-        vMes.findViewById<TextView>(R.id.txtNumero).text = t.conteoTrabajos.toString()
-        vMes.findViewById<TextView>(R.id.txtTitulo).text = "Este mes"
-
         val vGanado = findViewById<View>(R.id.statGanado)
-        vGanado.findViewById<TextView>(R.id.txtNumero).text = "S/ 0"
-        vGanado.findViewById<TextView>(R.id.txtTitulo).text = "Ganado"
-
         val vRating = findViewById<View>(R.id.statRating)
-        vRating.findViewById<TextView>(R.id.txtNumero).text = String.format(Locale.getDefault(), "%.1f ★", t.promedioEstrellas)
+
+        db.collection("solicitudes")
+            .whereEqualTo("tecnicoId", t.uid)
+            .whereEqualTo("estado", "finalizada")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                vMes.findViewById<TextView>(R.id.txtNumero).text = snapshot.size().toString()
+            }
+
+        db.collection("pagos")
+            .whereEqualTo("tecnicoId", t.uid)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                var totalDinero = 0.0
+                snapshot.forEach { doc ->
+                    totalDinero += doc.getDouble("monto") ?: 0.0
+                }
+                vGanado.findViewById<TextView>(R.id.txtNumero).text = String.format(Locale.US, "S/ %.2f", totalDinero)
+            }
+
+        vRating.findViewById<TextView>(R.id.txtNumero).text = 
+            String.format(Locale.US, "%.1f ★", t.promedioEstrellas)
+        
+        vMes.findViewById<TextView>(R.id.txtTitulo).text = "Trabajos"
+        vGanado.findViewById<TextView>(R.id.txtTitulo).text = "Ganado"
         vRating.findViewById<TextView>(R.id.txtTitulo).text = "Rating"
     }
 
@@ -119,15 +191,22 @@ class HomeTecnicoActivity : NavActivity() {
         
         solicitudesListener = solicitudRepo.escucharSolicitudesNuevas(misDistritos) { lista ->
             adapter.updateList(lista)
-            findViewById<TextView>(R.id.txtPendientes).text = "${lista.size} pendiente"
-            findViewById<TextView>(R.id.txtPendientes).visibility = if (lista.isEmpty()) View.GONE else View.VISIBLE
+            val tvPendientes = findViewById<TextView>(R.id.txtPendientes)
+            tvPendientes.text = "${lista.size} pendiente"
+            tvPendientes.visibility = if (lista.isEmpty()) View.GONE else View.VISIBLE
         }
     }
 
     private fun aceptarTrabajo(solicitudId: String) {
+        if (solicitudId.isEmpty()) {
+            showToast("Error: ID de solicitud no válido")
+            return
+        }
+        
         uid?.let { tecnicoId ->
             solicitudRepo.aceptarSolicitud(solicitudId, tecnicoId) {
-                showToast("¡Trabajo aceptado! Ve a 'Mis Solicitudes' para ver detalles.")
+                showToast("¡Trabajo aceptado!")
+                startActivity(Intent(this, MisSolicitudesActivity::class.java))
             }
         }
     }
@@ -151,5 +230,13 @@ class HomeTecnicoActivity : NavActivity() {
     override fun onDestroy() {
         super.onDestroy()
         desactivarEscuchaSolicitudes()
+    }
+
+    override fun onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
     }
 }

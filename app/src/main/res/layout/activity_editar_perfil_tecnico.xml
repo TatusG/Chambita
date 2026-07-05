@@ -70,21 +70,51 @@
                 android:background="@drawable/bg_profile_header_dark"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- AVATAR -->
-            <TextView
-                android:id="@+id/tvAvatarInitials"
+            <!-- AVATAR CONTAINER -->
+            <FrameLayout
+                android:id="@+id/avatarContainer"
                 android:layout_width="86dp"
                 android:layout_height="86dp"
                 android:layout_marginTop="24dp"
-                android:background="@drawable/bg_nav_active"
-                android:gravity="center"
-                android:textColor="@color/chambita_acento"
-                android:textSize="24sp"
-                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="CQ" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tvAvatarInitials"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_nav_active"
+                    android:gravity="center"
+                    android:textColor="@color/chambita_acento"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    tools:text="CQ" />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:cardCornerRadius="43dp"
+                    app:cardElevation="0dp">
+
+                    <ImageView
+                        android:id="@+id/imgPerfilHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+                </androidx.cardview.widget.CardView>
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="bottom|end"
+                    android:background="@drawable/bg_circle_primary"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_edit"
+                    app:tint="@color/blanco" />
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/txtNombre"
@@ -96,7 +126,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvAvatarInitials"
+                app:layout_constraintTop_toBottomOf="@id/avatarContainer"
                 tools:text="Carlos Quispe" />
 
             <TextView
@@ -215,7 +245,7 @@
                     android:layout_height="52dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_edittext"
-                    android:hint="Ej. 5 años"
+                    android:hint="Ej. 5"
                     android:inputType="number"
                     android:paddingHorizontal="16dp"
                     android:textSize="15sp" />
@@ -234,41 +264,7 @@
                     android:id="@+id/chipGroupServicios"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipInstalaciones"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Instalaciones"
-                        app:chipBackgroundColor="@color/figma_blue"
-                        app:chipCornerRadius="16dp"
-                        app:chipStrokeWidth="0dp"
-                        android:textColor="@color/blanco" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipReparaciones"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Reparaciones"
-                        app:chipBackgroundColor="@color/figma_blue"
-                        app:chipCornerRadius="16dp"
-                        app:chipStrokeWidth="0dp"
-                        android:textColor="@color/blanco" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/chipMantenimiento"
-                        style="@style/Widget.MaterialComponents.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Mtto."
-                        app:chipBackgroundColor="@color/figma_blue"
-                        app:chipCornerRadius="16dp"
-                        app:chipStrokeWidth="0dp"
-                        android:textColor="@color/blanco" />
-                </com.google.android.material.chip.ChipGroup>
+                    android:layout_marginTop="10dp" />
 
                 <LinearLayout
                     android:id="@+id/btnAnadirServicio"
@@ -310,8 +306,8 @@
                         android:layout_height="52dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_edittext"
-                        android:hint="Min: 50"
-                        android:inputType="number"
+                        android:hint="Min"
+                        android:inputType="numberDecimal"
                         android:paddingHorizontal="16dp"
                         android:textSize="15sp" />
 
@@ -325,8 +321,8 @@
                         android:layout_height="52dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_edittext"
-                        android:hint="Max: 80"
-                        android:inputType="number"
+                        android:hint="Max"
+                        android:inputType="numberDecimal"
                         android:paddingHorizontal="16dp"
                         android:textSize="15sp" />
                 </LinearLayout>

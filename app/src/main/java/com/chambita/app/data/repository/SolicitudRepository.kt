@@ -10,6 +10,7 @@ class SolicitudRepository {
 
     /**
      * Escucha solicitudes pendientes en los distritos que cubre el técnico.
+     * ✅ Se asegura de asignar el Document ID al campo 'id' del modelo.
      */
     fun escucharSolicitudesNuevas(
         distritos: List<String>,
@@ -21,7 +22,9 @@ class SolicitudRepository {
             .orderBy("fechaCreacion", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) return@addSnapshotListener
-                val lista = snapshot?.toObjects(Solicitud::class.java) ?: emptyList()
+                val lista = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(Solicitud::class.java)?.copy(id = doc.id)
+                } ?: emptyList()
                 onUpdate(lista)
             }
     }
@@ -30,6 +33,8 @@ class SolicitudRepository {
      * El técnico acepta el trabajo: se asigna su UID y cambia el estado.
      */
     fun aceptarSolicitud(solicitudId: String, tecnicoId: String, onSuccess: () -> Unit) {
+        if (solicitudId.isEmpty()) return
+        
         db.collection("solicitudes").document(solicitudId)
             .update(mapOf(
                 "tecnicoId" to tecnicoId,
@@ -42,6 +47,8 @@ class SolicitudRepository {
      * El técnico finaliza el trabajo.
      */
     fun finalizarSolicitud(solicitudId: String, onSuccess: () -> Unit) {
+        if (solicitudId.isEmpty()) return
+
         db.collection("solicitudes").document(solicitudId)
             .update("estado", "finalizada")
             .addOnSuccessListener { onSuccess() }

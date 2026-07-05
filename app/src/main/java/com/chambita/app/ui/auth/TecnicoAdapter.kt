@@ -63,8 +63,8 @@ class TecnicoAdapter(
                 "LIMA"
             }
 
-            // Mostrar tarifa
-            tvPrecioRango.text = "S/ %.2f".format(tecnico.tarifaPorHora)
+            // Mostrar tarifa con punto decimal
+            tvPrecioRango.text = String.format(Locale.US, "S/ %.2f", tecnico.tarifaPorHora)
 
             imgFotoPerfil.setImageResource(R.drawable.ic_usuario)
             if (tecnico.fotoPerfil.isNotEmpty()) {

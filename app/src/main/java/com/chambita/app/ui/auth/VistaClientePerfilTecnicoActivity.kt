@@ -140,7 +140,7 @@ class VistaClientePerfilTecnicoActivity : NavActivity() {
                             viewStatusDot.visibility = View.GONE
                         }
 
-                        tvTarifa.text = "S/ ${tecnico.tarifaPorHora.toInt()}"
+                        tvTarifa.text = String.format(Locale.US, "S/ %.2f", tecnico.tarifaPorHora)
 
                         // Chips de servicios
                         llChipsServicios.removeAllViews()

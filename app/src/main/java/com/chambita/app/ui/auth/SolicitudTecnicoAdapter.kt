@@ -14,7 +14,8 @@ import com.chambita.app.models.Solicitud
 class SolicitudTecnicoAdapter(
     private var list: List<Solicitud>,
     private val onAceptar: (Solicitud) -> Unit,
-    private val onRechazar: (Solicitud) -> Unit
+    private val onRechazar: (Solicitud) -> Unit,
+    private val onDetail: (Solicitud) -> Unit // ✅ Nuevo callback para detalle
 ) : RecyclerView.Adapter<SolicitudTecnicoAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,6 +34,9 @@ class SolicitudTecnicoAdapter(
 
         holder.btnAceptar.setOnClickListener { onAceptar(item) }
         holder.btnRechazar.setOnClickListener { onRechazar(item) }
+        
+        // Al hacer clic en la tarjeta se muestra el detalle
+        holder.itemView.setOnClickListener { onDetail(item) }
     }
 
     override fun getItemCount() = list.size

@@ -11,7 +11,9 @@ import com.chambita.app.models.MetodoPago
 
 class MetodoPagoAdapter(
     private var list: List<MetodoPago>,
-    private val onSetDefault: (MetodoPago) -> Unit
+    private val onSetDefault: (MetodoPago) -> Unit,
+    private val onEdit: (MetodoPago) -> Unit,
+    private val onDelete: (MetodoPago) -> Unit
 ) : RecyclerView.Adapter<MetodoPagoAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,6 +36,8 @@ class MetodoPagoAdapter(
         holder.txtDefault.visibility = if (item.esPredeterminado) View.VISIBLE else View.GONE
         
         holder.itemView.setOnClickListener { onSetDefault(item) }
+        holder.btnEditar.setOnClickListener { onEdit(item) }
+        holder.btnEliminar.setOnClickListener { onDelete(item) }
     }
 
     override fun getItemCount() = list.size
@@ -48,5 +52,7 @@ class MetodoPagoAdapter(
         val txtTipo: TextView = v.findViewById(R.id.txtMetodoTipo)
         val txtNumero: TextView = v.findViewById(R.id.txtMetodoNumero)
         val txtDefault: TextView = v.findViewById(R.id.txtMetodoDefault)
+        val btnEditar: android.widget.ImageButton = v.findViewById(R.id.btnEditarMetodo)
+        val btnEliminar: android.widget.ImageButton = v.findViewById(R.id.btnEliminarMetodo)
     }
 }

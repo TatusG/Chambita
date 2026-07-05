@@ -5,13 +5,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -29,9 +26,10 @@ import java.util.*
 
 class ChatActivity : AppCompatActivity() {
 
-    private val TAG = "ChatActivity"
+    private val TAG = "CHAT_LOG"
     private var contactoId: String? = null
     private var chatId: String? = null
+    private var contactoData: Usuario? = null
     private val db = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
     private val currentUid = FirebaseAuth.getInstance().currentUser?.uid
@@ -51,29 +49,33 @@ class ChatActivity : AppCompatActivity() {
         contactoId = intent.getStringExtra("contactoId") ?: intent.getStringExtra("tecnicoId")
         
         if (contactoId == null || currentUid == null) {
-            Toast.makeText(this, "Error: Datos de chat incompletos", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error: Datos incompletos", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
-        chatId = intent.getStringExtra("chatId") ?: generarChatId()
-        Log.d(TAG, "Chat ID generado: $chatId")
-
         inicializarComponentes()
-        obtenerMiRol()
+        obtenerRolYGenerarId()
         cargarDatosContacto()
-        escucharMensajes()
     }
 
-    private fun generarChatId(): String {
-        val ids = listOf(currentUid ?: "", contactoId ?: "").sorted()
-        return "${ids[0]}_${ids[1]}"
-    }
-
-    private fun obtenerMiRol() {
+    private fun obtenerRolYGenerarId() {
         currentUid?.let { uid ->
-            db.collection("usuarios").document(uid).get().addOnSuccessListener {
-                miRol = it.getString("rol") ?: "cliente"
+            db.collection("usuarios").document(uid).get().addOnSuccessListener { doc ->
+                miRol = doc.getString("rol") ?: "cliente"
+                
+                chatId = if (miRol == "cliente") {
+                    "${currentUid}_${contactoId}"
+                } else {
+                    "${contactoId}_${currentUid}"
+                }
+                
+                Log.d(TAG, "Chat ID generado: $chatId | Mi Rol: $miRol")
+                escucharMensajes()
+            }.addOnFailureListener { e ->
+                Log.e(TAG, "Error al obtener rol: ${e.message}")
+                chatId = "${currentUid}_${contactoId}"
+                escucharMensajes()
             }
         }
     }
@@ -81,9 +83,7 @@ class ChatActivity : AppCompatActivity() {
     private fun inicializarComponentes() {
         val rvMensajes = findViewById<RecyclerView>(R.id.rvMensajes)
         adapter = ChatAdapter(emptyList())
-        rvMensajes.layoutManager = LinearLayoutManager(this).apply {
-            stackFromEnd = true
-        }
+        rvMensajes.layoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }
         rvMensajes.adapter = adapter
 
         findViewById<ImageView>(R.id.btnVolver).setOnClickListener { finish() }
@@ -100,6 +100,10 @@ class ChatActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnAdjuntar).setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
+
+        findViewById<ImageButton>(R.id.btnUbicacion).setOnClickListener {
+            abrirMapaContacto()
+        }
     }
 
     private fun cargarDatosContacto() {
@@ -107,8 +111,17 @@ class ChatActivity : AppCompatActivity() {
             .addOnSuccessListener { doc ->
                 val contacto = doc.toObject(Usuario::class.java)
                 contacto?.let {
+                    contactoData = it
                     findViewById<TextView>(R.id.tvNombreTecnico).text = it.nombreCompleto
-                    findViewById<TextView>(R.id.tvEstadoTecnico).text = if (it.disponible) "En línea" else "Desconectado"
+                    
+                    val tvEstado = findViewById<TextView>(R.id.tvEstadoTecnico)
+                    if (it.disponible) {
+                        tvEstado.text = "En línea"
+                        tvEstado.setTextColor(ContextCompat.getColor(this, R.color.chambita_verde))
+                    } else {
+                        tvEstado.text = "Desconectado"
+                        tvEstado.setTextColor(ContextCompat.getColor(this, R.color.chambita_rojo))
+                    }
                     
                     val imgPerfil = findViewById<ImageView>(R.id.imgPerfil)
                     if (it.fotoPerfil.isNotEmpty()) {
@@ -118,21 +131,44 @@ class ChatActivity : AppCompatActivity() {
             }
     }
 
+    private fun abrirMapaContacto() {
+        val distrito = if (contactoData?.rol == "tecnico") {
+            contactoData?.distritoActivoHoy
+        } else {
+            contactoData?.distritoResidencia
+        }
+
+        if (distrito.isNullOrEmpty()) {
+            Toast.makeText(this, "El contacto no tiene una ubicación definida", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Abrir Google Maps con la ubicación del contacto
+        val gmmIntentUri = Uri.parse("geo:0,0?q=${distrito}, Lima, Peru")
+        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+        mapIntent.setPackage("com.google.android.apps.maps")
+        
+        if (mapIntent.resolveActivity(packageManager) != null) {
+            startActivity(mapIntent)
+        } else {
+            // Fallback si no tiene app de mapas oficial
+            val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=${distrito},+Lima,+Peru"))
+            startActivity(webIntent)
+        }
+    }
+
     private fun escucharMensajes() {
         if (chatId == null) return
         
-        Log.d(TAG, "Iniciando escucha de mensajes para chat: $chatId")
         mensajesListener = db.collection("chats").document(chatId!!)
             .collection("mensajes")
             .orderBy("fechaRegistro", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    Log.e(TAG, "Error escuchando mensajes", e)
+                    Log.e(TAG, "Error en listener: ${e.message}")
                     return@addSnapshotListener
                 }
-
                 val lista = snapshot?.toObjects(Mensaje::class.java) ?: emptyList()
-                Log.d(TAG, "Mensajes actualizados: ${lista.size}")
                 adapter.updateList(lista)
                 if (lista.isNotEmpty()) {
                     findViewById<RecyclerView>(R.id.rvMensajes).scrollToPosition(lista.size - 1)
@@ -151,38 +187,29 @@ class ChatActivity : AppCompatActivity() {
             fechaRegistro = Timestamp.now()
         )
 
-        val batch = db.batch()
-        
-        // 1. Agregar mensaje
-        val chatRef = db.collection("chats").document(chatId!!)
-        val mensajeRef = chatRef.collection("mensajes").document()
-        batch.set(mensajeRef, nuevoMensaje)
-
-        // 2. Actualizar resumen
-        val chatData = mutableMapOf<String, Any>(
+        val ids = chatId!!.split("_")
+        val chatData = hashMapOf(
+            "clienteId" to ids[0],
+            "tecnicoId" to ids[1],
             "ultimoMensaje" to (if (tipo == "imagen") "📷 Imagen" else texto),
             "fechaUltimoMensaje" to Timestamp.now()
         )
+
+        val batch = db.batch()
+        val chatRef = db.collection("chats").document(chatId!!)
+        val mensajeRef = chatRef.collection("mensajes").document()
         
-        if (miRol == "cliente") {
-            chatData["clienteId"] = currentUid
-            chatData["tecnicoId"] = contactoId!!
-        } else {
-            chatData["clienteId"] = contactoId!!
-            chatData["tecnicoId"] = currentUid
-        }
-
         batch.set(chatRef, chatData, SetOptions.merge())
+        batch.set(mensajeRef, nuevoMensaje)
 
-        batch.commit().addOnSuccessListener {
-            Log.d(TAG, "Mensaje enviado con éxito")
-        }.addOnFailureListener { e ->
-            Log.e(TAG, "Error al enviar mensaje", e)
-            Toast.makeText(this, "Error al enviar: ${e.message}", Toast.LENGTH_SHORT).show()
+        batch.commit().addOnFailureListener { e ->
+            Log.e(TAG, "ERROR DE FIREBASE: ${e.message}")
+            Toast.makeText(this, "Error al enviar mensaje", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun subirImagenYEnviar(uri: Uri) {
+        if (chatId == null) return
         val path = "chats/${chatId}/${UUID.randomUUID()}.jpg"
         val imageRef = storage.reference.child(path)
 
@@ -190,8 +217,6 @@ class ChatActivity : AppCompatActivity() {
             imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
                 enviarMensaje(downloadUri.toString(), "imagen")
             }
-        }.addOnFailureListener {
-            Toast.makeText(this, "Error al subir imagen", Toast.LENGTH_SHORT).show()
         }
     }
 

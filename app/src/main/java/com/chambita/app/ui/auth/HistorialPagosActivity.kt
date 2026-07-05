@@ -39,19 +39,23 @@ class HistorialPagosActivity : NavActivity() {
     private fun cargarHistorialPagos() {
         if (uid == null) return
 
+        // Simplificamos la consulta eliminando el orderBy para evitar el error FAILED_PRECONDITION (falta de índice)
         db.collection("pagos")
             .whereEqualTo("clienteId", uid)
-            .orderBy("fechaRegistro", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
                 val lista = result.toObjects(Pago::class.java)
-                adapter.updateList(lista)
+                
+                // Ordenamos localmente por fecha descendente
+                val listaOrdenada = lista.sortedByDescending { it.fechaRegistro }
+                
+                adapter.updateList(listaOrdenada)
                 
                 var total = 0.0
-                lista.forEach { total += it.monto }
+                listaOrdenada.forEach { total += it.monto }
                 findViewById<TextView>(R.id.tvTotalGastado)?.text = String.format(Locale.US, "S/ %.2f", total)
                 
-                findViewById<TextView>(R.id.tvResumenMes)?.text = "${lista.size} servicios • Total"
+                findViewById<TextView>(R.id.tvResumenMes)?.text = "${listaOrdenada.size} servicios • Total"
             }
             .addOnFailureListener { e ->
                 showToast("Error al cargar pagos: ${e.message}")

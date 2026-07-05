@@ -1,9 +1,15 @@
 package com.chambita.app.ui.auth
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import com.bumptech.glide.Glide
 import com.chambita.app.R
 import com.chambita.app.models.Usuario
 import com.chambita.app.utils.Distritos
@@ -11,15 +17,18 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import java.util.Locale
 
 class EditarPerfilTecnicoActivity : NavActivity() {
 
     private val TAG = "EDIT_PERFIL_TECNICO"
     private val db = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance()
     private val uid = FirebaseAuth.getInstance().currentUser?.uid
 
     private var tvAvatar: TextView? = null
+    private var imgPerfil: ImageView? = null
     private var txtNombreHeader: TextView? = null
     private var txtUbicacionHeader: TextView? = null
     private var etEspecialidad: EditText? = null
@@ -31,6 +40,19 @@ class EditarPerfilTecnicoActivity : NavActivity() {
     private var btnGuardar: Button? = null
     private var progresoPerfil: ProgressBar? = null
     private var txtPorcentaje: TextView? = null
+    private var chipGroup: ChipGroup? = null
+
+    private var selectedImageUri: Uri? = null
+
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            selectedImageUri = result.data?.data
+            if (selectedImageUri != null) {
+                imgPerfil?.visibility = View.VISIBLE
+                Glide.with(this).load(selectedImageUri).circleCrop().into(imgPerfil!!)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,10 +65,17 @@ class EditarPerfilTecnicoActivity : NavActivity() {
             cargarDatos()
 
             findViewById<View>(R.id.btnVolver)?.setOnClickListener { finish() }
-            btnGuardar?.setOnClickListener { guardarCambios() }
+            
+            tvAvatar?.setOnClickListener { abrirGaleria() }
+            imgPerfil?.setOnClickListener { abrirGaleria() }
+
+            btnGuardar?.setOnClickListener { 
+                if (selectedImageUri != null) subirFotoYGuardar()
+                else guardarCambios(null)
+            }
             
             findViewById<View>(R.id.btnAnadirServicio)?.setOnClickListener {
-                showToast("Función para añadir nuevos servicios próximamente")
+                mostrarDialogoNuevoServicio()
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error en onCreate: ${e.message}")
@@ -57,6 +86,7 @@ class EditarPerfilTecnicoActivity : NavActivity() {
 
     private fun inicializarComponentes() {
         tvAvatar = findViewById(R.id.tvAvatarInitials)
+        imgPerfil = findViewById(R.id.imgPerfilHeader) // Debería añadir este ID al XML o usar el contenedor
         txtNombreHeader = findViewById(R.id.txtNombre)
         txtUbicacionHeader = findViewById(R.id.txtUbicacion)
         etEspecialidad = findViewById(R.id.etEspecialidad)
@@ -68,6 +98,7 @@ class EditarPerfilTecnicoActivity : NavActivity() {
         btnGuardar = findViewById(R.id.btnGuardarCambios)
         progresoPerfil = findViewById(R.id.progresoPerfil)
         txtPorcentaje = findViewById(R.id.txtPorcentaje)
+        chipGroup = findViewById(R.id.chipGroupServicios)
     }
 
     private fun configurarSpinner() {
@@ -88,26 +119,74 @@ class EditarPerfilTecnicoActivity : NavActivity() {
                         txtUbicacionHeader?.text = "${it.especialidad} • ${it.distritoActivoHoy}"
                         tvAvatar?.text = obtenerIniciales(it.nombreCompleto)
                         
+                        if (it.fotoPerfil.isNotEmpty()) {
+                            imgPerfil?.visibility = View.VISIBLE
+                            Glide.with(this).load(it.fotoPerfil).circleCrop().into(imgPerfil!!)
+                        }
+
                         etEspecialidad?.setText(it.especialidad)
                         etDescripcion?.setText(it.descripcion)
                         etExperiencia?.setText(it.experienciaAnos.toString())
-                        etTarifaMin?.setText(it.tarifaPorHora.toInt().toString())
-                        etTarifaMax?.setText(it.tarifaMaxima.toInt().toString())
+                        etTarifaMin?.setText(String.format(Locale.US, "%.2f", it.tarifaPorHora))
+                        etTarifaMax?.setText(String.format(Locale.US, "%.2f", it.tarifaMaxima))
                         
                         val index = Distritos.listaLimaCallao.indexOf(it.distritoActivoHoy)
                         if (index >= 0) spDistrito?.setSelection(index)
 
+                        chipGroup?.removeAllViews()
                         it.servicios.forEach { servicio ->
-                            when(servicio) {
-                                "Instalaciones" -> findViewById<Chip>(R.id.chipInstalaciones)?.isChecked = true
-                                "Reparaciones" -> findViewById<Chip>(R.id.chipReparaciones)?.isChecked = true
-                                "Mantenimiento", "Mtto." -> findViewById<Chip>(R.id.chipMantenimiento)?.isChecked = true
-                            }
+                            agregarChip(servicio)
                         }
 
                         actualizarProgreso()
                     }
                 }
+            }
+    }
+
+    private fun agregarChip(texto: String) {
+        val chip = Chip(this)
+        chip.text = texto
+        chip.isCheckable = true
+        chip.isChecked = true
+        chip.chipBackgroundColor = getColorStateList(R.color.figma_blue)
+        chip.setTextColor(getColor(R.color.blanco))
+        chipGroup?.addView(chip)
+    }
+
+    private fun mostrarDialogoNuevoServicio() {
+        val input = EditText(this)
+        input.hint = "Nombre del servicio"
+        AlertDialog.Builder(this)
+            .setTitle("Nuevo Servicio")
+            .setView(input)
+            .setPositiveButton("Añadir") { _, _ ->
+                val texto = input.text.toString().trim()
+                if (texto.isNotEmpty()) agregarChip(texto)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun abrirGaleria() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        pickImageLauncher.launch(intent)
+    }
+
+    private fun subirFotoYGuardar() {
+        if (uid == null || selectedImageUri == null) return
+        btnGuardar?.isEnabled = false
+        val ref = storage.reference.child("perfiles/$uid.jpg")
+        ref.putFile(selectedImageUri!!)
+            .addOnSuccessListener {
+                ref.downloadUrl.addOnSuccessListener { uri ->
+                    guardarCambios(uri.toString())
+                }
+            }
+            .addOnFailureListener {
+                btnGuardar?.isEnabled = true
+                showToast("Error al subir foto")
             }
     }
 
@@ -120,33 +199,23 @@ class EditarPerfilTecnicoActivity : NavActivity() {
         }
     }
 
-    private fun guardarCambios() {
+    private fun guardarCambios(nuevaFotoUrl: String?) {
         if (uid == null) return
 
         val especialidad = etEspecialidad?.text.toString().trim()
         val descripcion = etDescripcion?.text.toString().trim()
-        val experiencia = etExperiencia?.text.toString().replace(" años", "").trim().toIntOrNull() ?: 0
+        val experiencia = etExperiencia?.text.toString().toIntOrNull() ?: 0
         val tarifaMin = etTarifaMin?.text.toString().toDoubleOrNull() ?: 0.0
         val tarifaMax = etTarifaMax?.text.toString().toDoubleOrNull() ?: 0.0
         val distrito = spDistrito?.selectedItem?.toString() ?: ""
 
-        if (tarifaMin <= 0 || tarifaMax <= 0) {
-            showToast("Las tarifas deben ser mayores a cero")
-            return
-        }
-
-        if (tarifaMin > tarifaMax) {
-            etTarifaMin?.error = "No puede ser mayor al máximo"
-            etTarifaMin?.requestFocus()
-            return
-        }
-
         val servicios = mutableListOf<String>()
-        if (findViewById<Chip>(R.id.chipInstalaciones)?.isChecked == true) servicios.add("Instalaciones")
-        if (findViewById<Chip>(R.id.chipReparaciones)?.isChecked == true) servicios.add("Reparaciones")
-        if (findViewById<Chip>(R.id.chipMantenimiento)?.isChecked == true) servicios.add("Mtto.")
+        for (i in 0 until (chipGroup?.childCount ?: 0)) {
+            val chip = chipGroup?.getChildAt(i) as? Chip
+            if (chip?.isChecked == true) servicios.add(chip.text.toString())
+        }
 
-        val actualizaciones = mapOf(
+        val actualizaciones = mutableMapOf<String, Any>(
             "especialidad" to especialidad,
             "descripcion" to descripcion,
             "experienciaAnos" to experiencia,
@@ -156,15 +225,13 @@ class EditarPerfilTecnicoActivity : NavActivity() {
             "servicios" to servicios
         )
 
+        if (nuevaFotoUrl != null) actualizaciones["fotoPerfil"] = nuevaFotoUrl
+
         btnGuardar?.isEnabled = false
         db.collection("usuarios").document(uid).update(actualizaciones)
             .addOnSuccessListener {
-                showToast("Perfil profesional actualizado")
-                actualizarProgreso()
-                btnGuardar?.isEnabled = true
-                // Actualizar cabecera visual
-                txtNombreHeader?.text = FirebaseAuth.getInstance().currentUser?.displayName ?: ""
-                txtUbicacionHeader?.text = "$especialidad • $distrito"
+                showToast("Perfil actualizado")
+                finish()
             }
             .addOnFailureListener { e ->
                 showToast("Error: ${e.message}")
@@ -178,13 +245,7 @@ class EditarPerfilTecnicoActivity : NavActivity() {
         if (etDescripcion?.text?.isNotEmpty() == true) puntos += 20
         if (etExperiencia?.text?.isNotEmpty() == true) puntos += 20
         if (etTarifaMin?.text?.isNotEmpty() == true) puntos += 20
-        
-        val servicios = mutableListOf<String>()
-        if (findViewById<Chip>(R.id.chipInstalaciones)?.isChecked == true) servicios.add("Instalaciones")
-        if (findViewById<Chip>(R.id.chipReparaciones)?.isChecked == true) servicios.add("Reparaciones")
-        if (findViewById<Chip>(R.id.chipMantenimiento)?.isChecked == true) servicios.add("Mtto.")
-        if (servicios.isNotEmpty()) puntos += 20
-
+        if ((chipGroup?.childCount ?: 0) > 0) puntos += 20
         progresoPerfil?.progress = puntos
         txtPorcentaje?.text = "Perfil completado: $puntos%"
     }

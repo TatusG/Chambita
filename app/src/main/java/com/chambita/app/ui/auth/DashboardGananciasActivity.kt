@@ -79,8 +79,9 @@ class DashboardGananciasActivity : NavActivity() {
             }
         }
 
-        findViewById<TextView>(R.id.txtGananciaHoy)?.text = "S/ %.2f".format(gananciaHoy)
-        findViewById<TextView>(R.id.txtGananciaMes)?.text = "S/ %.2f".format(gananciaMes)
+        // Formato con punto (Locale.US)
+        findViewById<TextView>(R.id.txtGananciaHoy)?.text = String.format(Locale.US, "S/ %.2f", gananciaHoy)
+        findViewById<TextView>(R.id.txtGananciaMes)?.text = String.format(Locale.US, "S/ %.2f", gananciaMes)
         findViewById<TextView>(R.id.txtConteoServicios)?.text = conteoServiciosMes.toString()
     }
 }

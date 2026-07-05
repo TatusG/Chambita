@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_perfil"
+            android:icon="@drawable/ic_person"
+            android:title="Mi Perfil" />
+        <item
+            android:id="@+id/nav_ganancias"
+            android:icon="@drawable/ic_payment"
+            android:title="Mis Ganancias" />
+        <item
+            android:id="@+id/nav_cobertura"
+            android:icon="@drawable/ic_location"
+            android:title="Zonas de Cobertura" />
+        <item
+            android:id="@+id/nav_solicitudes"
+            android:icon="@drawable/ic_receipt"
+            android:title="Mis Solicitudes" />
+    </group>
+
+    <item android:title="Otros">
+        <menu>
+            <item
+                android:id="@+id/nav_soporte"
+                android:icon="@drawable/ic_chat"
+                android:title="Soporte Técnico" />
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_logout"
+                android:title="Cerrar Sesión" />
+        </menu>
+    </item>
+</menu>

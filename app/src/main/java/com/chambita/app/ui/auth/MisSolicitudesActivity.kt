@@ -2,6 +2,7 @@ package com.chambita.app.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
@@ -20,9 +21,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class MisSolicitudesActivity : NavActivity() {
 
+    private val TAG = "MIS_SOLICITUDES"
     private lateinit var adapterTecnico: SolicitudGestionTecnicoAdapter
     private lateinit var adapterCliente: SolicitudAdapter
     private val solicitudRepo = SolicitudRepository()
@@ -30,6 +33,7 @@ class MisSolicitudesActivity : NavActivity() {
     
     private var userRol: String = "cliente"
     private var misDistritos: List<String> = emptyList()
+    private var tabActual: String = "PENDIENTES"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,20 +50,22 @@ class MisSolicitudesActivity : NavActivity() {
 
         adapterTecnico = SolicitudGestionTecnicoAdapter(emptyList(),
             onAceptar = { solicitud -> aceptarTrabajo(solicitud.id) },
-            onRechazar = { showToast("Omitido") },
+            onRechazar = { _ -> showToast("Solicitud omitida") },
             onChat = { solicitud -> abrirChat(solicitud.clienteId) },
-            onFinalizar = { solicitud -> mostrarDialogoPago(solicitud) }
+            onFinalizar = { solicitud -> mostrarDialogoPago(solicitud) },
+            onDetail = { solicitud -> mostrarDetalleSolicitud(solicitud) } // ✅ Mostrar detalle
         )
         
         adapterCliente = SolicitudAdapter(emptyList()) { solicitud, accion ->
-            if (accion == "CHAT") {
-                abrirChat(solicitud.tecnicoId ?: "")
-            } else if (accion == "CALIFICAR") {
-                val intent = Intent(this, CalificarServicioActivity::class.java).apply {
-                    putExtra("solicitudId", solicitud.id)
-                    putExtra("tecnicoId", solicitud.tecnicoId)
+            when (accion) {
+                "CHAT" -> abrirChat(solicitud.tecnicoId ?: "")
+                "CALIFICAR" -> {
+                    val intent = Intent(this, CalificarServicioActivity::class.java).apply {
+                        putExtra("solicitudId", solicitud.id)
+                        putExtra("tecnicoId", solicitud.tecnicoId)
+                    }
+                    startActivity(intent)
                 }
-                startActivity(intent)
             }
         }
 
@@ -67,6 +73,17 @@ class MisSolicitudesActivity : NavActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
         setupFiltros()
+    }
+
+    private fun mostrarDetalleSolicitud(solicitud: Solicitud) {
+        AlertDialog.Builder(this)
+            .setTitle("Detalle del Servicio")
+            .setMessage("Cliente: ${solicitud.nombreCliente}\n" +
+                    "Distrito: ${solicitud.distritoServicio}\n" +
+                    "Dirección: ${solicitud.direccionServicio}\n\n" +
+                    "Descripción de la avería:\n${solicitud.descripcionAveria}")
+            .setPositiveButton("Cerrar", null)
+            .show()
     }
 
     private fun mostrarDialogoPago(solicitud: Solicitud) {
@@ -119,7 +136,8 @@ class MisSolicitudesActivity : NavActivity() {
 
         batch.commit().addOnSuccessListener {
             showToast("¡Trabajo finalizado y pago registrado!")
-            cargarSolicitudesTecnico("FINALIZADOS")
+            tabActual = "FINALIZADOS"
+            cargarSolicitudesTecnico(tabActual)
         }
     }
 
@@ -144,11 +162,13 @@ class MisSolicitudesActivity : NavActivity() {
                     .addOnSuccessListener { doc ->
                         misDistritos = doc.get("distritos") as? List<String> ?: emptyList()
                         findViewById<RecyclerView>(R.id.rvSolicitudes).adapter = adapterTecnico
-                        cargarSolicitudesTecnico("PENDIENTES")
+                        tabActual = "PENDIENTES"
+                        cargarSolicitudesTecnico(tabActual)
                     }
             } else {
                 findViewById<RecyclerView>(R.id.rvSolicitudes).adapter = adapterCliente
-                cargarSolicitudesCliente("PENDIENTES")
+                tabActual = "PENDIENTES"
+                cargarSolicitudesCliente(tabActual)
             }
         }
     }
@@ -161,15 +181,18 @@ class MisSolicitudesActivity : NavActivity() {
 
         btnPendientes?.setOnClickListener { 
             seleccionarTab(btnPendientes, botones)
-            if (userRol == "tecnico") cargarSolicitudesTecnico("PENDIENTES") else cargarSolicitudesCliente("PENDIENTES")
+            tabActual = "PENDIENTES"
+            if (userRol == "tecnico") cargarSolicitudesTecnico(tabActual) else cargarSolicitudesCliente(tabActual)
         }
         btnEnCurso?.setOnClickListener { 
             seleccionarTab(btnEnCurso, botones)
-            if (userRol == "tecnico") cargarSolicitudesTecnico("EN CURSO") else cargarSolicitudesCliente("EN CURSO")
+            tabActual = "EN CURSO"
+            if (userRol == "tecnico") cargarSolicitudesTecnico(tabActual) else cargarSolicitudesCliente(tabActual)
         }
         btnFinalizados?.setOnClickListener { 
             seleccionarTab(btnFinalizados, botones)
-            if (userRol == "tecnico") cargarSolicitudesTecnico("FINALIZADOS") else cargarSolicitudesCliente("HISTORIAL")
+            tabActual = if (userRol == "tecnico") "FINALIZADOS" else "HISTORIAL"
+            if (userRol == "tecnico") cargarSolicitudesTecnico(tabActual) else cargarSolicitudesCliente(tabActual)
         }
     }
 
@@ -201,6 +224,11 @@ class MisSolicitudesActivity : NavActivity() {
                 if (misDistritos.isNotEmpty()) {
                     query = query.whereEqualTo("estado", "pendiente")
                                  .whereIn("distritoServicio", misDistritos)
+                } else {
+                    adapterTecnico.updateList(emptyList())
+                    findViewById<TextView>(R.id.txtMensajeVacio)?.text = "Configura tus zonas de cobertura"
+                    findViewById<LinearLayout>(R.id.layoutVacio).visibility = View.VISIBLE
+                    return
                 }
             }
             "EN CURSO" -> {
@@ -214,8 +242,15 @@ class MisSolicitudesActivity : NavActivity() {
         }
 
         solicitudesListener = query.addSnapshotListener { value, error ->
-            if (error != null) return@addSnapshotListener
-            val lista = value?.toObjects(Solicitud::class.java) ?: emptyList()
+            if (error != null) {
+                Log.e(TAG, "Error escuchando solicitudes: ${error.message}")
+                return@addSnapshotListener
+            }
+            // ✅ Mapeo de Document ID
+            val lista = value?.documents?.mapNotNull { doc ->
+                doc.toObject(Solicitud::class.java)?.copy(id = doc.id)
+            } ?: emptyList()
+            
             adapterTecnico.updateList(lista)
             findViewById<TextView>(R.id.txtMensajeVacio)?.text = mensajeVacio
             findViewById<LinearLayout>(R.id.layoutVacio).visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
@@ -250,7 +285,11 @@ class MisSolicitudesActivity : NavActivity() {
 
         solicitudesListener = query.addSnapshotListener { value, error ->
             if (error != null) return@addSnapshotListener
-            val lista = value?.toObjects(Solicitud::class.java) ?: emptyList()
+            // ✅ Mapeo de Document ID
+            val lista = value?.documents?.mapNotNull { doc ->
+                doc.toObject(Solicitud::class.java)?.copy(id = doc.id)
+            } ?: emptyList()
+            
             adapterCliente.updateList(lista)
             findViewById<TextView>(R.id.txtMensajeVacio)?.text = mensajeVacio
             findViewById<LinearLayout>(R.id.layoutVacio).visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
@@ -258,10 +297,21 @@ class MisSolicitudesActivity : NavActivity() {
     }
 
     private fun aceptarTrabajo(solicitudId: String) {
+        if (solicitudId.isEmpty()) {
+            showToast("Error: ID de solicitud no válido")
+            return
+        }
+        
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         solicitudRepo.aceptarSolicitud(solicitudId, uid) {
             showToast("¡Trabajo aceptado!")
-            cargarSolicitudesTecnico("EN CURSO")
+            if (tabActual == "PENDIENTES") {
+                tabActual = "EN CURSO"
+                val btnEnCurso = findViewById<Button>(R.id.btnEnCurso)
+                val botones = listOf(findViewById<Button>(R.id.btnPendientes), btnEnCurso, findViewById<Button>(R.id.btnFinalizados))
+                seleccionarTab(btnEnCurso, botones)
+            }
+            cargarSolicitudesTecnico(tabActual)
         }
     }
 

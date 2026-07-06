@@ -7,13 +7,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -34,15 +28,17 @@ import java.util.Locale
 
 class HomeClienteActivity : NavActivity() {
 
+    private val TAG = "HOME_CLIENTE"
     private lateinit var tecnicoAdapter: TecnicoAdapter
     private val db = FirebaseFirestore.getInstance()
-    private var clienteDistrito: String = "Ventanilla" // Distrito por defecto
+    private var clienteDistrito: String = "Ventanilla"
     private lateinit var drawerLayout: DrawerLayout
 
-    // ── Chips ─────────────────────────────────────────
     private lateinit var btnTodos: Button
     private lateinit var btnCategoria1: Button
     private lateinit var btnCategoria2: Button
+    
+    private var distritosPermitidos: List<String> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,11 +73,8 @@ class HomeClienteActivity : NavActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val texto = s.toString().trim()
-                if (texto.isNotEmpty()) {
-                    buscarTecnicosPorTexto(texto)
-                } else {
-                    buscarTecnicos(null)
-                }
+                if (texto.isNotEmpty()) buscarTecnicosPorTexto(texto)
+                else buscarTecnicosLocalized(null)
             }
             override fun afterTextChanged(s: Editable?) {}
         })
@@ -99,17 +92,15 @@ class HomeClienteActivity : NavActivity() {
         }
 
         findViewById<CardView>(R.id.cardMapa)?.setOnClickListener {
-            val intent = Intent(this, NuevaSolicitudActivity::class.java).apply {
+            startActivity(Intent(this, NuevaSolicitudActivity::class.java).apply {
                 putExtra("distrito", clienteDistrito)
-            }
-            startActivity(intent)
+            })
         }
         
         findViewById<View>(R.id.fabAdd)?.setOnClickListener {
-            val intent = Intent(this, NuevaSolicitudActivity::class.java).apply {
+            startActivity(Intent(this, NuevaSolicitudActivity::class.java).apply {
                 putExtra("distrito", clienteDistrito)
-            }
-            startActivity(intent)
+            })
         }
     }
 
@@ -121,14 +112,7 @@ class HomeClienteActivity : NavActivity() {
                 R.id.nav_direcciones -> startActivity(Intent(this, MisDireccionesActivity::class.java))
                 R.id.nav_pagos -> startActivity(Intent(this, MetodosPagoActivity::class.java))
                 R.id.nav_historial -> startActivity(Intent(this, HistorialPagosActivity::class.java))
-                R.id.nav_logout -> {
-                    FirebaseAuth.getInstance().signOut()
-                    val intent = Intent(this, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    finish()
-                }
-                R.id.nav_soporte -> showToast("Soporte técnico próximamente")
+                R.id.nav_logout -> forzarCerrarSesion()
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true
@@ -142,74 +126,48 @@ class HomeClienteActivity : NavActivity() {
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
                     val nombreCompleto = document.getString("nombreCompleto") ?: "Usuario"
-                    val fotoPerfil = document.getString("fotoPerfil") ?: ""
-                    val correo = document.getString("correo") ?: ""
-                    val partesNombre = nombreCompleto.trim().split(" ")
-                    val primerNombre = partesNombre[0]
-                    
+                    val primerNombre = nombreCompleto.trim().split(" ")[0]
                     findViewById<TextView>(R.id.tvSaludo)?.text = "HOLA, ${primerNombre.uppercase()} 👋"
-
-                    val iniciales = if (partesNombre.size > 1) {
-                        "${partesNombre[0].take(1)}${partesNombre[1].take(1)}"
-                    } else {
-                        primerNombre.take(2)
-                    }.uppercase()
-                    
-                    findViewById<TextView>(R.id.tvAvatarInitials)?.text = iniciales
-                    val imgPerfil = findViewById<ImageView>(R.id.imgPerfil)
-                    
-                    val navView = findViewById<NavigationView>(R.id.navigationView)
-                    val headerView = if (navView.headerCount > 0) navView.getHeaderView(0) else null
-                    
-                    headerView?.let { header ->
-                        header.findViewById<TextView>(R.id.tvNavHeaderNombre).text = nombreCompleto
-                        header.findViewById<TextView>(R.id.tvNavHeaderCorreo).text = correo
-                        header.findViewById<TextView>(R.id.tvNavHeaderInitials).text = iniciales
-                        val imgNavHeader = header.findViewById<ImageView>(R.id.imgNavHeaderPerfil)
-
-                        if (fotoPerfil.isNotEmpty()) {
-                            Glide.with(this).load(fotoPerfil).circleCrop().into(imgNavHeader)
-                            imgNavHeader.visibility = View.VISIBLE
-                        } else {
-                            imgNavHeader.visibility = View.GONE
-                        }
-                    }
-
-                    if (fotoPerfil.isNotEmpty() && imgPerfil != null) {
-                        Glide.with(this).load(fotoPerfil).circleCrop().into(imgPerfil)
-                        imgPerfil.visibility = View.VISIBLE
-                    } else {
-                        imgPerfil?.visibility = View.GONE
-                    }
 
                     clienteDistrito = document.getString("distritoResidencia") ?: "Ventanilla"
                     findViewById<TextView>(R.id.tvNombreZona)?.text = "Zona: $clienteDistrito"
                     
                     cargarMapaEstatico(clienteDistrito)
-                    buscarTecnicos(null)
+                    
+                    // PASO 1: Obtener vecinos antes de buscar técnicos
+                    cargarDistritosCercanos(clienteDistrito)
                 } else {
-                    Log.e("HOME", "Perfil no encontrado en Firestore. Cerrando sesión.")
                     forzarCerrarSesion()
                 }
             }
     }
 
-    private fun forzarCerrarSesion() {
-        FirebaseAuth.getInstance().signOut()
-        lifecycleScope.launch {
-            val dbLocal = com.chambita.app.data.local.AppDatabase.getDatabase(this@HomeClienteActivity)
-            dbLocal.userSessionDao().clearActiveSessions()
-            val intent = Intent(this@HomeClienteActivity, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
-        }
+    private fun cargarDistritosCercanos(distrito: String) {
+        db.collection("distritos").document(distrito).get()
+            .addOnSuccessListener { doc ->
+                val vecinos = doc.get("distritosVecinos") as? List<String> ?: emptyList()
+                // Lista final: Mi distrito + Vecinos
+                distritosPermitidos = (vecinos + distrito).distinct()
+                Log.d(TAG, "Zonas permitidas para búsqueda: $distritosPermitidos")
+                
+                // PASO 2: Ahora sí buscamos técnicos solo en estas zonas
+                buscarTecnicosLocalized(null)
+            }
+            .addOnFailureListener {
+                // Fallback: si falla la colección de distritos, buscamos solo en el distrito del cliente
+                distritosPermitidos = listOf(distrito)
+                buscarTecnicosLocalized(null)
+            }
     }
 
-    private fun buscarTecnicos(especialidad: String?) {
+    private fun buscarTecnicosLocalized(especialidad: String?) {
+        if (distritosPermitidos.isEmpty()) return
+
+        // Filtro: Rol Técnico + Disponible + Que cubra alguna de mis zonas permitidas
         var query = db.collection("usuarios")
             .whereEqualTo("rol", "tecnico")
             .whereEqualTo("disponible", true)
+            .whereArrayContainsAny("distritos", distritosPermitidos)
 
         if (especialidad != null) {
             query = query.whereEqualTo("especialidad", especialidad)
@@ -225,6 +183,7 @@ class HomeClienteActivity : NavActivity() {
     }
 
     private fun buscarTecnicosPorTexto(texto: String) {
+        // En la búsqueda manual por texto, sí permitimos buscar en todo Lima
         db.collection("usuarios")
             .whereEqualTo("rol", "tecnico")
             .whereEqualTo("disponible", true)
@@ -240,15 +199,13 @@ class HomeClienteActivity : NavActivity() {
                     tecnico.especialidad.lowercase(Locale.getDefault()).contains(busquedaLower) ||
                     tecnico.distritos.any { d -> d.lowercase(Locale.getDefault()).contains(busquedaLower) }
                 }
-                
                 actualizarUILista(listaFiltrada)
             }
     }
 
     private fun actualizarUILista(lista: List<Usuario>) {
         tecnicoAdapter.actualizarLista(lista)
-        
-        if (lista.isEmpty()) {
+        if (lista.isEmpty() && distritosPermitidos.isNotEmpty()) {
             val intent = Intent(this, SinResultadosActivity::class.java).apply {
                 putExtra("distrito", clienteDistrito)
             }
@@ -256,48 +213,19 @@ class HomeClienteActivity : NavActivity() {
         }
     }
 
-    private fun cargarMapaEstatico(distrito: String) {
-        val imgMapa = findViewById<ImageView>(R.id.imgMapa) ?: return
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                val apiKey = com.chambita.app.BuildConfig.MAPS_API_KEY
-                if (apiKey.isEmpty() || !apiKey.startsWith("AIza")) return@launch
-
-                val center = "${distrito.replace(" ", "+")},+Lima,+Peru"
-                val urlString = "https://maps.googleapis.com/maps/api/staticmap" +
-                        "?center=$center&zoom=15&size=600x300&scale=2&maptype=roadmap&key=$apiKey"
-
-                val url = URL(urlString)
-                val connection = url.openConnection() as java.net.HttpURLConnection
-                connection.setRequestProperty("X-Android-Package", packageName)
-                
-                if (connection.responseCode == java.net.HttpURLConnection.HTTP_OK) {
-                    val bitmap = BitmapFactory.decodeStream(connection.inputStream)
-                    withContext(Dispatchers.Main) {
-                        imgMapa.setImageBitmap(bitmap)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("MAPS", "Excepción al descargar el mapa estático", e)
-            }
-        }
-    }
-
     private fun configurarChips() {
         seleccionarChip(btnTodos)
-
         btnTodos.setOnClickListener {
             seleccionarChip(btnTodos)
-            buscarTecnicos(null)
+            buscarTecnicosLocalized(null)
         }
         btnCategoria1.setOnClickListener {
             seleccionarChip(btnCategoria1)
-            buscarTecnicos("Electricista")
+            buscarTecnicosLocalized("Electricista")
         }
         btnCategoria2.setOnClickListener {
             seleccionarChip(btnCategoria2)
-            buscarTecnicos("Gasfitero")
+            buscarTecnicosLocalized("Gasfitero")
         }
     }
 
@@ -313,12 +241,34 @@ class HomeClienteActivity : NavActivity() {
         }
     }
 
+    private fun cargarMapaEstatico(distrito: String) {
+        val imgMapa = findViewById<ImageView>(R.id.imgMapa) ?: return
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val apiKey = com.chambita.app.BuildConfig.MAPS_API_KEY
+                val center = "${distrito.replace(" ", "+")},+Lima,+Peru"
+                val urlString = "https://maps.googleapis.com/maps/api/staticmap?center=$center&zoom=15&size=600x300&scale=2&maptype=roadmap&key=$apiKey"
+                val url = URL(urlString)
+                val connection = url.openConnection() as java.net.HttpURLConnection
+                connection.setRequestProperty("X-Android-Package", packageName)
+                if (connection.responseCode == java.net.HttpURLConnection.HTTP_OK) {
+                    val bitmap = BitmapFactory.decodeStream(connection.inputStream)
+                    withContext(Dispatchers.Main) { imgMapa.setImageBitmap(bitmap) }
+                }
+            } catch (e: Exception) { Log.e("MAPS", "Error en mapa", e) }
+        }
+    }
+
+    private fun forzarCerrarSesion() {
+        FirebaseAuth.getInstance().signOut()
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
 
     override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) drawerLayout.closeDrawer(GravityCompat.START)
+        else super.onBackPressed()
     }
 }

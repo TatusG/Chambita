@@ -1,13 +1,13 @@
 package com.chambita.app.ui.auth
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import com.chambita.app.R
 import com.chambita.app.models.Pago
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -36,13 +36,18 @@ class DashboardGananciasActivity : NavActivity() {
     private fun cargarDatosGanancias() {
         if (uid == null) return
 
+        // Simplificamos eliminando el orderBy de Firestore para evitar errores de índice
         db.collection("pagos")
             .whereEqualTo("tecnicoId", uid)
-            .orderBy("fechaRegistro", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { snapshot ->
                 val pagos = snapshot.toObjects(Pago::class.java)
-                calcularYMostrarMetricas(pagos)
+                // Ordenamos en memoria
+                val pagosOrdenados = pagos.sortedByDescending { it.fechaRegistro }
+                calcularYMostrarMetricas(pagosOrdenados)
+            }
+            .addOnFailureListener { e ->
+                Log.e("DASHBOARD", "Error cargando ganancias", e)
             }
     }
 

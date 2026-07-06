@@ -31,20 +31,26 @@ class ChatListAdapter(
         val chat = list[position]
         val contactoId = if (chat.clienteId == currentUid) chat.tecnicoId else chat.clienteId
         
+        if (contactoId.isEmpty()) return
+
         holder.txtMensaje.text = chat.ultimoMensaje
-        val sdf = SimpleDateFormat("dd/MM", Locale.getDefault())
+        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
         holder.txtHora.text = chat.fechaUltimoMensaje?.let { sdf.format(it.toDate()) } ?: ""
 
         // Cargar datos del contacto
         FirebaseFirestore.getInstance().collection("usuarios").document(contactoId)
             .get().addOnSuccessListener { doc ->
-                val contacto = doc.toObject(Usuario::class.java)
-                contacto?.let {
-                    holder.txtNombre.text = it.nombreCompleto
-                    if (it.fotoPerfil.isNotEmpty()) {
-                        Glide.with(holder.itemView.context).load(it.fotoPerfil).circleCrop().into(holder.imgAvatar)
+                if (doc.exists()) {
+                    val contacto = doc.toObject(Usuario::class.java)
+                    contacto?.let {
+                        holder.txtNombre.text = it.nombreCompleto
+                        if (it.fotoPerfil.isNotEmpty()) {
+                            Glide.with(holder.itemView.context).load(it.fotoPerfil).circleCrop().into(holder.imgAvatar)
+                        } else {
+                            holder.imgAvatar.setImageResource(R.drawable.ic_person)
+                        }
+                        holder.itemView.setOnClickListener { onClick(chat, contacto) }
                     }
-                    holder.itemView.setOnClickListener { onClick(chat, contacto) }
                 }
             }
     }

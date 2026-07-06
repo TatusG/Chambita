@@ -9,23 +9,31 @@ class SolicitudRepository {
     private val db = FirebaseFirestore.getInstance()
 
     /**
-     * Escucha solicitudes pendientes en los distritos que cubre el técnico.
-     * ✅ Se asegura de asignar el Document ID al campo 'id' del modelo.
+     * Escucha solicitudes para el técnico:
+     * 1. Asignadas directamente a él (tecnicoId == uid) y pendientes.
+     * 2. Abiertas (tecnicoId == null) en sus distritos y pendientes.
+     * ✅ Se ordena en memoria para evitar requerir índices compuestos de Firestore.
      */
-    fun escucharSolicitudesNuevas(
+    fun escucharSolicitudesParaTecnico(
+        uid: String,
         distritos: List<String>,
         onUpdate: (List<Solicitud>) -> Unit
     ): ListenerRegistration {
         return db.collection("solicitudes")
             .whereEqualTo("estado", "pendiente")
-            .whereIn("distritoServicio", distritos)
-            .orderBy("fechaCreacion", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) return@addSnapshotListener
+                
                 val lista = snapshot?.documents?.mapNotNull { doc ->
                     doc.toObject(Solicitud::class.java)?.copy(id = doc.id)
                 } ?: emptyList()
-                onUpdate(lista)
+
+                // Filtrado y ordenamiento en memoria
+                val filtradas = lista.filter { sol ->
+                    sol.tecnicoId == uid || (sol.tecnicoId == null && distritos.contains(sol.distritoServicio))
+                }.sortedByDescending { it.fechaCreacion }
+                
+                onUpdate(filtradas)
             }
     }
 

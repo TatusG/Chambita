@@ -187,9 +187,9 @@ class HomeTecnicoActivity : NavActivity() {
     }
 
     private fun activarEscuchaSolicitudes() {
-        if (solicitudesListener != null || misDistritos.isEmpty()) return
+        if (solicitudesListener != null || misDistritos.isEmpty() || uid == null) return
         
-        solicitudesListener = solicitudRepo.escucharSolicitudesNuevas(misDistritos) { lista ->
+        solicitudesListener = solicitudRepo.escucharSolicitudesParaTecnico(uid, misDistritos) { lista ->
             adapter.updateList(lista)
             val tvPendientes = findViewById<TextView>(R.id.txtPendientes)
             tvPendientes.text = "${lista.size} pendiente"

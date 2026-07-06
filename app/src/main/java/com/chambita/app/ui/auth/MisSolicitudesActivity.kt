@@ -210,8 +210,6 @@ class MisSolicitudesActivity : NavActivity() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val db = FirebaseFirestore.getInstance()
 
-        var query: Query = db.collection("solicitudes")
-
         val mensajeVacio = when (tab) {
             "PENDIENTES" -> "No hay solicitudes pendientes"
             "EN CURSO" -> "No tienes trabajos en curso"
@@ -219,18 +217,19 @@ class MisSolicitudesActivity : NavActivity() {
             else -> "Sin datos"
         }
 
-        when (tab) {
-            "PENDIENTES" -> {
-                if (misDistritos.isNotEmpty()) {
-                    query = query.whereEqualTo("estado", "pendiente")
-                                 .whereIn("distritoServicio", misDistritos)
-                } else {
-                    adapterTecnico.updateList(emptyList())
-                    findViewById<TextView>(R.id.txtMensajeVacio)?.text = "Configura tus zonas de cobertura"
-                    findViewById<LinearLayout>(R.id.layoutVacio).visibility = View.VISIBLE
-                    return
-                }
+        if (tab == "PENDIENTES") {
+            // Usar la lógica centralizada del repositorio para PENDIENTES
+            solicitudesListener = solicitudRepo.escucharSolicitudesParaTecnico(uid, misDistritos) { lista ->
+                adapterTecnico.updateList(lista)
+                findViewById<TextView>(R.id.txtMensajeVacio)?.text = mensajeVacio
+                findViewById<LinearLayout>(R.id.layoutVacio).visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
             }
+            return
+        }
+
+        var query: Query = db.collection("solicitudes")
+
+        when (tab) {
             "EN CURSO" -> {
                 query = query.whereEqualTo("tecnicoId", uid)
                              .whereIn("estado", listOf("aceptada", "en_curso"))
@@ -242,19 +241,18 @@ class MisSolicitudesActivity : NavActivity() {
         }
 
         solicitudesListener = query.addSnapshotListener { value, error ->
-            if (error != null) {
-                Log.e(TAG, "Error escuchando solicitudes: ${error.message}")
-                return@addSnapshotListener
+                if (error != null) {
+                    Log.e(TAG, "Error escuchando solicitudes: ${error.message}")
+                    return@addSnapshotListener
+                }
+                val lista = value?.documents?.mapNotNull { doc ->
+                    doc.toObject(Solicitud::class.java)?.copy(id = doc.id)
+                }?.sortedByDescending { it.fechaCreacion } ?: emptyList()
+                
+                adapterTecnico.updateList(lista)
+                findViewById<TextView>(R.id.txtMensajeVacio)?.text = mensajeVacio
+                findViewById<LinearLayout>(R.id.layoutVacio).visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
             }
-            // ✅ Mapeo de Document ID
-            val lista = value?.documents?.mapNotNull { doc ->
-                doc.toObject(Solicitud::class.java)?.copy(id = doc.id)
-            } ?: emptyList()
-            
-            adapterTecnico.updateList(lista)
-            findViewById<TextView>(R.id.txtMensajeVacio)?.text = mensajeVacio
-            findViewById<LinearLayout>(R.id.layoutVacio).visibility = if (lista.isEmpty()) View.VISIBLE else View.GONE
-        }
     }
 
     private fun cargarSolicitudesCliente(tab: String) {
@@ -285,10 +283,10 @@ class MisSolicitudesActivity : NavActivity() {
 
         solicitudesListener = query.addSnapshotListener { value, error ->
             if (error != null) return@addSnapshotListener
-            // ✅ Mapeo de Document ID
+            // ✅ Mapeo de Document ID y ordenamiento en memoria
             val lista = value?.documents?.mapNotNull { doc ->
                 doc.toObject(Solicitud::class.java)?.copy(id = doc.id)
-            } ?: emptyList()
+            }?.sortedByDescending { it.fechaCreacion } ?: emptyList()
             
             adapterCliente.updateList(lista)
             findViewById<TextView>(R.id.txtMensajeVacio)?.text = mensajeVacio

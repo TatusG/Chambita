@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import com.bumptech.glide.Glide
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chambita.app.R
@@ -28,7 +29,18 @@ class MensajesActivity : NavActivity() {
 
         barraNavegacion()
         inicializarComponentes()
+        cargarMiAvatar()
         escucharChats()
+    }
+
+    private fun cargarMiAvatar() {
+        if (currentUid == null) return
+        db.collection("usuarios").document(currentUid).get().addOnSuccessListener { doc ->
+            val url = doc.getString("fotoPerfil")
+            if (!url.isNullOrEmpty()) {
+                Glide.with(this).load(url).circleCrop().into(findViewById<ImageView>(R.id.imgAvatar))
+            }
+        }
     }
 
     private fun inicializarComponentes() {
@@ -68,7 +80,6 @@ class MensajesActivity : NavActivity() {
             
             chatsListener = db.collection("chats")
                 .whereEqualTo(field, currentUid)
-                .orderBy("fechaUltimoMensaje", Query.Direction.DESCENDING)
                 .addSnapshotListener { snapshot, e ->
                     if (e != null) {
                         Log.e("MensajesActivity", "Error escuchando chats", e)
@@ -77,7 +88,7 @@ class MensajesActivity : NavActivity() {
 
                     val lista = snapshot?.mapNotNull { doc ->
                         doc.toObject(Chat::class.java).copy(id = doc.id)
-                    } ?: emptyList()
+                    }?.sortedByDescending { it.fechaUltimoMensaje } ?: emptyList()
                     
                     adapter.updateList(lista)
                 }

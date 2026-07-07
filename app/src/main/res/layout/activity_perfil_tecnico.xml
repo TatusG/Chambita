@@ -271,7 +271,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:layout_marginTop="24dp"
-                        android:background="@drawable/bg_logout"
+                        android:background="@drawable/bg_button_danger_outline"
                         android:gravity="center"
                         android:orientation="horizontal"
                         android:clickable="true"
@@ -281,14 +281,14 @@
                             android:layout_width="22dp"
                             android:layout_height="22dp"
                             android:src="@drawable/ic_logout"
-                            android:tint="#D32F2F" />
+                            app:tint="@color/chambita_rojo" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:text="CERRAR SESIÓN"
-                            android:textColor="#D32F2F"
+                            android:textColor="@color/chambita_rojo"
                             android:textSize="16sp"
                             android:textStyle="bold" />
                     </LinearLayout>

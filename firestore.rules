@@ -24,8 +24,13 @@ service cloud.firestore {
       // Cualquier usuario autenticado puede leer los perfiles (para que clientes vean técnicos y viceversa).
       allow read: if esUsuarioAutenticado();
 
-      // Un usuario solo puede crear o editar su propio perfil (cliente o técnico).
-      allow create, update: if esPropioUsuario(uid);
+      // Un usuario puede crear su propio perfil.
+      allow create: if esPropioUsuario(uid);
+
+      // Un usuario puede editar su propio perfil.
+      // Además, se permite que otros usuarios (clientes) actualicen los campos de reputación del técnico al calificar.
+      allow update: if esPropioUsuario(uid) ||
+                    (esUsuarioAutenticado() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['promedioEstrellas', 'numeroResenas', 'conteoTrabajos']));
 
       // Por seguridad e integridad de la plataforma, se deshabilita la eliminación directa de perfiles.
       allow delete: if false;
@@ -104,8 +109,9 @@ service cloud.firestore {
       // Solo los involucrados (el cliente emisor o el técnico receptor) pueden consultar la información del pago.
       allow read: if esInvolucradoEnPago(resource.data);
 
-      // Un cliente autenticado puede registrar un pago donde él es el emisor ('clienteId').
-      allow create: if esUsuarioAutenticado() && request.auth.uid == request.resource.data.clienteId;
+      // El cliente o el técnico involucrados pueden registrar un pago.
+      allow create: if esUsuarioAutenticado() &&
+                    (request.auth.uid == request.resource.data.clienteId || request.auth.uid == request.resource.data.tecnicoId);
 
       // Los registros de pago no se pueden modificar ni eliminar para mantener la integridad de la auditoría financiera.
       allow update, delete: if false;

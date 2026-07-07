@@ -376,20 +376,37 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- CERRAR SESIÓN -->
-                <Button
-                    android:id="@+id/btnCerrarSesion"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginHorizontal="20dp"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="@drawable/bg_button_logout"
-                    app:backgroundTint="@null"
+            <!-- CERRAR SESIÓN -->
+            <LinearLayout
+                android:id="@+id/btnCerrarSesion"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/bg_button_danger_outline"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_logout"
+                    app:tint="@color/chambita_rojo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:text="CERRAR SESIÓN"
-                    android:textColor="#D32F2F"
+                    android:textColor="@color/chambita_rojo"
                     android:textStyle="bold"
+                    android:textSize="16sp"
                     android:textAllCaps="true" />
+
+            </LinearLayout>
 
             </LinearLayout>
         </ScrollView>

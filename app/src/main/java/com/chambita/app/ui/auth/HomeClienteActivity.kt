@@ -127,7 +127,40 @@ class HomeClienteActivity : NavActivity() {
                 if (document != null && document.exists()) {
                     val nombreCompleto = document.getString("nombreCompleto") ?: "Usuario"
                     val primerNombre = nombreCompleto.trim().split(" ")[0]
+                    val fotoPerfil = document.getString("fotoPerfil") ?: ""
+                    val correo = document.getString("correo") ?: ""
+
                     findViewById<TextView>(R.id.tvSaludo)?.text = "HOLA, ${primerNombre.uppercase()} 👋"
+
+                    val iniciales = if (nombreCompleto.contains(" ")) {
+                        val partes = nombreCompleto.trim().split(" ")
+                        "${partes[0].take(1)}${partes[1].take(1)}"
+                    } else {
+                        nombreCompleto.take(2)
+                    }.uppercase()
+
+                    // Actualizar Home
+                    findViewById<TextView>(R.id.tvAvatarInitials)?.text = iniciales
+                    val imgPerfil = findViewById<ImageView>(R.id.imgPerfil)
+
+                    // Actualizar Drawer
+                    val navView = findViewById<NavigationView>(R.id.navigationView)
+                    val headerView = navView.getHeaderView(0)
+                    headerView.findViewById<TextView>(R.id.tvNavHeaderNombre).text = nombreCompleto
+                    headerView.findViewById<TextView>(R.id.tvNavHeaderCorreo).text = correo
+                    headerView.findViewById<TextView>(R.id.tvNavHeaderInitials).text = iniciales
+                    val imgNavHeader = headerView.findViewById<ImageView>(R.id.imgNavHeaderPerfil)
+
+                    if (fotoPerfil.isNotEmpty()) {
+                        Glide.with(this).load(fotoPerfil).circleCrop().into(imgPerfil)
+                        imgPerfil.visibility = View.VISIBLE
+
+                        Glide.with(this).load(fotoPerfil).circleCrop().into(imgNavHeader)
+                        imgNavHeader.visibility = View.VISIBLE
+                    } else {
+                        imgPerfil.visibility = View.GONE
+                        imgNavHeader.visibility = View.GONE
+                    }
 
                     clienteDistrito = document.getString("distritoResidencia") ?: "Ventanilla"
                     findViewById<TextView>(R.id.tvNombreZona)?.text = "Zona: $clienteDistrito"

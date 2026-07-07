@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:layout_margin="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/blanco">
+
+    <LinearLayout
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvPropuestaTitulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PROPUESTA DE PRECIO"
+            android:textColor="@color/chambita_texto_secundario"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:letterSpacing="0.1" />
+
+        <TextView
+            android:id="@+id/tvPropuestaMonto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="S/ 0.00"
+            android:textColor="@color/figma_blue"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tvPropuestaDetalle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Por el servicio completo"
+            android:textColor="@color/chambita_texto_principal"
+            android:textSize="14sp"
+            android:gravity="center" />
+
+        <LinearLayout
+            android:id="@+id/layoutAccionesPropuesta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnRechazarPropuesta"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_button_outline"
+                android:text="Rechazar"
+                android:textAllCaps="false"
+                android:textColor="@color/chambita_rojo"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/btnAceptarPropuesta"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_primary"
+                android:text="Aceptar"
+                android:textAllCaps="false"
+                android:textColor="@color/blanco"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

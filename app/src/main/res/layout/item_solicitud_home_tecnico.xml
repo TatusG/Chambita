@@ -76,8 +76,9 @@
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@drawable/bg_button_primary"
+                android:background="@drawable/bg_button_success"
                 android:text="@string/aceptar"
+                android:textStyle="bold"
                 android:textColor="@android:color/white"/>
 
             <Button
@@ -86,7 +87,10 @@
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
-                android:text="@string/rechazar"/>
+                android:background="@drawable/bg_button_danger_outline"
+                android:text="@string/rechazar"
+                android:textStyle="bold"
+                android:textColor="@color/chambita_rojo"/>
         </LinearLayout>
 
     </LinearLayout>

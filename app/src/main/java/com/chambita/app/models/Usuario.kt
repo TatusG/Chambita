@@ -19,7 +19,9 @@ data class Usuario(
     val rol: String = "", // "cliente" o "tecnico"
     val fotoPerfil: String = "",
     val fcmToken: String = "", // Faltaba en tu código original
-    val notificacionesHabilitadas: Boolean = true, // Faltaba en tu código original
+    val notificacionesHabilitadas: Boolean = true,
+    val estaEnLinea: Boolean = false, // ✅ NUEVO: Para estado real
+    val ultimaConexion: Timestamp? = null, // ✅ NUEVO: Para saber cuándo estuvo activo
     val fechaRegistro: Timestamp? = null,
 
     // --- CAMPOS EXCLUSIVOS: CLIENTE ---

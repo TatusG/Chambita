@@ -1,6 +1,7 @@
 package com.chambita.app.ui.auth
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.*
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
@@ -9,11 +10,11 @@ import com.chambita.app.models.Resena
 import com.chambita.app.models.Usuario
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 class CalificarServicioActivity : NavActivity() {
 
+    private val TAG = "CALIFICAR_LOG"
     private var solicitudId: String? = null
     private var tecnicoId: String? = null
     private val db = FirebaseFirestore.getInstance()
@@ -28,7 +29,10 @@ class CalificarServicioActivity : NavActivity() {
         solicitudId = intent.getStringExtra("solicitudId")
         tecnicoId = intent.getStringExtra("tecnicoId")
 
-        if (tecnicoId == null) {
+        Log.d(TAG, "Iniciando calificación. Solicitud: $solicitudId | Técnico: $tecnicoId")
+
+        if (tecnicoId == null || solicitudId == null) {
+            Log.e(TAG, "Error: IDs nulos")
             finish()
             return
         }
@@ -108,6 +112,8 @@ class CalificarServicioActivity : NavActivity() {
             return
         }
 
+        Log.d(TAG, "Intentando enviar reseña...")
+
         val resena = Resena(
             clienteId = uid,
             nombreCliente = FirebaseAuth.getInstance().currentUser?.displayName ?: "Cliente",
@@ -118,30 +124,43 @@ class CalificarServicioActivity : NavActivity() {
             fechaRegistro = Timestamp.now()
         )
 
-        // Usamos una transaccion para actualizar el promedio de estrellas y numero de reseñas
         db.runTransaction { transaction ->
+            Log.d(TAG, "Ejecutando transacción Firestore")
             val tecnicoRef = db.collection("usuarios").document(tecnicoId!!)
             val snapshot = transaction.get(tecnicoRef)
             
             val numActual = snapshot.getLong("numeroResenas") ?: 0L
             val promActual = snapshot.getDouble("promedioEstrellas") ?: 0.0
+            val conteoTrabajosActual = snapshot.getLong("conteoTrabajos") ?: 0L
             
             val nuevoNum = numActual + 1
             val nuevoProm = ((promActual * numActual) + ratingSeleccionado) / nuevoNum
             
-            transaction.update(tecnicoRef, "numeroResenas", nuevoNum)
-            transaction.update(tecnicoRef, "promedioEstrellas", nuevoProm)
+            Log.d(TAG, "Nuevos valores -> Prom: $nuevoProm, Num: $nuevoNum")
+
+            // Actualizamos el perfil del técnico directamente
+            transaction.update(tecnicoRef, 
+                "numeroResenas", nuevoNum,
+                "promedioEstrellas", nuevoProm,
+                "conteoTrabajos", conteoTrabajosActual + 1
+            )
             
+            // Guardamos la reseña
             val resenaRef = tecnicoRef.collection("resenas").document()
             transaction.set(resenaRef, resena)
             
+            // Marcamos la solicitud como calificada
             val solicitudRef = db.collection("solicitudes").document(solicitudId!!)
             transaction.update(solicitudRef, "resenaDejada", true)
+            
+            null
         }.addOnSuccessListener {
+            Log.d(TAG, "Transacción completada con éxito")
             showToast("¡Gracias por tu reseña!")
             finish()
         }.addOnFailureListener { e ->
-            showToast("Error al enviar: ${e.message}")
+            Log.e(TAG, "FALLO EN TRANSACCIÓN: ${e.message}", e)
+            showToast("Error de permisos. Revisa el Logcat.")
         }
     }
 }

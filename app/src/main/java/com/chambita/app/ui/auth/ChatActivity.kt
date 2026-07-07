@@ -4,9 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,6 +38,7 @@ class ChatActivity : NavActivity() {
     private val db = FirebaseFirestore.getInstance()
     private val storage = FirebaseStorage.getInstance()
     private val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+    private var miRol: String = "cliente"
     
     private lateinit var adapter: ChatAdapter
     private lateinit var rvMensajes: RecyclerView
@@ -63,35 +67,24 @@ class ChatActivity : NavActivity() {
 
     private fun determinarJerarquiaYActivarChat() {
         lifecycleScope.launch {
-            try {
-                val dbLocal = AppDatabase.getDatabase(this@ChatActivity)
-                val session = dbLocal.userSessionDao().getActiveSession()
-                val miRol = session?.rol ?: "cliente"
+            val dbLocal = AppDatabase.getDatabase(this@ChatActivity)
+            val session = dbLocal.userSessionDao().getActiveSession()
+            miRol = session?.rol ?: "cliente"
 
-                chatId = if (miRol == "cliente") {
-                    "${currentUid}_${contactoId}"
-                } else {
-                    "${contactoId}_${currentUid}"
-                }
-                
-                Log.d(TAG, "Chat ID Final: $chatId")
-                escucharMensajes()
-            } catch (e: Exception) {
-                Log.e(TAG, "Error inicializando chat: ${e.message}")
-            }
+            chatId = if (miRol == "cliente") "${currentUid}_${contactoId}" else "${contactoId}_${currentUid}"
+            escucharMensajes()
         }
     }
 
     private fun inicializarComponentes() {
         rvMensajes = findViewById(R.id.rvMensajes)
-        adapter = ChatAdapter(emptyList())
-        rvMensajes.layoutManager = LinearLayoutManager(this).apply {
-            stackFromEnd = true
+        adapter = ChatAdapter(emptyList()) { mensaje, accion ->
+            procesarAccionPropuesta(mensaje, accion)
         }
+        rvMensajes.layoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }
         rvMensajes.adapter = adapter
 
         findViewById<ImageView>(R.id.btnVolver).setOnClickListener { finish() }
-
         findViewById<ImageButton>(R.id.btnEnviar).setOnClickListener {
             val et = findViewById<EditText>(R.id.etMensaje)
             val texto = et.text.toString().trim()
@@ -102,7 +95,7 @@ class ChatActivity : NavActivity() {
         }
 
         findViewById<ImageButton>(R.id.btnAdjuntar).setOnClickListener {
-            pickImageLauncher.launch("image/*")
+            mostrarOpcionesAdjuntar()
         }
 
         findViewById<ImageButton>(R.id.btnUbicacion).setOnClickListener {
@@ -110,96 +103,120 @@ class ChatActivity : NavActivity() {
         }
     }
 
-    private fun cargarDatosContacto() {
-        db.collection("usuarios").document(contactoId!!).get()
-            .addOnSuccessListener { doc ->
-                val contacto = doc.toObject(Usuario::class.java)
-                contacto?.let {
-                    contactoData = it
-                    findViewById<TextView>(R.id.tvNombreTecnico).text = it.nombreCompleto
-                    
-                    val tvEstado = findViewById<TextView>(R.id.tvEstadoTecnico)
-                    if (it.disponible) {
-                        tvEstado.text = "En línea"
-                        tvEstado.setTextColor(ContextCompat.getColor(this, R.color.chambita_verde))
-                    } else {
-                        tvEstado.text = "Desconectado"
-                        tvEstado.setTextColor(ContextCompat.getColor(this, R.color.chambita_rojo))
-                    }
-                    
-                    val imgPerfil = findViewById<ImageView>(R.id.imgPerfil)
-                    if (it.fotoPerfil.isNotEmpty()) {
-                        Glide.with(this).load(it.fotoPerfil).circleCrop().into(imgPerfil)
-                    }
+    private fun mostrarOpcionesAdjuntar() {
+        val opciones = if (miRol == "tecnico") arrayOf("Enviar Foto", "Enviar Propuesta de Precio") else arrayOf("Enviar Foto")
+        AlertDialog.Builder(this)
+            .setTitle("Seleccionar acción")
+            .setItems(opciones) { _, which ->
+                when (which) {
+                    0 -> pickImageLauncher.launch("image/*")
+                    1 -> mostrarDialogoPropuesta()
                 }
             }
+            .show()
     }
 
-    private fun escucharMensajes() {
-        if (chatId == null) return
-        
-        Log.d(TAG, "Iniciando escucha de mensajes para: $chatId")
-        mensajesListener?.remove()
-        
-        mensajesListener = db.collection("chats").document(chatId!!)
-            .collection("mensajes")
-            .orderBy("fechaRegistro", Query.Direction.ASCENDING)
-            .addSnapshotListener { snapshot, e ->
-                if (e != null) {
-                    Log.e(TAG, "Error en SnapshotListener: ${e.message}")
-                    return@addSnapshotListener
-                }
-                
-                if (snapshot != null) {
-                    val lista = snapshot.toObjects(Mensaje::class.java)
-                    Log.d(TAG, "Mensajes recibidos: ${lista.size}")
-                    adapter.updateList(lista)
-                    if (lista.isNotEmpty()) {
-                        rvMensajes.post {
-                            rvMensajes.scrollToPosition(lista.size - 1)
-                        }
-                    }
-                }
+    private fun mostrarDialogoPropuesta() {
+        val view = LayoutInflater.from(this).inflate(R.layout.dialog_registrar_pago, null)
+        val etMonto = view.findViewById<EditText>(R.id.etMontoCobrado)
+        view.findViewById<TextView>(R.id.tvLabelMetodoPago)?.visibility = View.GONE
+        view.findViewById<RadioGroup>(R.id.rgMetodoPago)?.visibility = View.GONE
+
+        AlertDialog.Builder(this)
+            .setTitle("Enviar Propuesta de Precio")
+            .setView(view)
+            .setPositiveButton("Enviar") { _, _ ->
+                val monto = etMonto.text.toString().toDoubleOrNull() ?: 0.0
+                if (monto > 0) enviarMensaje("Propuesta por el servicio", "propuesta", monto)
+                else showToast("Ingresa un monto válido")
             }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
-    private fun enviarMensaje(texto: String, tipo: String) {
-        if (currentUid == null || chatId == null) {
-            showToast("Iniciando chat, por favor espera...")
-            return
+    private fun procesarAccionPropuesta(mensaje: Mensaje, accion: String) {
+        if (accion == "ACEPTAR") {
+            // Actualizar la solicitud con el monto aceptado
+            actualizarMontoSolicitud(mensaje.monto)
+            enviarMensaje("He aceptado la propuesta de S/ ${mensaje.monto}", "texto")
+        } else {
+            enviarMensaje("He rechazado la propuesta", "texto")
         }
+    }
+
+    private fun actualizarMontoSolicitud(monto: Double) {
+        // Buscamos la solicitud activa entre estos dos usuarios
+        db.collection("solicitudes")
+            .whereEqualTo("clienteId", if (miRol == "cliente") currentUid else contactoId)
+            .whereEqualTo("tecnicoId", if (miRol == "tecnico") currentUid else contactoId)
+            .whereIn("estado", listOf("pendiente", "aceptada", "en_curso"))
+            .get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.isEmpty) {
+                    val solId = snapshot.documents[0].id
+                    db.collection("solicitudes").document(solId).update("montoFinal", monto)
+                    showToast("Precio acordado: S/ $monto")
+                }
+            }
+    }
+
+    private fun enviarMensaje(texto: String, tipo: String, monto: Double = 0.0) {
+        if (currentUid == null || chatId == null) return
+
+        val nuevoMensaje = Mensaje(
+            remitenteId = currentUid,
+            texto = texto,
+            tipo = tipo,
+            monto = monto,
+            fechaRegistro = Timestamp.now()
+        )
 
         val ids = chatId!!.split("_")
         val chatData = hashMapOf(
             "clienteId" to ids[0],
             "tecnicoId" to ids[1],
-            "ultimoMensaje" to (if (tipo == "imagen") "📷 Imagen" else texto),
+            "ultimoMensaje" to if (tipo == "propuesta") "💰 Propuesta: S/ $monto" else texto,
             "fechaUltimoMensaje" to Timestamp.now()
         )
 
-        db.collection("chats").document(chatId!!).set(chatData, SetOptions.merge())
-            .addOnSuccessListener {
-                val nuevoMensaje = Mensaje(
-                    remitenteId = currentUid,
-                    texto = texto,
-                    tipo = tipo,
-                    leido = false,
-                    fechaRegistro = Timestamp.now()
-                )
+        val batch = db.batch()
+        batch.set(db.collection("chats").document(chatId!!), chatData, SetOptions.merge())
+        batch.set(db.collection("chats").document(chatId!!).collection("mensajes").document(), nuevoMensaje)
+        batch.commit()
+    }
+
+    private fun cargarDatosContacto() {
+        db.collection("usuarios").document(contactoId!!).addSnapshotListener { doc, e ->
+            if (e != null || doc == null) return@addSnapshotListener
+            val contacto = doc.toObject(Usuario::class.java)
+            contacto?.let {
+                contactoData = it
+                findViewById<TextView>(R.id.tvNombreTecnico).text = it.nombreCompleto
+                val tvEstado = findViewById<TextView>(R.id.tvEstadoTecnico)
                 
-                db.collection("chats").document(chatId!!)
-                    .collection("mensajes")
-                    .add(nuevoMensaje)
-                    .addOnSuccessListener {
-                        Log.d(TAG, "Mensaje guardado en Firestore")
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e(TAG, "Error al añadir mensaje: ${e.message}")
-                    }
+                if (it.estaEnLinea) {
+                    tvEstado.text = "En línea"
+                    tvEstado.setTextColor(ContextCompat.getColor(this, R.color.chambita_verde))
+                } else {
+                    tvEstado.text = "Desconectado"
+                    tvEstado.setTextColor(ContextCompat.getColor(this, R.color.chambita_rojo))
+                }
+                
+                if (it.fotoPerfil.isNotEmpty()) Glide.with(this).load(it.fotoPerfil).circleCrop().into(findViewById(R.id.imgPerfil))
             }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Error al actualizar chat raíz: ${e.message}")
-                showToast("Error de permisos")
+        }
+    }
+
+    private fun escucharMensajes() {
+        if (chatId == null) return
+        mensajesListener = db.collection("chats").document(chatId!!)
+            .collection("mensajes")
+            .orderBy("fechaRegistro", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) return@addSnapshotListener
+                val lista = snapshot?.toObjects(Mensaje::class.java) ?: emptyList()
+                adapter.updateList(lista)
+                if (lista.isNotEmpty()) rvMensajes.scrollToPosition(lista.size - 1)
             }
     }
 

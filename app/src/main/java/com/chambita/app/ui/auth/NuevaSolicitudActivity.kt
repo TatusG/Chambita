@@ -5,8 +5,11 @@ import android.app.TimePickerDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.*
 import com.chambita.app.R
+import com.chambita.app.models.Direccion
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,14 +18,15 @@ import java.util.*
 
 class NuevaSolicitudActivity : NavActivity() {
 
+    private val TAG = "NUEVA_SOLICITUD"
     private var fechaSeleccionada: Date? = null
     private var nombreCliente: String = ""
     private var fotoCliente: String = ""
-    private var categoriaSeleccionada: String = "Instalación" // Por defecto
+    private var categoriaSeleccionada: String = "Instalación"
     private var tecnicoId: String? = null
     
     private lateinit var spDireccion: Spinner
-    private var direccionesList: List<String> = emptyList()
+    private var listaDireccionesFull: List<Direccion> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,51 +36,56 @@ class NuevaSolicitudActivity : NavActivity() {
         val nombreTecnico = intent.getStringExtra("nombreTecnico")
         val tarifa = intent.getDoubleExtra("tarifa", 0.0)
 
-        if (tecnicoId != null) {
-            findViewById<TextView>(R.id.tvResumenTecnico).text = nombreTecnico ?: "Profesional"
-            findViewById<TextView>(R.id.tvTarifa).text = String.format(Locale.getDefault(), "S/. %.2f", tarifa)
-            findViewById<TextView>(R.id.tvTecnico).text = "Contratando a: ${nombreTecnico ?: "profesional"}"
-        } else {
-            findViewById<TextView>(R.id.tvResumenTecnico).text = "Publicación abierta"
-            findViewById<TextView>(R.id.tvTarifa).text = "A convenir"
-            findViewById<TextView>(R.id.tvTecnico).text = "Publicando para técnicos cercanos"
-        }
-
-        val tvVolver = findViewById<TextView>(R.id.tvVolver)
-        val tvFechaHora = findViewById<TextView>(R.id.tvFechaHora)
-        val layoutFecha = findViewById<LinearLayout>(R.id.layoutFecha)
-        val btnConfirmar = findViewById<Button>(R.id.btnConfirmar)
-        val etDescripcion = findViewById<EditText>(R.id.etDescripcion)
-        spDireccion = findViewById(R.id.spDireccion)
-        
-        // Botones de Categoría
-        val btnInstalacion = findViewById<Button>(R.id.btnInstalacion)
-        val btnReparacion = findViewById<Button>(R.id.btnReparacion)
-        val btnMantenimiento = findViewById<Button>(R.id.btnMantenimiento)
-
+        inicializarUI(nombreTecnico, tarifa)
         cargarDatosCliente()
         cargarDirecciones()
+    }
 
-        // Lógica de Selección de Categoría
-        val botones = listOf(btnInstalacion, btnReparacion, btnMantenimiento)
-        botones.forEach { boton ->
-            boton?.setOnClickListener {
-                seleccionarBoton(boton, botones)
-                categoriaSeleccionada = boton.text.toString()
+    private fun inicializarUI(nombreTecnico: String?, tarifa: Double) {
+        val tvResumen = findViewById<TextView>(R.id.tvResumenTecnico)
+        val tvTarifa = findViewById<TextView>(R.id.tvTarifa)
+        val tvTecnicoLabel = findViewById<TextView>(R.id.tvTecnico)
+        
+        if (tecnicoId != null) {
+            tvResumen.text = nombreTecnico ?: "Profesional"
+            tvTarifa.text = String.format(Locale.US, "S/. %.2f", tarifa)
+            tvTecnicoLabel.text = "Contratando a: ${nombreTecnico ?: "profesional"}"
+        } else {
+            tvResumen.text = "Publicación abierta"
+            tvTarifa.text = "A convenir"
+            tvTecnicoLabel.text = "Publicando para técnicos cercanos"
+        }
+
+        spDireccion = findViewById(R.id.spDireccion)
+        val etDesc = findViewById<EditText>(R.id.etDescripcion)
+        val tvFecha = findViewById<TextView>(R.id.tvFechaHora)
+        
+        findViewById<LinearLayout>(R.id.layoutFecha)?.setOnClickListener { mostrarSelectorFechaHora(tvFecha) }
+        findViewById<TextView>(R.id.tvVolver)?.setOnClickListener { finish() }
+
+        // Categorías
+        val botones = listOf(
+            findViewById<Button>(R.id.btnInstalacion),
+            findViewById<Button>(R.id.btnReparacion),
+            findViewById<Button>(R.id.btnMantenimiento)
+        )
+        botones.forEach { btn ->
+            btn?.setOnClickListener {
+                seleccionarBoton(btn, botones)
+                categoriaSeleccionada = btn.text.toString()
             }
         }
 
-        tvVolver?.setOnClickListener { finish() }
-        layoutFecha?.setOnClickListener { mostrarSelectorFechaHora(tvFechaHora) }
-
-        btnConfirmar?.setOnClickListener {
-            val descripcion = etDescripcion.text.toString()
-            if (descripcion.isEmpty() || fechaSeleccionada == null) {
-                showToast("Por favor, describe el problema y elige una fecha")
+        findViewById<Button>(R.id.btnConfirmar)?.setOnClickListener {
+            val desc = etDesc.text.toString().trim()
+            if (desc.isEmpty() || fechaSeleccionada == null) {
+                showToast("Completa la descripción y la fecha")
             } else {
-                enviarSolicitud(descripcion)
+                enviarSolicitud(desc)
             }
         }
+
+        findViewById<Button>(R.id.btnCancelar)?.setOnClickListener { finish() }
     }
 
     private fun cargarDirecciones() {
@@ -85,13 +94,58 @@ class NuevaSolicitudActivity : NavActivity() {
             .collection("direcciones")
             .get()
             .addOnSuccessListener { snapshot ->
-                direccionesList = snapshot.documents.map { it.getString("direccion") ?: "" }.filter { it.isNotEmpty() }
-                if (direccionesList.isEmpty()) {
-                    direccionesList = listOf("No tienes direcciones guardadas")
+                listaDireccionesFull = snapshot.toObjects(Direccion::class.java)
+                
+                val visualList = if (listaDireccionesFull.isEmpty()) {
+                    listOf("Agrega una dirección en tu perfil")
+                } else {
+                    listaDireccionesFull.map { "${it.alias}: ${it.direccion} (${it.distrito})" }
                 }
-                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, direccionesList)
+
+                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, visualList)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spDireccion.adapter = adapter
+            }
+    }
+
+    private fun enviarSolicitud(descripcion: String) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val index = spDireccion.selectedItemPosition
+        
+        if (listaDireccionesFull.isEmpty()) {
+            showToast("Debes tener una dirección guardada")
+            return
+        }
+
+        val direccionElegida = listaDireccionesFull[index]
+        val db = FirebaseFirestore.getInstance()
+
+        val solicitud = hashMapOf(
+            "clienteId" to uid,
+            "tecnicoId" to tecnicoId,
+            "descripcionAveria" to descripcion,
+            "especialidadRequerida" to categoriaSeleccionada,
+            "fechaCreacion" to Timestamp.now(),
+            "fechaServicioProgramado" to Timestamp(fechaSeleccionada!!),
+            "direccionServicio" to direccionElegida.direccion,
+            "distritoServicio" to direccionElegida.distrito, // ✅ FIX: Ahora sí guardamos el distrito
+            "estado" to "pendiente",
+            "montoFinal" to 0.0,
+            "resenaDejada" to false,
+            "nombreCliente" to nombreCliente,
+            "fotoCliente" to fotoCliente
+        )
+
+        findViewById<Button>(R.id.btnConfirmar)?.isEnabled = false
+        db.collection("solicitudes").add(solicitud)
+            .addOnSuccessListener {
+                showToast("¡Solicitud enviada!")
+                startActivity(Intent(this, MisSolicitudesActivity::class.java))
+                finish()
+            }
+            .addOnFailureListener { 
+                findViewById<Button>(R.id.btnConfirmar)?.isEnabled = true
+                showToast("Error al enviar")
             }
     }
 
@@ -117,57 +171,12 @@ class NuevaSolicitudActivity : NavActivity() {
 
     private fun mostrarSelectorFechaHora(textView: TextView) {
         val cal = Calendar.getInstance()
-        val dpd = DatePickerDialog(this, { _, year, month, day ->
-            val tpd = TimePickerDialog(this, { _, hour, min ->
-                val selectedCal = Calendar.getInstance()
-                selectedCal.set(year, month, day, hour, min)
-                fechaSeleccionada = selectedCal.time
-                val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                textView.text = sdf.format(fechaSeleccionada!!)
-            }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true)
-            tpd.show()
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
-        dpd.show()
-    }
-
-    private fun enviarSolicitud(descripcion: String) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val db = FirebaseFirestore.getInstance()
-        val direccion = spDireccion.selectedItem?.toString() ?: "Sin dirección"
-
-        if (direccion == "No tienes direcciones guardadas") {
-            showToast("Por favor, agrega una dirección en tu perfil primero")
-            return
-        }
-
-        val solicitud = hashMapOf(
-            "clienteId" to uid,
-            "tecnicoId" to tecnicoId,
-            "descripcionAveria" to descripcion,
-            "especialidadRequerida" to categoriaSeleccionada,
-            "fechaCreacion" to Timestamp.now(),
-            "fechaServicioProgramado" to Timestamp(fechaSeleccionada!!),
-            "direccionServicio" to direccion,
-            "estado" to "pendiente",
-            "montoFinal" to 0.0,
-            "resenaDejada" to false,
-            "nombreCliente" to nombreCliente,
-            "fotoCliente" to fotoCliente
-        )
-
-        findViewById<Button>(R.id.btnConfirmar)?.isEnabled = false
-        db.collection("solicitudes").add(solicitud)
-            .addOnSuccessListener {
-                showToast("¡Solicitud enviada! Esperando técnico...")
-                // Navegar directamente a Mis Solicitudes para ver el estado
-                val intent = Intent(this, MisSolicitudesActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-                finish()
-            }
-            .addOnFailureListener { e ->
-                findViewById<Button>(R.id.btnConfirmar)?.isEnabled = true
-                showToast("Error: ${e.message}")
-            }
+        DatePickerDialog(this, { _, y, m, d ->
+            TimePickerDialog(this, { _, h, min ->
+                val sel = Calendar.getInstance().apply { set(y, m, d, h, min) }
+                fechaSeleccionada = sel.time
+                textView.text = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(fechaSeleccionada!!)
+            }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show()
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
     }
 }

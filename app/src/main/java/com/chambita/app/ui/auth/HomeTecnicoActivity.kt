@@ -61,7 +61,7 @@ class HomeTecnicoActivity : NavActivity() {
         adapter = SolicitudTecnicoAdapter(emptyList(), 
             onAceptar = { solicitud -> aceptarTrabajo(solicitud.id) },
             onRechazar = { _ -> showToast("Solicitud omitida") },
-            onDetail = { solicitud -> mostrarDetalleSolicitud(solicitud) } // ✅ Mostrar detalle
+            onDetail = { solicitud -> mostrarDetalleSolicitud(solicitud) }
         )
         rv.adapter = adapter
         
@@ -129,6 +129,21 @@ class HomeTecnicoActivity : NavActivity() {
                     
                     actualizarEstadisticas(it)
 
+                    // ACTUALIZAR DRAWER
+                    val navView = findViewById<NavigationView>(R.id.navigationView)
+                    if (navView != null && navView.headerCount > 0) {
+                        val header = navView.getHeaderView(0)
+                        header.findViewById<TextView>(R.id.tvNavHeaderNombre).text = it.nombreCompleto
+                        header.findViewById<TextView>(R.id.tvNavHeaderCorreo).text = it.correo
+                        val iniciales = obtenerIniciales(it.nombreCompleto)
+                        header.findViewById<TextView>(R.id.tvNavHeaderInitials).text = iniciales
+                        val imgNavHeader = header.findViewById<ImageView>(R.id.imgNavHeaderPerfil)
+                        if (it.fotoPerfil.isNotEmpty()) {
+                            Glide.with(this).load(it.fotoPerfil).circleCrop().into(imgNavHeader)
+                            imgNavHeader.visibility = View.VISIBLE
+                        }
+                    }
+
                     if (it.fotoPerfil.isNotEmpty()) {
                         Glide.with(this).load(it.fotoPerfil).circleCrop().into(findViewById<ImageView>(R.id.imgPerfil))
                     }
@@ -139,6 +154,15 @@ class HomeTecnicoActivity : NavActivity() {
                 Log.e(TAG, "Perfil no encontrado. Cerrando sesión.")
                 forzarCerrarSesion()
             }
+        }
+    }
+
+    private fun obtenerIniciales(nombre: String): String {
+        val partes = nombre.trim().split("\\s+".toRegex())
+        return if (partes.size >= 2) {
+            "${partes[0].take(1)}${partes[1].take(1)}".uppercase()
+        } else {
+            nombre.take(2).uppercase()
         }
     }
 

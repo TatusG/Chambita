@@ -38,8 +38,8 @@ class PerfilClienteActivity : NavActivity() {
 
     private fun inicializarComponentes() {
         drawerLayout = findViewById(R.id.drawerLayout)
-        val swNotificaciones = findViewById<Switch>(R.id.swNotificaciones)
-        val swGps = findViewById<Switch>(R.id.swGps)
+        val swNotificaciones = findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.swNotificaciones)
+        val swGps = findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.swGps)
 
         findViewById<ImageButton>(R.id.btnMenu)?.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
@@ -80,7 +80,7 @@ class PerfilClienteActivity : NavActivity() {
             startActivity(Intent(this, HistorialPagosActivity::class.java))
         }
 
-        findViewById<Button>(R.id.btnCerrarSesion)?.setOnClickListener {
+        findViewById<View>(R.id.btnCerrarSesion)?.setOnClickListener {
             viewModel.logout()
         }
     }

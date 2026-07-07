@@ -7,9 +7,34 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.chambita.app.R
 import com.chambita.app.data.local.AppDatabase
+import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
 abstract class NavActivity : AppCompatActivity() {
+
+    override fun onResume() {
+        super.onResume()
+        actualizarEstadoLinea(true)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        actualizarEstadoLinea(false)
+    }
+
+    private fun actualizarEstadoLinea(enLinea: Boolean) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val db = FirebaseFirestore.getInstance()
+        
+        val data = mapOf(
+            "estaEnLinea" to enLinea,
+            "ultimaConexion" to Timestamp.now()
+        )
+        
+        db.collection("usuarios").document(uid).update(data)
+    }
 
     protected fun barraNavegacion() {
         lifecycleScope.launch {

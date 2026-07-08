@@ -1,5 +1,4 @@
 <resources>
-    <!-- Tema Principal (Para la app interna) -->
     <style name="Theme.Chambita" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/chambita_primario</item>
         <item name="colorPrimaryVariant">@color/chambita_primario_oscuro</item>
@@ -8,9 +7,12 @@
         <item name="colorSecondaryVariant">@color/chambita_acento_oscuro</item>
         <item name="colorOnSecondary">@color/blanco</item>
         <item name="android:statusBarColor">@color/chambita_primario_oscuro</item>
+
+        <!-- ✅ AGREGA ESTA LÍNEA — hace que Button respete el drawable -->
+        <item name="materialButtonStyle">@style/Widget.AppCompat.Button</item>
+
     </style>
 
-    <!-- TEMA DE EMERGENCIA PARA SPLASH (Ultra-compatible) -->
     <style name="Theme.Chambita.Splash" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@color/chambita_primario</item>
         <item name="android:windowNoTitle">true</item>

@@ -45,19 +45,34 @@ class MensajesActivity : NavActivity() {
 
     private fun inicializarComponentes() {
         val rvChats = findViewById<RecyclerView>(R.id.rvChats)
+
         adapter = ChatListAdapter(emptyList()) { chat, contacto ->
+
+            // ✅ Determinar el contactoId directamente desde el objeto Chat
+            // sin depender de que contacto?.uid esté resuelto
+            val contactoId = if (currentUid == chat.clienteId) {
+                chat.tecnicoId
+            } else {
+                chat.clienteId
+            }
+
+            if (contactoId.isNullOrEmpty()) {
+                showToast("Error: No se pudo identificar el contacto")
+                return@ChatListAdapter
+            }
+
             val intent = Intent(this, ChatActivity::class.java).apply {
-                putExtra("chatId", chat.id)
-                putExtra("contactoId", contacto?.uid)
-                putExtra("nombreContacto", contacto?.nombreCompleto)
+                putExtra("chatId",          chat.id)
+                putExtra("contactoId",      contactoId)           // ← desde el Chat directamente
+                putExtra("nombreContacto",  contacto?.nombreCompleto ?: "")
             }
             startActivity(intent)
         }
+
         rvChats.layoutManager = LinearLayoutManager(this)
         rvChats.adapter = adapter
-        
+
         findViewById<ImageView>(R.id.btnMenu)?.setOnClickListener {
-            // Manejar apertura de drawer si fuera necesario o finish si es solo volver
             finish()
         }
     }

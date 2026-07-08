@@ -80,7 +80,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Métodos de pago"
+                    android:text="Medios de pago"
                     android:textColor="@color/chambita_texto_principal"
                     android:textSize="32sp"
                     android:textStyle="bold" />
@@ -126,7 +126,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="AGREGAR MÉTODO DE PAGO"
+                        android:text="AGREGAR MEDIO DE PAGO"
                         android:textColor="@color/chambita_acento"
                         android:textSize="14sp"
                         android:textStyle="bold" />

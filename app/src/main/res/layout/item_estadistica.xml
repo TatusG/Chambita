@@ -2,8 +2,9 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="0dp"
-    android:layout_height="110dp"
+    android:layout_height="90dp"
     android:layout_weight="1"
     android:layout_margin="4dp"
     app:cardCornerRadius="16dp"
@@ -14,25 +15,32 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        xmlns:tools="http://schemas.android.com/tools">
+        android:padding="8dp">
 
         <TextView
             android:id="@+id/txtNumero"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/chambita_primario"
-            android:textSize="28sp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            tools:text="0"/>
+            android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="12sp"
+            android:autoSizeMaxTextSize="20sp"
+            android:autoSizeStepGranularity="1sp"
+            tools:text="S/ 2600" />
 
         <TextView
             android:id="@+id/txtTitulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/chambita_texto_secundario"
-            android:textSize="13sp"
-            tools:text="Título"/>
+            android:textSize="11sp"
+            android:layout_marginTop="4dp"
+            tools:text="Ganado" />
 
     </LinearLayout>
-
 </androidx.cardview.widget.CardView>

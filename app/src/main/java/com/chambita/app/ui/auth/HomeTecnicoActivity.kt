@@ -179,41 +179,64 @@ class HomeTecnicoActivity : NavActivity() {
     }
 
     private fun actualizarEstadisticas(t: Usuario) {
-        val vMes = findViewById<View>(R.id.statMes)
+        val vMes    = findViewById<View>(R.id.statMes)
         val vGanado = findViewById<View>(R.id.statGanado)
         val vRating = findViewById<View>(R.id.statRating)
 
+        // Labels
+        vMes.findViewById<TextView>(R.id.txtTitulo).text    = "Trabajos"
+        vGanado.findViewById<TextView>(R.id.txtTitulo).text = "Ganado"
+        vRating.findViewById<TextView>(R.id.txtTitulo).text = "Rating"
+
+        // Rating inmediato desde el objeto
+        vRating.findViewById<TextView>(R.id.txtNumero).text =
+            String.format(Locale.US, "%.1f ★", t.promedioEstrellas)
+
+        // Trabajos completados
         db.collection("solicitudes")
             .whereEqualTo("tecnicoId", t.uid)
             .whereEqualTo("estado", "finalizada")
             .get()
             .addOnSuccessListener { snapshot ->
-                vMes.findViewById<TextView>(R.id.txtNumero).text = snapshot.size().toString()
+                vMes.findViewById<TextView>(R.id.txtNumero).text =
+                    snapshot.size().toString()
+            }
+            .addOnFailureListener {
+                vMes.findViewById<TextView>(R.id.txtNumero).text = "0"
             }
 
+        // Ganancias totales
         db.collection("pagos")
             .whereEqualTo("tecnicoId", t.uid)
             .get()
             .addOnSuccessListener { snapshot ->
-                var totalDinero = 0.0
-                snapshot.forEach { doc ->
-                    totalDinero += doc.getDouble("monto") ?: 0.0
-                }
-                vGanado.findViewById<TextView>(R.id.txtNumero).text = String.format(Locale.US, "S/ %.2f", totalDinero)
-            }
+                var total = 0.0
+                snapshot.forEach { doc -> total += doc.getDouble("monto") ?: 0.0 }
 
-        vRating.findViewById<TextView>(R.id.txtNumero).text = 
-            String.format(Locale.US, "%.1f ★", t.promedioEstrellas)
-        
-        vMes.findViewById<TextView>(R.id.txtTitulo).text = "Trabajos"
-        vGanado.findViewById<TextView>(R.id.txtTitulo).text = "Ganado"
-        vRating.findViewById<TextView>(R.id.txtTitulo).text = "Rating"
+                // ✅ Sin decimales si el monto es entero
+                vGanado.findViewById<TextView>(R.id.txtNumero).text =
+                    if (total % 1.0 == 0.0) {
+                        "S/ ${total.toInt()}"
+                    } else {
+                        "S/ ${"%.0f".format(total)}"
+                    }
+            }
+            .addOnFailureListener {
+                vGanado.findViewById<TextView>(R.id.txtNumero).text = "S/ 0"
+            }
     }
 
     private fun activarEscuchaSolicitudes() {
-        if (solicitudesListener != null || misDistritos.isEmpty() || uid == null) return
+        if (solicitudesListener != null || uid == null) return
         
+        if (misDistritos.isEmpty()) {
+            Log.w(TAG, "El técnico no tiene distritos de cobertura configurados. No se mostrarán solicitudes abiertas.")
+            return
+        }
+
+        Log.d(TAG, "Escuchando solicitudes para el técnico $uid en zonas: $misDistritos")
         solicitudesListener = solicitudRepo.escucharSolicitudesParaTecnico(uid, misDistritos) { lista ->
+            Log.d(TAG, "Solicitudes detectadas para el técnico: ${lista.size}")
             adapter.updateList(lista)
             val tvPendientes = findViewById<TextView>(R.id.txtPendientes)
             tvPendientes.text = "${lista.size} pendiente"

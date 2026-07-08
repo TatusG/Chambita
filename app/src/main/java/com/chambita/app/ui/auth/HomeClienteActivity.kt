@@ -31,7 +31,7 @@ class HomeClienteActivity : NavActivity() {
     private val TAG = "HOME_CLIENTE"
     private lateinit var tecnicoAdapter: TecnicoAdapter
     private val db = FirebaseFirestore.getInstance()
-    private var clienteDistrito: String = "Ventanilla"
+    private var clienteDistrito: String = ""
     private lateinit var drawerLayout: DrawerLayout
 
     private lateinit var btnTodos: Button
@@ -47,13 +47,25 @@ class HomeClienteActivity : NavActivity() {
         barraNavegacion()
         inicializarComponentes()
         configurarMenuLateral()
-        cargarDatosCabecera()
         configurarChips()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        cargarDatosCabecera()
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent) {
+        val filtros = intent.getStringArrayListExtra("filtroDistritos")
+        if (filtros != null) {
+            distritosPermitidos = filtros
+            buscarTecnicosLocalized(null)
+        }
     }
 
     private fun inicializarComponentes() {
         drawerLayout = findViewById(R.id.drawerLayout)
-        
         btnTodos      = findViewById(R.id.btnTodos)
         btnCategoria1 = findViewById(R.id.btnCategoria1)
         btnCategoria2 = findViewById(R.id.btnCategoria2)
@@ -68,6 +80,11 @@ class HomeClienteActivity : NavActivity() {
         rvTecnicos?.layoutManager = LinearLayoutManager(this)
         rvTecnicos?.adapter = tecnicoAdapter
 
+        findViewById<TextView>(R.id.tvVerTodo)?.setOnClickListener { 
+            showToast("Mostrando todos los técnicos de Lima")
+            buscarTecnicosGeneral(null) 
+        }
+
         val etBuscar = findViewById<EditText>(R.id.etBuscar)
         etBuscar?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -79,28 +96,12 @@ class HomeClienteActivity : NavActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        findViewById<ImageButton>(R.id.btnMenu)?.setOnClickListener {
-            drawerLayout.openDrawer(GravityCompat.START)
-        }
-
-        findViewById<ImageButton>(R.id.btnNotificaciones)?.setOnClickListener {
-            showToast("No tienes notificaciones nuevas")
-        }
-
-        findViewById<View>(R.id.layoutAvatar)?.setOnClickListener {
-            startActivity(Intent(this, PerfilClienteActivity::class.java))
-        }
-
+        findViewById<ImageButton>(R.id.btnMenu)?.setOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
+        findViewById<View>(R.id.layoutAvatar)?.setOnClickListener { startActivity(Intent(this, PerfilClienteActivity::class.java)) }
         findViewById<CardView>(R.id.cardMapa)?.setOnClickListener {
-            startActivity(Intent(this, NuevaSolicitudActivity::class.java).apply {
-                putExtra("distrito", clienteDistrito)
-            })
-        }
-        
-        findViewById<View>(R.id.fabAdd)?.setOnClickListener {
-            startActivity(Intent(this, NuevaSolicitudActivity::class.java).apply {
-                putExtra("distrito", clienteDistrito)
-            })
+            if (clienteDistrito.isNotEmpty()) {
+                startActivity(Intent(this, NuevaSolicitudActivity::class.java).apply { putExtra("distrito", clienteDistrito) })
+            }
         }
     }
 
@@ -110,8 +111,6 @@ class HomeClienteActivity : NavActivity() {
             when (menuItem.itemId) {
                 R.id.nav_perfil -> startActivity(Intent(this, PerfilClienteActivity::class.java))
                 R.id.nav_direcciones -> startActivity(Intent(this, MisDireccionesActivity::class.java))
-                R.id.nav_pagos -> startActivity(Intent(this, MetodosPagoActivity::class.java))
-                R.id.nav_historial -> startActivity(Intent(this, HistorialPagosActivity::class.java))
                 R.id.nav_logout -> forzarCerrarSesion()
             }
             drawerLayout.closeDrawer(GravityCompat.START)
@@ -121,145 +120,156 @@ class HomeClienteActivity : NavActivity() {
 
     private fun cargarDatosCabecera() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        db.collection("usuarios").document(uid).get().addOnSuccessListener { document ->
+            if (document != null && document.exists()) {
+                val nombreCompleto = document.getString("nombreCompleto") ?: "Usuario"
+                val primerNombre = nombreCompleto.trim().split(" ")[0]
+                findViewById<TextView>(R.id.tvSaludo)?.text = "HOLA, ${primerNombre.uppercase()} 👋"
 
-        db.collection("usuarios").document(uid).get()
-            .addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
-                    val nombreCompleto = document.getString("nombreCompleto") ?: "Usuario"
-                    val primerNombre = nombreCompleto.trim().split(" ")[0]
-                    val fotoPerfil = document.getString("fotoPerfil") ?: ""
-                    val correo = document.getString("correo") ?: ""
-
-                    findViewById<TextView>(R.id.tvSaludo)?.text = "HOLA, ${primerNombre.uppercase()} 👋"
-
-                    val iniciales = if (nombreCompleto.contains(" ")) {
-                        val partes = nombreCompleto.trim().split(" ")
-                        "${partes[0].take(1)}${partes[1].take(1)}"
-                    } else {
-                        nombreCompleto.take(2)
-                    }.uppercase()
-
-                    // Actualizar Home
-                    findViewById<TextView>(R.id.tvAvatarInitials)?.text = iniciales
-                    val imgPerfil = findViewById<ImageView>(R.id.imgPerfil)
-
-                    // Actualizar Drawer
-                    val navView = findViewById<NavigationView>(R.id.navigationView)
-                    val headerView = navView.getHeaderView(0)
-                    headerView.findViewById<TextView>(R.id.tvNavHeaderNombre).text = nombreCompleto
-                    headerView.findViewById<TextView>(R.id.tvNavHeaderCorreo).text = correo
-                    headerView.findViewById<TextView>(R.id.tvNavHeaderInitials).text = iniciales
-                    val imgNavHeader = headerView.findViewById<ImageView>(R.id.imgNavHeaderPerfil)
-
-                    if (fotoPerfil.isNotEmpty()) {
-                        Glide.with(this).load(fotoPerfil).circleCrop().into(imgPerfil)
-                        imgPerfil.visibility = View.VISIBLE
-
-                        Glide.with(this).load(fotoPerfil).circleCrop().into(imgNavHeader)
-                        imgNavHeader.visibility = View.VISIBLE
-                    } else {
-                        imgPerfil.visibility = View.GONE
-                        imgNavHeader.visibility = View.GONE
-                    }
-
-                    clienteDistrito = document.getString("distritoResidencia") ?: "Ventanilla"
+                clienteDistrito = document.getString("distritoResidencia") ?: ""
+                if (clienteDistrito.isNotEmpty()) {
                     findViewById<TextView>(R.id.tvNombreZona)?.text = "Zona: $clienteDistrito"
-                    
                     cargarMapaEstatico(clienteDistrito)
-                    
-                    // PASO 1: Obtener vecinos antes de buscar técnicos
                     cargarDistritosCercanos(clienteDistrito)
                 } else {
-                    forzarCerrarSesion()
+                    findViewById<TextView>(R.id.tvNombreZona)?.text = "Zona: No definida"
+                    buscarTecnicosGeneral(null)
                 }
+                
+                val fotoPerfil = document.getString("fotoPerfil") ?: ""
+                val correo = document.getString("correo") ?: ""
+                actualizarUIPerfilHeader(nombreCompleto, correo, fotoPerfil)
             }
+        }
+    }
+
+    private fun actualizarUIPerfilHeader(nombre: String, correo: String, foto: String) {
+        val navView = findViewById<NavigationView>(R.id.navigationView)
+        val headerView = navView.getHeaderView(0)
+        headerView.findViewById<TextView>(R.id.tvNavHeaderNombre).text = nombre
+        headerView.findViewById<TextView>(R.id.tvNavHeaderCorreo).text = correo
+        val imgPerfil = findViewById<ImageView>(R.id.imgPerfil)
+        val imgNavHeader = headerView.findViewById<ImageView>(R.id.imgNavHeaderPerfil)
+        if (foto.isNotEmpty()) {
+            Glide.with(this).load(foto).circleCrop().into(imgPerfil)
+            Glide.with(this).load(foto).circleCrop().into(imgNavHeader)
+            imgPerfil.visibility = View.VISIBLE
+            imgNavHeader.visibility = View.VISIBLE
+        }
     }
 
     private fun cargarDistritosCercanos(distrito: String) {
         db.collection("distritos").document(distrito).get()
             .addOnSuccessListener { doc ->
                 val vecinos = doc.get("distritosVecinos") as? List<String> ?: emptyList()
-                // Lista final: Mi distrito + Vecinos
                 distritosPermitidos = (vecinos + distrito).distinct()
-                Log.d(TAG, "Zonas permitidas para búsqueda: $distritosPermitidos")
-                
-                // PASO 2: Ahora sí buscamos técnicos solo en estas zonas
                 buscarTecnicosLocalized(null)
             }
             .addOnFailureListener {
-                // Fallback: si falla la colección de distritos, buscamos solo en el distrito del cliente
                 distritosPermitidos = listOf(distrito)
                 buscarTecnicosLocalized(null)
             }
     }
 
     private fun buscarTecnicosLocalized(especialidad: String?) {
-        if (distritosPermitidos.isEmpty()) return
-
-        // Filtro: Rol Técnico + Disponible + Que cubra alguna de mis zonas permitidas
+        if (distritosPermitidos.isEmpty()) {
+            Log.w(TAG, "No hay distritos permitidos configurados. Abortando búsqueda localizada.")
+            return
+        }
+        
+        Log.d(TAG, "Buscando técnicos localizados para especialidad: $especialidad")
         var query = db.collection("usuarios")
             .whereEqualTo("rol", "tecnico")
             .whereEqualTo("disponible", true)
-            .whereArrayContainsAny("distritos", distritosPermitidos)
 
-        if (especialidad != null) {
-            query = query.whereEqualTo("especialidad", especialidad)
-        }
+        if (especialidad != null) query = query.whereEqualTo("especialidad", especialidad)
 
         query.get()
-            .addOnSuccessListener { querySnapshot ->
-                val lista = querySnapshot.mapNotNull { doc ->
-                    doc.toObject(Usuario::class.java)?.copy(uid = doc.id)
+            .addOnSuccessListener { snapshot ->
+                val listaCompleta = snapshot.mapNotNull { doc -> 
+                    doc.toObject(Usuario::class.java)?.copy(uid = doc.id) 
                 }
+                
+                // Filtrado tolerante a ortografía, guiones y variantes como Callao / Callao (Cercado)
+                val listaFiltrada = listaCompleta.filter { tecnico ->
+                    tecnico.distritos.any { td ->
+                        distritosPermitidos.any { dp ->
+                            matchesDistrict(td, dp)
+                        }
+                    }
+                }
+                Log.d(TAG, "Búsqueda localizada en memoria exitosa. Encontrados: ${listaFiltrada.size} de ${listaCompleta.size}")
+                actualizarUILista(listaFiltrada)
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error crítico en buscarTecnicosLocalized:", e)
+                showToast("Error al cargar técnicos locales")
+            }
+    }
+
+    private fun matchesDistrict(d1: String, d2: String): Boolean {
+        val n1 = normalizarTexto(d1)
+        val n2 = normalizarTexto(d2)
+        if (n1 == n2) return true
+        
+        // Manejar "Callao" y "Callao (Cercado)"
+        if (n1.contains("callao") && n2.contains("callao")) return true
+        
+        // Manejar "Cercado de Lima" y "Lima (Cercado)"
+        if (n1.contains("lima") && n1.contains("cercado") && n2.contains("lima") && n2.contains("cercado")) return true
+        
+        return false
+    }
+
+    private fun normalizarTexto(texto: String?): String {
+        if (texto == null) return ""
+        return java.text.Normalizer.normalize(texto, java.text.Normalizer.Form.NFD)
+            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+            .replace("-", " ")
+            .lowercase().trim()
+    }
+
+    private fun buscarTecnicosGeneral(especialidad: String?) {
+        Log.d(TAG, "Buscando técnicos general (todos los distritos). Especialidad: $especialidad")
+        var query = db.collection("usuarios")
+            .whereEqualTo("rol", "tecnico")
+            .whereEqualTo("disponible", true)
+            
+        if (especialidad != null) query = query.whereEqualTo("especialidad", especialidad)
+        
+        query.get()
+            .addOnSuccessListener { snapshot ->
+                val lista = snapshot.mapNotNull { doc -> 
+                    doc.toObject(Usuario::class.java)?.copy(uid = doc.id) 
+                }
+                Log.d(TAG, "Búsqueda general exitosa. Técnicos encontrados: ${lista.size}")
                 actualizarUILista(lista)
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error en buscarTecnicosGeneral:", e)
+                showToast("Error al cargar la lista general")
             }
     }
 
     private fun buscarTecnicosPorTexto(texto: String) {
-        // En la búsqueda manual por texto, sí permitimos buscar en todo Lima
-        db.collection("usuarios")
-            .whereEqualTo("rol", "tecnico")
-            .whereEqualTo("disponible", true)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                val listaCompleta = querySnapshot.mapNotNull { doc ->
-                    doc.toObject(Usuario::class.java)?.copy(uid = doc.id)
-                }
-                
-                val busquedaLower = texto.lowercase(Locale.getDefault())
-                val listaFiltrada = listaCompleta.filter { tecnico ->
-                    tecnico.nombreCompleto.lowercase(Locale.getDefault()).contains(busquedaLower) ||
-                    tecnico.especialidad.lowercase(Locale.getDefault()).contains(busquedaLower) ||
-                    tecnico.distritos.any { d -> d.lowercase(Locale.getDefault()).contains(busquedaLower) }
-                }
-                actualizarUILista(listaFiltrada)
+        db.collection("usuarios").whereEqualTo("rol", "tecnico").whereEqualTo("disponible", true).get()
+            .addOnSuccessListener { snapshot ->
+                val busqueda = texto.lowercase()
+                val lista = snapshot.mapNotNull { it.toObject(Usuario::class.java)?.copy(uid = it.id) }
+                    .filter { it.nombreCompleto.lowercase().contains(busqueda) || it.especialidad.lowercase().contains(busqueda) }
+                actualizarUILista(lista)
             }
     }
 
     private fun actualizarUILista(lista: List<Usuario>) {
         tecnicoAdapter.actualizarLista(lista)
-        if (lista.isEmpty() && distritosPermitidos.isNotEmpty()) {
-            val intent = Intent(this, SinResultadosActivity::class.java).apply {
-                putExtra("distrito", clienteDistrito)
-            }
-            startActivity(intent)
-        }
     }
 
     private fun configurarChips() {
         seleccionarChip(btnTodos)
-        btnTodos.setOnClickListener {
-            seleccionarChip(btnTodos)
-            buscarTecnicosLocalized(null)
-        }
-        btnCategoria1.setOnClickListener {
-            seleccionarChip(btnCategoria1)
-            buscarTecnicosLocalized("Electricista")
-        }
-        btnCategoria2.setOnClickListener {
-            seleccionarChip(btnCategoria2)
-            buscarTecnicosLocalized("Gasfitero")
-        }
+        btnTodos.setOnClickListener { seleccionarChip(btnTodos); buscarTecnicosLocalized(null) }
+        btnCategoria1.setOnClickListener { seleccionarChip(btnCategoria1); buscarTecnicosLocalized("Electricista") }
+        btnCategoria2.setOnClickListener { seleccionarChip(btnCategoria2); buscarTecnicosLocalized("Gasfitero") }
     }
 
     private fun seleccionarChip(seleccionado: Button) {
@@ -278,30 +288,21 @@ class HomeClienteActivity : NavActivity() {
         val imgMapa = findViewById<ImageView>(R.id.imgMapa) ?: return
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val apiKey = com.chambita.app.BuildConfig.MAPS_API_KEY
                 val center = "${distrito.replace(" ", "+")},+Lima,+Peru"
-                val urlString = "https://maps.googleapis.com/maps/api/staticmap?center=$center&zoom=15&size=600x300&scale=2&maptype=roadmap&key=$apiKey"
-                val url = URL(urlString)
+                val url = URL("https://maps.googleapis.com/maps/api/staticmap?center=$center&zoom=15&size=600x300&scale=2&maptype=roadmap&key=${com.chambita.app.BuildConfig.MAPS_API_KEY}")
                 val connection = url.openConnection() as java.net.HttpURLConnection
                 connection.setRequestProperty("X-Android-Package", packageName)
                 if (connection.responseCode == java.net.HttpURLConnection.HTTP_OK) {
                     val bitmap = BitmapFactory.decodeStream(connection.inputStream)
                     withContext(Dispatchers.Main) { imgMapa.setImageBitmap(bitmap) }
                 }
-            } catch (e: Exception) { Log.e("MAPS", "Error en mapa", e) }
+            } catch (e: Exception) { Log.e("MAPS", "Error", e) }
         }
     }
 
     private fun forzarCerrarSesion() {
         FirebaseAuth.getInstance().signOut()
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+        startActivity(Intent(this, LoginActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK })
         finish()
-    }
-
-    override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) drawerLayout.closeDrawer(GravityCompat.START)
-        else super.onBackPressed()
     }
 }

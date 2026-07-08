@@ -135,13 +135,31 @@ class ChatActivity : NavActivity() {
     }
 
     private fun procesarAccionPropuesta(mensaje: Mensaje, accion: String) {
-        if (accion == "ACEPTAR") {
-            // Actualizar la solicitud con el monto aceptado
-            actualizarMontoSolicitud(mensaje.monto)
-            enviarMensaje("He aceptado la propuesta de S/ ${mensaje.monto}", "texto")
-        } else {
-            enviarMensaje("He rechazado la propuesta", "texto")
-        }
+        if (chatId == null) return
+
+        db.collection("chats").document(chatId!!)
+            .collection("mensajes")
+            .whereEqualTo("monto", mensaje.monto)
+            .whereEqualTo("tipo", "propuesta")
+            .whereEqualTo("estadoPropuesta", "pendiente")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                if (snapshot.isEmpty) return@addOnSuccessListener
+
+                val mensajeDoc = snapshot.documents[0]
+                val nuevoEstado = if (accion == "ACEPTAR") "aceptada" else "rechazada"
+
+                // ✅ Actualizar estado en Firestore
+                mensajeDoc.reference.update("estadoPropuesta", nuevoEstado)
+                    .addOnSuccessListener {
+                        if (accion == "ACEPTAR") {
+                            actualizarMontoSolicitud(mensaje.monto)
+                            enviarMensaje("He aceptado la propuesta de S/ ${mensaje.monto.toInt()}", "texto")
+                        } else {
+                            enviarMensaje("He rechazado la propuesta", "texto")
+                        }
+                    }
+            }
     }
 
     private fun actualizarMontoSolicitud(monto: Double) {
@@ -163,26 +181,37 @@ class ChatActivity : NavActivity() {
     private fun enviarMensaje(texto: String, tipo: String, monto: Double = 0.0) {
         if (currentUid == null || chatId == null) return
 
-        val nuevoMensaje = Mensaje(
-            remitenteId = currentUid,
-            texto = texto,
-            tipo = tipo,
-            monto = monto,
-            fechaRegistro = Timestamp.now()
+        val nuevoMensaje = hashMapOf(
+            "remitenteId"      to currentUid,
+            "texto"            to texto,
+            "tipo"             to tipo,
+            "monto"            to monto,
+            "leido"            to false,
+            "estadoPropuesta"  to "pendiente",
+            "fechaRegistro"    to com.google.firebase.Timestamp.now()
         )
 
         val ids = chatId!!.split("_")
         val chatData = hashMapOf(
-            "clienteId" to ids[0],
-            "tecnicoId" to ids[1],
-            "ultimoMensaje" to if (tipo == "propuesta") "💰 Propuesta: S/ $monto" else texto,
-            "fechaUltimoMensaje" to Timestamp.now()
+            "clienteId"          to ids[0],
+            "tecnicoId"          to ids[1],
+            "ultimoMensaje"      to if (tipo == "propuesta") "💰 Propuesta: S/ ${monto.toInt()}" else texto,
+            "fechaUltimoMensaje" to com.google.firebase.Timestamp.now()
         )
 
         val batch = db.batch()
-        batch.set(db.collection("chats").document(chatId!!), chatData, SetOptions.merge())
-        batch.set(db.collection("chats").document(chatId!!).collection("mensajes").document(), nuevoMensaje)
+        batch.set(
+            db.collection("chats").document(chatId!!),
+            chatData,
+            com.google.firebase.firestore.SetOptions.merge()
+        )
+        batch.set(
+            db.collection("chats").document(chatId!!).collection("mensajes").document(),
+            nuevoMensaje
+        )
         batch.commit()
+            .addOnSuccessListener { Log.d("CHAT", "Mensaje enviado OK") }
+            .addOnFailureListener { Log.e("CHAT", "Error al enviar: ${it.message}") }
     }
 
     private fun cargarDatosContacto() {

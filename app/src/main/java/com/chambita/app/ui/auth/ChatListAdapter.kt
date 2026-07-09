@@ -98,7 +98,7 @@ class ChatListAdapter(
         val imgAvatar: ImageView = view.findViewById(R.id.imgAvatar)
         val txtNombre: TextView  = view.findViewById(R.id.txtNombre)
         val txtMensaje: TextView = view.findViewById(R.id.txtMensaje)
-        val txtHora: TextView    = view.findViewById(R.id.tvHora)
+        val txtHora: TextView    = view.findViewById(R.id.txtHora)
         val viewOnline: View     = view.findViewById(R.id.viewOnline)
     }
 }

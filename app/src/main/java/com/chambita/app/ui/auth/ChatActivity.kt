@@ -135,30 +135,21 @@ class ChatActivity : NavActivity() {
     }
 
     private fun procesarAccionPropuesta(mensaje: Mensaje, accion: String) {
-        if (chatId == null) return
+        if (chatId == null || mensaje.id.isEmpty()) return
 
+        val nuevoEstado = if (accion == "ACEPTAR") "aceptada" else "rechazada"
+
+        // ✅ Actualizar estado directamente usando el ID del mensaje
         db.collection("chats").document(chatId!!)
-            .collection("mensajes")
-            .whereEqualTo("monto", mensaje.monto)
-            .whereEqualTo("tipo", "propuesta")
-            .whereEqualTo("estadoPropuesta", "pendiente")
-            .get()
-            .addOnSuccessListener { snapshot ->
-                if (snapshot.isEmpty) return@addOnSuccessListener
-
-                val mensajeDoc = snapshot.documents[0]
-                val nuevoEstado = if (accion == "ACEPTAR") "aceptada" else "rechazada"
-
-                // ✅ Actualizar estado en Firestore
-                mensajeDoc.reference.update("estadoPropuesta", nuevoEstado)
-                    .addOnSuccessListener {
-                        if (accion == "ACEPTAR") {
-                            actualizarMontoSolicitud(mensaje.monto)
-                            enviarMensaje("He aceptado la propuesta de S/ ${mensaje.monto.toInt()}", "texto")
-                        } else {
-                            enviarMensaje("He rechazado la propuesta", "texto")
-                        }
-                    }
+            .collection("mensajes").document(mensaje.id)
+            .update("estadoPropuesta", nuevoEstado)
+            .addOnSuccessListener {
+                if (accion == "ACEPTAR") {
+                    actualizarMontoSolicitud(mensaje.monto)
+                    enviarMensaje("He aceptado la propuesta de S/ ${mensaje.monto.toInt()}", "texto")
+                } else {
+                    enviarMensaje("He rechazado la propuesta", "texto")
+                }
             }
     }
 
@@ -243,7 +234,11 @@ class ChatActivity : NavActivity() {
             .orderBy("fechaRegistro", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) return@addSnapshotListener
-                val lista = snapshot?.toObjects(Mensaje::class.java) ?: emptyList()
+                
+                val lista = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(Mensaje::class.java)?.apply { id = doc.id }
+                } ?: emptyList()
+
                 adapter.updateList(lista)
                 if (lista.isNotEmpty()) rvMensajes.scrollToPosition(lista.size - 1)
             }

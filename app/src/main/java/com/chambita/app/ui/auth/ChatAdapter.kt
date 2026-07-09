@@ -48,7 +48,6 @@ class ChatAdapter(
         val hora = message.fechaRegistro?.let { sdf.format(it.toDate()) } ?: ""
 
         when (holder) {
-
             is SentViewHolder -> {
                 holder.tvHora.text = hora
                 if (message.tipo == "imagen") {
@@ -76,57 +75,36 @@ class ChatAdapter(
             }
 
             is ProposalViewHolder -> {
-                val esMia = message.remitenteId == FirebaseAuth.getInstance().currentUser?.uid
+                val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+                val esMia = message.remitenteId == currentUid
 
                 holder.tvTitulo.text = if (message.tipo == "propuesta") "PROPUESTA DE PRECIO" else "CONFIRMACIÓN DE PAGO"
                 holder.tvMonto.text  = "S/ ${message.monto.toInt()}"
-                holder.tvDetalle.text = message.texto
-
-                if (!esMia) {
-                    holder.layoutAcciones.visibility = View.VISIBLE
-
-                    when (message.estadoPropuesta) {
-                        "aceptada" -> {
-                            holder.btnAceptar.text      = "✓ Aceptado"
-                            holder.btnAceptar.isEnabled = false
-                            holder.btnAceptar.alpha     = 0.6f
-                            holder.btnRechazar.visibility = View.GONE
-                        }
-                        "rechazada" -> {
-                            holder.btnRechazar.text      = "✗ Rechazado"
-                            holder.btnRechazar.isEnabled = false
-                            holder.btnRechazar.alpha     = 0.6f
-                            holder.btnAceptar.visibility = View.GONE
-                        }
-                        else -> {
-                            // pendiente — botones activos
-                            holder.btnAceptar.text        = "Aceptar"
-                            holder.btnRechazar.text       = "Rechazar"
-                            holder.btnAceptar.isEnabled   = true
-                            holder.btnRechazar.isEnabled  = true
-                            holder.btnAceptar.visibility  = View.VISIBLE
-                            holder.btnRechazar.visibility = View.VISIBLE
-                            holder.btnAceptar.alpha       = 1f
-                            holder.btnRechazar.alpha      = 1f
-
-                            // Limpiar listeners anteriores
-                            holder.btnAceptar.setOnClickListener(null)
-                            holder.btnRechazar.setOnClickListener(null)
-
-                            holder.btnAceptar.setOnClickListener {
-                                onPropuestaAction(message, "ACEPTAR")
-                            }
-                            holder.btnRechazar.setOnClickListener {
-                                onPropuestaAction(message, "RECHAZAR")
-                            }
-                        }
-                    }
-                } else {
+                
+                // Color del monto según diseño (Azul para resaltar cifra)
+                holder.tvMonto.setTextColor(holder.itemView.context.getColor(R.color.figma_blue))
+                
+                // --- LÓGICA DE ESTADOS ---
+                if (message.estadoPropuesta == "aceptada") {
                     holder.layoutAcciones.visibility = View.GONE
-                    holder.tvDetalle.text = when (message.estadoPropuesta) {
-                        "aceptada"  -> "✓ Propuesta aceptada por el cliente"
-                        "rechazada" -> "✗ Propuesta rechazada por el cliente"
-                        else        -> "${message.texto} (Esperando confirmación...)"
+                    holder.tvDetalle.text = if (esMia) "✓ Propuesta aceptada por el cliente" else "✓ Has aceptado esta propuesta"
+                    holder.tvDetalle.setTextColor(holder.itemView.context.getColor(R.color.chambita_verde))
+                } else if (message.estadoPropuesta == "rechazada") {
+                    holder.layoutAcciones.visibility = View.GONE
+                    holder.tvDetalle.text = if (esMia) "✗ Propuesta rechazada por el cliente" else "✗ Has rechazado esta propuesta"
+                    holder.tvDetalle.setTextColor(holder.itemView.context.getColor(R.color.chambita_rojo))
+                } else {
+                    // PENDIENTE
+                    holder.tvDetalle.setTextColor(holder.itemView.context.getColor(R.color.chambita_texto_secundario))
+                    if (!esMia) {
+                        holder.layoutAcciones.visibility = View.VISIBLE
+                        holder.tvDetalle.text = "Propuesta por el servicio"
+                        
+                        holder.btnAceptar.setOnClickListener { onPropuestaAction(message, "ACEPTAR") }
+                        holder.btnRechazar.setOnClickListener { onPropuestaAction(message, "RECHAZAR") }
+                    } else {
+                        holder.layoutAcciones.visibility = View.GONE
+                        holder.tvDetalle.text = "Esperando confirmación del cliente..."
                     }
                 }
             }

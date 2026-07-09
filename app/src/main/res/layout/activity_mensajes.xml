@@ -18,6 +18,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_above="@id/bottomNav"
                 android:orientation="vertical"
                 android:paddingHorizontal="20dp"
                 android:paddingTop="12dp">
@@ -95,10 +96,109 @@
                 android:layout_marginBottom="20dp"
                 android:src="@drawable/ic_chat"
                 app:backgroundTint="@color/figma_blue"
-                app:tint="@color/blanco" />
+                app:tint="@color/blanco"
+                android:visibility="gone" />
 
-            <!-- BOTTOM NAV -->
-            <include layout="@layout/activity_perfil_cliente" android:id="@+id/bottomNav" />
+            <!-- Bottom Navigation -->
+            <LinearLayout
+                android:id="@+id/bottomNav"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/blanco"
+                android:elevation="12dp"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:baselineAligned="false">
+
+                <LinearLayout
+                    android:id="@+id/navInicio"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_home"
+                        app:tint="@color/chambita_texto_secundario" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Inicio"
+                        android:textColor="@color/chambita_texto_secundario"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/navTrabajos"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_tools"
+                        app:tint="@color/chambita_texto_secundario" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Trabajos"
+                        android:textColor="@color/chambita_texto_secundario"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/navMensajes"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_nav_active"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_chat"
+                        app:tint="@color/blanco" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Mensajes"
+                        android:textColor="@color/chambita_acento"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/navPerfil"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_person"
+                        app:tint="@color/chambita_texto_secundario" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Perfil"
+                        android:textColor="@color/chambita_texto_secundario"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
 
         </RelativeLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

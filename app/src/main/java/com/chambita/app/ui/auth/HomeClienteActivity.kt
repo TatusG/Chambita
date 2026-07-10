@@ -103,6 +103,14 @@ class HomeClienteActivity : NavActivity() {
                 startActivity(Intent(this, NuevaSolicitudActivity::class.java).apply { putExtra("distrito", clienteDistrito) })
             }
         }
+
+        findViewById<View>(R.id.fabAdd)?.setOnClickListener {
+            if (clienteDistrito.isNotEmpty()) {
+                startActivity(Intent(this, NuevaSolicitudActivity::class.java).apply { putExtra("distrito", clienteDistrito) })
+            } else {
+                showToast("Por favor, configura tu distrito en el perfil")
+            }
+        }
     }
 
     private fun configurarMenuLateral() {
@@ -111,6 +119,9 @@ class HomeClienteActivity : NavActivity() {
             when (menuItem.itemId) {
                 R.id.nav_perfil -> startActivity(Intent(this, PerfilClienteActivity::class.java))
                 R.id.nav_direcciones -> startActivity(Intent(this, MisDireccionesActivity::class.java))
+                R.id.nav_pagos -> startActivity(Intent(this, MetodosPagoActivity::class.java))
+                R.id.nav_historial -> startActivity(Intent(this, HistorialPagosActivity::class.java))
+                R.id.nav_soporte -> showToast("Soporte técnico próximamente")
                 R.id.nav_logout -> forzarCerrarSesion()
             }
             drawerLayout.closeDrawer(GravityCompat.START)

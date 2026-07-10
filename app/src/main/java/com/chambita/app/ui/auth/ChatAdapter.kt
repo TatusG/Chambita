@@ -80,11 +80,9 @@ class ChatAdapter(
 
                 holder.tvTitulo.text = if (message.tipo == "propuesta") "PROPUESTA DE PRECIO" else "CONFIRMACIÓN DE PAGO"
                 holder.tvMonto.text  = "S/ ${message.monto.toInt()}"
-                
-                // Color del monto según diseño (Azul para resaltar cifra)
+
                 holder.tvMonto.setTextColor(holder.itemView.context.getColor(R.color.figma_blue))
-                
-                // --- LÓGICA DE ESTADOS ---
+
                 if (message.estadoPropuesta == "aceptada") {
                     holder.layoutAcciones.visibility = View.GONE
                     holder.tvDetalle.text = if (esMia) "✓ Propuesta aceptada por el cliente" else "✓ Has aceptado esta propuesta"
